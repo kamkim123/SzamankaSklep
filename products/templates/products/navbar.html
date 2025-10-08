@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Navbar</title>
+    {% load static %}
+
+    <link rel="stylesheet" href="{% static 'products/navbar.css' %}">
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Delius+Swash+Caps&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+</head>
+<body>
+
+
+<nav>
+    <div class="top-navbar">
+        <div class="logo-search-bar">
+            <a href="{% url 'home' %}"><h4 class="logo-name">Szamanka.pl</h4></a>
+        </div>
+        <div class="kategorie-nav">
+            <div class="dropdown" id="navCategories" data-target="/products/">
+
+                <div class="select">
+                    <a href="{% url 'products:produkty' %}" class="pasek1" id="navCurrent" aria-haspopup="listbox"
+                       aria-expanded="false">Produkty</a>
+                </div>
+                <ul class="menu">
+                    {% for c in categories %}
+                    <li data-value="{{ c.product_type }}">
+                        <a href="{% url 'products:produkty' %}?type={{ c.product_type }}">{{ c.product_type }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <a href="{% url 'products:produkty' %}?bestsellers=true" class="pasek1">Bestsellery</a>
+            </div>
+            <div>
+                <a href="#" class="pasek1">Promocje</a>
+            </div>
+            <div>
+                <a href="#o-nas-section" class="pasek1">O&nbsp;nas</a>
+            </div>
+            <div>
+                <a href="#location-section" class="pasek1">Kontakt</a>
+            </div>
+        </div>
+
+        <div class="search" id="search">
+            <label>
+                <input class="search__input" type="search" placeholder="Szukaj produktów..." disabled>
+            </label>
+            <button class="search__toggle" type="button" aria-label="Otwórz wyszukiwarkę">
+                <i class="bx bx-search"></i>
+            </button>
+            <button class="search__clear" type="button" aria-label="Wyczyść">
+                <i class="bx bx-x"></i>
+            </button>
+        </div>
+
+        <div class="ikonki_nav">
+            <div class="user-popover">
+                <!-- przycisk–trigger -->
+                <button class="user-trigger" type="button" aria-haspopup="dialog" aria-expanded="false"
+                        aria-controls="userPanel">
+                    <img src="{% static 'products/images/user1.png' %}" alt="Konto" class="nav-icon">
+                </button>
+
+                <!-- panel -->
+                <div class="user-panel" id="userPanel" role="dialog" aria-label="Panel konta" aria-modal="false">
+                    {% if user.is_authenticated %}
+                    <div class="user-row">
+                        <span class="user-dot" aria-hidden="true"></span>
+                        <span>Jesteś zalogowany</span>
+                    </div>
+                    <div class="user-name">🎉 {{ user.get_username }}</div>
+
+                    <div class="user-actions">
+                        <a class="btn1 btn-primary" href="{% url 'users:user-panel' %}">Mój profil</a>
+                        <form method="post" action="{% url 'users:logout' %}">
+                            {% csrf_token %}
+                            <button class="btn1 btn-secondary" type="submit">Wyloguj</button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="user-row">
+                        <span class="user-dot gray" aria-hidden="true"></span>
+                        <span>Nie jesteś zalogowany</span>
+                    </div>
+                    <div class="user-actions">
+                        <a class="btn1 btn-primary" href="{% url 'users:login' %}?next={{ request.path }}">Zaloguj
+                            się</a>
+                        <a class="btn1 btn-link" href="{% url 'users:signup' %}">Załóż konto</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <a href="{% url 'users:favorites' %}"><img src="{% static 'products/images/heart.png' %}" alt="ulubione"
+                                                       class="nav-icon"></a>
+            <a href="{% url 'orders:cart' %}"><img src="{% static 'products/images/shopping-cart.png' %}" alt="cart"
+                                                   class="nav-icon"></a>
+        </div>
+    </div>
+    <button class="burger" aria-label="Menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+</nav>
+
+<script src="{% static 'products/navbar.js' %}"></script>
+</body>
+</html>

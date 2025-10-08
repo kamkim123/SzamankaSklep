@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Favorites</title>
+    {% load static %}
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'users/favorites.css' %}">
+</head>
+<body>
+
+{% include "products/navbar.html" %}
+
+<main class="favorites-page">
+    <section class="favorites-header">
+        <h1>Twoje ulubione produkty</h1>
+        <p>Wszystkie Twoje ulubione produkty w jednym miejscu!</p>
+    </section>
+
+    <!-- Lista ulubionych produktów -->
+    <section class="favorites-list">
+        {% if not empty %}
+            {% for favorite in favorites %}
+                <div class="favorite-item">
+                    <a href="{% url 'products:detail' favorite.product.pk %}">
+                        <img src="{% if favorite.product.image %}{{ favorite.product.image.url }}{% else %}{% static 'images/product2.png' %}{% endif %}" alt="{{ favorite.product.product_name }}" class="favorite-image">
+                    </a>
+                    <div class="favorite-info">
+                        <h3>{{ favorite.product.product_name }}</h3>
+                        <p>{{ favorite.product.description }}</p>
+                        <a href="{% url 'users:favorite_toggle' favorite.product.pk %}" class="btn btn-remove">Usuń z ulubionych</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Nie masz żadnych ulubionych produktów.</p>
+            <a href="{% url 'products:produkty' %}" class="btn btn-primary">Zobacz produkty</a>
+        {% endif %}
+    </section>
+</main>
+
+{% include "products/footer.html" %}
+
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <!-- TEMPLATE: products/index.html -->
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Szamanka-products</title>
+
+    {% load static %}
+
+    <!-- jeśli plik masz w static/ -> np. static/products.css -->
+    <link rel="stylesheet" href="{% static 'products/products.css' %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Delius+Swash+Caps&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+    <script>
+        var cartAddUrl = "{% url 'orders:cart_add' %}";
+    </script>
+</head>
+<body>
+<form method="get" id="navFilterForm" style="display:none">
+    <input type="hidden" name="type" id="navTypeInput" value="{{ selected|default:'' }}">
+</form>
+<nav>
+    <div class="top-navbar">
+        <div class="logo-search-bar">
+            <a href="{% url 'home' %}"><h4 class="logo-name">Szamanka.pl</h4></a>
+        </div>
+        <div class="kategorie-nav">
+            <div class="dropdown" id="navCategories" data-target="/products/">
+
+                <div class="select">
+                    <a href="{% url 'products:produkty' %}" class="pasek1" id="navCurrent" aria-haspopup="listbox" aria-expanded="false">Produkty</a>
+                </div>
+                <ul class="menu">
+                    {% for c in categories %}
+                        <li data-value="{{ c.product_type }}">
+                            <a href="{% url 'products:produkty' %}?type={{ c.product_type }}">{{ c.product_type }} ({{ c.count }})</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <a href="{% url 'products:produkty' %}?bestsellers=true" class="pasek1">Bestsellery</a>
+            </div>
+            <div>
+                <a href="#" class="pasek1">Promocje</a>
+            </div>
+            <div>
+                <a href="#o-nas-section" class="pasek1">O&nbsp;nas</a>
+            </div>
+            <div>
+                <a href="#location-section" class="pasek1">Kontakt</a>
+            </div>
+        </div>
+
+        <div class="search" id="search">
+            <label>
+                <input class="search__input" type="search" placeholder="Szukaj produktów..." disabled>
+            </label>
+            <button class="search__toggle" type="button" aria-label="Otwórz wyszukiwarkę">
+                <i class="bx bx-search"></i>
+            </button>
+            <button class="search__clear" type="button" aria-label="Wyczyść">
+                <i class="bx bx-x"></i>
+            </button>
+        </div>
+
+        <div class="ikonki_nav">
+            <a href="{% url 'users:login' %}"><img src="{% static 'products/images/user1.png' %}" alt="login" class="nav-icon"></a>
+            <a href="{% url 'users:favorites' %}"><img src="{% static 'products/images/heart.png' %}" alt="ulubione" class="nav-icon"></a>
+            <a href="{% url 'orders:cart' %}"><img src="{% static 'products/images/shopping-cart.png' %}" alt="cart" class="nav-icon"></a>
+        </div>
+    </div>
+    <button class="burger" aria-label="Menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+</nav>
+
+
+<section class="products-section" id="products-section">
+    <div class="products-wrapper">
+
+        <!-- LEWE MENU: zostawiam statyczne, żeby wygląd nie uciekł -->
+        <div class="products-menu">
+            <div class="products-menu-item-title">Kategorie</div>
+            <div class="products-menu-item">
+                <span class="title-link" data-type="Promocje">Promocje</span>
+                <a href="{% url 'products:produkty' %}?bestsellers=true" class="title-link">Bestsellery</a>
+                <span class="title-link" data-type="Nowosci">Nowosci</span>
+            </div>
+
+            <div class="products-menu-item">
+                <span class="title-link" data-type="spozywcze">Artykuly&nbsp;spozywcze</span>
+                <a href="#" class="products-menu-link" data-type="Maki">Maki</a>
+                <a href="#" class="products-menu-link" data-type="Orzechy">orzechy</a>
+                <a href="#" class="products-menu-link" data-type="Przekaski">przekaski</a>
+                <a href="#" class="products-menu-link" data-type="Miody">miody</a>
+                <a href="#" class="products-menu-link" data-type="Inne">inne</a>
+            </div>
+
+            <div class="products-menu-item">
+                <span class="title-link" data-type="suplementy">Suplementy&nbsp;diety</span>
+            </div>
+
+            <div class="products-menu-item">
+                <span class="title-link">Kosmetyki</span>
+
+                <div class="submenu-block">
+                    <a href="#" class="products-menu-link subtitle-link" data-type="kosmetyki do twarzy">Do twarzy</a>
+                    <button class="submenu-toggle" type="button" aria-label="Rozwiń Do twarzy"></button>
+                </div>
+                <div class="submenu-panel">
+                    <a class="products-cat2" href="#" data-type="Hydrolaty">Hydrolaty</a>
+                    <a class="products-cat2" href="#" data-type="Olejki pod oczy">Olejki&nbsp;pod oczy</a>
+                    <a class="products-cat2" href="#" data-type="Kosmetyki kolorowe">Kosmetyki kolorowe</a>
+                    <a class="products-cat2" href="#" data-type="Pomadki do ust">Pomadki do ust</a>
+                    <a class="products-cat2" href="#" data-type="Maseczki">Maseczki</a>
+                    <a class="products-cat2" href="#" data-type="Kremy">Kremy</a>
+                    <a class="products-cat2" href="#" data-type="Peelingi">Peelingi</a>
+                    <a class="products-cat2" href="#" data-type="Zele i pianki">Zele i pianki</a>
+                    <a class="products-cat2" href="#" data-type="Serum">Serum</a>
+                    <a class="products-cat2" href="#" data-type="Plyny nicelarne">Plyny nicelarne</a>
+                </div>
+
+                <div class="submenu-block">
+                    <a href="#" class="products-menu-link subtitle-link" data-type="kosmetyki do ciała">Do ciala</a>
+                    <button class="submenu-toggle" type="button" aria-label="Rozwiń Do ciała"></button>
+                </div>
+                <div class="submenu-panel">
+                    <a class="products-cat2" href="#" data-type="Dezodoranty">Dezodoranty</a>
+                    <a class="products-cat2" href="#" data-type="Sole">Sole</a>
+                    <a class="products-cat2" href="#" data-type="Olejki">Olejki</a>
+                    <a class="products-cat2" href="#" data-type="Zele do mycia">Zele do mycia</a>
+                    <a class="products-cat2" href="#" data-type="Peelingi">Peelingi</a>
+                    <a class="products-cat2" href="#" data-type="Mydla">Mydla</a>
+                    <a class="products-cat2" href="#" data-type="Higiena intymna">Higiena intymna</a>
+                    <a class="products-cat2" href="#" data-type="Balsamy">Balsamy</a>
+                </div>
+
+                <div class="submenu-block">
+                    <a href="#" class="products-menu-link subtitle-link" data-type="kosmetyki do włosów">Do wlosow</a>
+                    <button class="submenu-toggle" type="button" aria-label="Rozwiń Do włosów"></button>
+                </div>
+                <div class="submenu-panel">
+                    <a class="products-cat2" href="#" data-type="Odzywki i maski">Odzywki i maski</a>
+                    <a class="products-cat2" href="#" data-type="Wcierki">Wcierki</a>
+                    <a class="products-cat2" href="#" data-type="Olejki">Olejki</a>
+                    <a class="products-cat2" href="#" data-type="Szampony">Szampony</a>
+                    <a class="products-cat2" href="#" data-type="Farby">Farby</a>
+                    <a class="products-cat2" href="#" data-type="Akcesoria">Akcesoria</a>
+                    <a class="products-cat2" href="#" data-type="Peelingi">Peelingi</a>
+                </div>
+            </div>
+
+            <div class="products-menu-item">
+                <span class="title-link" data-type="masci">Masci</span>
+                <a href="#" class="products-menu-link" data-type="Przeciwbolowe">Przeciwbolowe</a>
+                <a href="#" class="products-menu-link" data-type="Problemy skorne">Problemy skorne</a>
+                <a href="#" class="products-menu-link" data-type="Inne">Inne</a>
+            </div>
+            <div class="products-menu-item">
+                <span class="title-link" data-type="ziola">Ziola</span>
+            </div>
+            <div class="products-menu-item">
+                <span class="title-link" data-type="inne">Inne</span>
+                <a href="#" class="products-menu-link" data-type="Perfumy">Perfumy</a>
+                <a href="#" class="products-menu-link" data-type="Dyfuzory">Dyfuzory</a>
+                <a href="#" class="products-menu-link" data-type="Olejki eteryczne">Olejki eteryczne</a>
+                <a href="#" class="products-menu-link" data-type="Swiece zapachowe">Swiece zapachowe</a>
+                <a href="#" class="products-menu-link" data-type="Poduszki">Poduszki</a>
+                <a href="#" class="products-menu-link" data-type="Pasty do zebow">Pasty do zebow</a>
+            </div>
+        </div>
+
+        <form method="get" class="mb-4">
+            <label for="type">Kategoria:</label>
+            <select name="type" id="type" onchange="this.form.submit()">
+                <option value="">Wszystkie</option>
+                {% for c in categories %}
+                <option value="{{ c.product_type }}"
+                        {% if selected == c.product_type %}selected{% endif %}>
+                    {{ c.product_type }} ({{ c.count }})
+                </option>
+                {% endfor %}
+            </select>
+            <noscript>
+                <button type="submit">Filtruj</button>
+            </noscript>
+        </form>
+
+
+        <div class="all-products">
+            <div class="sort-by">sort&nbsp;by:</div>
+            <div class="sort-wrapper">
+                <div class="sort">Produkty</div>
+                <div class="caret"></div>
+                <ul class="sort-list">
+                    <li data-type="Najpopularniejsze">Najpopularniejsze</li>
+                    <li data-type="Nowosci">Nowosci</li>
+                    <li data-type="Promocje">Promocje</li>
+                    <li>
+                        <a href="{% url 'products:produkty' %}?bestsellers=true">Bestsellery</a>
+                    </li>
+                </ul>
+            </div>
+
+
+
+            {% if products %}
+
+            {% for p in products %}
+            <div class="product">
+                <a href="{% url 'products:detail' p.pk %}">
+                    <img
+                            src="{% if p.image %}{{ p.image.url }}{% else %}{% static 'images/product2.png' %}{% endif %}"
+                            alt="{{ p.product_name }}"
+                            class="product-image">
+                </a>
+
+                <h3>
+                    <a href="{% url 'products:detail' p.pk %}">{{ p.product_name }}</a>
+                </h3>
+
+
+                <h4 class="price">{{ p.price|floatformat:2 }}&nbsp;zł</h4>
+                <form method="post" action="{% url 'orders:cart_add' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ p.pk }}">
+                    <input type="hidden" name="quantity" value="1">
+
+                    <div class="products-cart{% if p.product_stock|default:0 <= 0 %} disabled{% endif %}">
+                        <!-- Formularz wysyłający dane produktu do koszyka -->
+                        <button type="submit" class="cart-icon" data-product-id="{{ p.pk }}">
+                            <img src="{% static 'products/images/shopping-cart-white.png' %}" alt="cart" class="cart-icon" />
+                        </button>
+                    </div>
+                </form>
+
+                {% if p in request.user.favorites.all %}
+                    <a href="{% url 'users:favorite_toggle' p.pk %}">
+                        <i class="bx bx-heart" style="color: red;"></i>  <!-- Czerwone serce, jeśli produkt jest w ulubionych -->
+                    </a>
+                {% else %}
+                    <a href="{% url 'users:favorite_toggle' p.pk %}">
+                        <i class="bx bx-heart"></i>  <!-- Puste serce, jeśli produkt nie jest w ulubionych -->
+                    </a>
+                {% endif %}
+
+                <div class="calc-product">
+                    <button type="button" class="minus" aria-label="zmniejsz ilość">-</button>
+                    <div class="calc-input">01</div>
+                    <button type="button" class="plus" aria-label="zwiększ ilość">+</button>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- „Więcej produktów” = następna strona paginacji -->
+            <nav class="pagination">
+                {% if page_obj.has_previous %}
+                <a href="?{% if selected %}type={{ selected }}&{% endif %}page={{ page_obj.previous_page_number }}">←
+                    Poprzednia</a>
+                {% endif %}
+
+                <span>Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}</span>
+
+                {% if page_obj.has_next %}
+                <a href="?{% if selected %}type={{ selected }}&{% endif %}page={{ page_obj.next_page_number }}">Następna
+                    →</a>
+                {% endif %}
+            </nav>
+            {% else %}
+            <p>Brak produktów.</p>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-box" id="socials-foot">
+            <h3><a href="{% url 'home' %}" class="footer-title">Szamanka</a></h3>
+            <p>Nasielsk 123/456</p>
+            <p>szamanka@nasielsk.pl</p>
+            <div class="footer-social">
+                <a href="#"><img src="{% static 'products/images/facebook.png' %}" alt="fb" class="footer-social-icons"></a>
+                <a href="#"><img src="{% static 'products/images/instagram.png' %}" class="footer-social-icons" alt="instagram"></a>
+                <a href="#"><img src="{% static 'products/images/tik-tok.png' %}" class="footer-social-icons" alt="tiktok"></a>
+            </div>
+        </div>
+
+        <div class="footer-box" id="info-foot">
+            <h3>Pomoc</h3>
+            <a href="#">Menu</a>
+            <a href="#">Kontakt</a>
+            <a href="#">Polityka prywatności</a>
+            <a href="#">Zwroty</a>
+        </div>
+
+        <div class="footer-box" id="call-to-mail">
+            <div class="nowrap-email">
+                <h3><a href="#" class="footer-newsletter">Podaj email</a></h3>
+                <p>Zapisz się do newslettera <br><br>i otrzymaj 10% znizki</p>
+
+                <form action="#">
+                    <i class="bx bx-mail-send"></i>
+                    <label class="input-box">
+                        <input type="email" placeholder="Email" class="email-footer">
+                    </label>
+                    <i class="bxr bx-arrow-right-stroke-square"></i>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+<section class="copyright">
+    <div class="copyright-container">
+        <div class="copyright">
+            <p>&copy; 2025 Szamanka. Wszelkie prawa zastrzeżone.</p>
+        </div>
+        <div class="payment-icons">
+            <img src="{% static 'products/images/visa.png' %}" alt="Visa" class="pay-icons">
+            <img src="{% static 'products/images/card.png' %}" alt="Mastercard" class="pay-icons">
+            <img src="{% static 'products/images/blik.png' %}" alt="BLIK" class="pay-icons" id="ikonka-blik">
+            <img src="{% static 'products/images/przelewy24.png' %}" alt="Przelewy24" class="pay-icons">
+            <img src="{% static 'products/images/payu.png' %}" alt="PayU" class="pay-icons">
+            <img src="{% static 'products/images/paypal.png' %}" alt="PeoPay" class="pay-icons">
+        </div>
+    </div>
+</section>
+
+
+
+
+<script src="{% static 'products/products.js' %}"></script>
+
+
+</body>
+</html>

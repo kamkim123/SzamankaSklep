@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h1>Płatność w toku</h1>
+<p>Otrzymaliśmy powrót z bramki płatniczej dla zamówienia #{{ order.id }}.
+{% if order.is_paid %}Status: opłacone{% else %}Status: oczekiwanie na potwierdzenie{% endif %}</p>
+<a href="{% url 'shop:order_summary' order.id %}">Podsumowanie zamówienia</a>
+
+
+</body>
+</html>

@@ -1,0 +1,233 @@
+
+
+footer{
+    margin-top:150px;
+
+}
+
+
+.nowrap-email {
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+.footer .footer-container {
+    background: #475338;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    color: white;
+    justify-items: center;
+    align-items: start;
+    gap: 1rem;
+}
+
+.nowrap-email {
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+.footer .footer-container .footer-box {
+    display: flex;
+    flex-direction: column;
+    margin: 0.5rem 0;
+}
+
+.footer-container .footer-box h3 {
+    padding: 0.5rem 0;
+    font-size: 1.7rem;
+    color: white;
+}
+
+.footer-container .footer-box a {
+
+    padding: 0.5rem 0;
+    color: white;
+}
+
+.footer-container .footer-box p {
+    display: block;
+    padding: 0.5rem 0;
+    color: white;
+}
+
+.footer-container .footer-box a:hover {
+    color: floralwhite;
+    text-decoration-line: underline;
+}
+
+
+.footer-social {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footer-social img {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
+.bx-mail-send {
+    font-size: 30px;
+    margin-top: 10px;
+    margin-right: 0.5rem;
+
+    cursor: pointer;
+}
+
+
+.bx-arrow-right-stroke-square {
+    font-size: 35px;
+    margin-top: 0.5rem;
+    color: white;
+}
+
+.email-footer {
+    width: 200px;
+    border: none;
+    border-bottom: 2px solid white;
+    background: transparent;
+    color: white;
+    outline: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0.5rem 0;
+    font-size: 1rem;
+}
+
+.footer-box form {
+    width: 100%;
+}
+
+.email-footer::placeholder {
+    color: rgba(248, 247, 247, 0.7);
+}
+
+.copyright-container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* domyślnie wszystko na środek */
+    position: relative;
+    padding: 1rem 2rem;
+    background-color: #e4ffc2;
+    margin:0;
+    height: 60px;
+    width:100%;
+
+}
+
+.payment-icons {
+    position: absolute;
+    right: 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.copyright {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.pay-icons {
+    height: 32px;
+    width: auto;
+    cursor: pointer;
+}
+
+#ikonka-blik {
+    width: 43px;
+    height: 28px;
+}
+
+#przelewy24{
+
+    width: 48px;
+    height: 26px;
+
+}
+
+
+
+@media (max-width: 900px) {
+
+
+    .copyright-container {
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 2rem;
+        gap: 0.8rem;
+        margin: 0;
+        height: auto;
+    }
+
+    .payment-icons {
+        position: static;
+        gap: 1.5rem;
+    }
+
+    .pay-icons {
+        height: 28px;
+        width: auto;
+        cursor: pointer;
+    }
+
+    #ikonka-blik {
+        width: 43px;
+        height: auto;
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .footer {
+        margin: 0 64px;
+    }
+
+    .footer .footer-container {
+        margin: 0 -64px 0 -64px;
+        grid-template-columns: repeat(2, 1fr); /* tylko 2 kolumny */
+    }
+
+    .nowrap-email form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+
+
+    .footer .footer-container .footer-box {
+        margin-top: 0;
+        margin-right: 0;
+        line-height: 1;
+    }
+
+    #info-foot {
+        padding: 1.5rem 0 0 0;
+    }
+
+    #socials-foot {
+        padding: 1.5rem 0 0 0;
+    }
+
+    #call-to-mail {
+        margin-left: 10px;
+
+    }
+
+    .footer-container .footer-box a {
+        padding: 0.5rem 0;
+        color: white;
+    }
+
+    .footer-container .footer-box h3 {
+        padding: 0.5rem 0;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+}

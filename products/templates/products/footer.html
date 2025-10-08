@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Footer</title>
+
+    {% load static %}
+
+     <link rel="stylesheet" href="{% static 'products/footer.css' %}">
+</head>
+<body>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-box" id="socials-foot">
+            <h3><a href="{% url 'home' %}" class="footer-title">Szamanka</a></h3>
+            <p>Nasielsk 123/456</p>
+            <p>szamanka@nasielsk.pl</p>
+            <div class="footer-social">
+                <a href="#"><img src="{%static 'products/images/facebook.png' %}" alt="fb" class="footer-social-icons"></a>
+                <a href="#"><img src="{%static 'products/images/instagram.png' %}" class="footer-social-icons" alt="instagram"></a>
+                <a href="#"><img src="{%static 'products/images/tik-tok.png' %}" class="footer-social-icons" alt="tiktok"></a>
+            </div>
+        </div>
+
+        <div class="footer-box" id="info-foot">
+            <h3>Pomoc</h3>
+            <a href="{% url 'home' %}">Menu</a>
+            <a href="#">Kontakt</a>
+            <a href="#">Polityka prywatności</a>
+            <a href="#">Zwroty</a>
+        </div>
+
+        <div class="footer-box" id="call-to-mail">
+            <div class="nowrap-email">
+                <h3><a href="#" class="footer-newsletter">Podaj email</a></h3>
+                <p>Zapisz się do newslettera <br><br>i otrzymaj 10% znizki</p>
+
+                <form action="#">
+                    <i class="bx bx-mail-send"></i>
+                    <label class="input-box1">
+                        <input type="email" placeholder="Email" class="email-footer">
+                    </label>
+                    <i class='bxr bx-arrow-right-stroke-square'></i>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</footer>
+<section class="copyright">
+    <div class="copyright-container">
+        <div class="copyright"><p>&copy; 2025 Szamanka. Wszelkie prawa zastrzeżone.</p></div>
+        <div class="payment-icons">
+            <img src="{% static 'products/images/visa.png' %}" alt="Visa" class="pay-icons">
+            <img src="{% static 'products/images/card.png' %}" alt="Mastercard" class="pay-icons">
+            <img src="{% static 'products/images/blik.png' %}" alt="BLIK" class="pay-icons" id="ikonka-blik">
+            <img src="{% static 'products/images/przelewy24.png' %}" alt="Przelewy24" class="pay-icons" id="przelewy24">
+            <img src="{% static 'products/images/payu.png' %}" alt="PayU" class="pay-icons">
+            <img src="{% static 'products/images/paypal.png' %}" alt="PeoPay" class="pay-icons">
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'orders/checkout.css' %}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+
+{% include "products/navbar.html" %}
+
+<section class="checkout-section">
+    <div class="checkout-container">
+        <h1>Checkout - Dane do wysyłki</h1>
+
+        <form method="post" class="checkout-form">
+            {% csrf_token %}
+            <div class="checkout-grid">
+                <!-- LEWA: dane do wysyłki -->
+                <div class="checkout-left">
+                    <div class="panel">
+                        <h2>Dane do wysyłki</h2>
+
+                        <div class="form-group">
+                            <label for="first_name">Imię</label>
+                            <input type="text" id="first_name" name="first_name" placeholder="Jan" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="last_name">Nazwisko</label>
+                            <input type="text" id="last_name" name="last_name" placeholder="Kowalski" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="jan.kowalski@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Telefon</label>
+                            <input type="tel" id="phone" name="phone" placeholder="123-456-789" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Adres</label>
+                            <input type="text" id="address" name="address" placeholder="ul. Przykładowa 10" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city">Miasto</label>
+                            <input type="text" id="city" name="city" placeholder="Warszawa" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="postal_code">Kod pocztowy</label>
+                            <input type="text" id="postal_code" name="postal_code" placeholder="00-001"
+                                   pattern="\d{2}-\d{3}" inputmode="numeric" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRAWA: koszyk + dostawa (dropdown) + płatność + zgody -->
+                <aside class="checkout-right">
+
+                    <!-- Podsumowanie -->
+                    <div class="card">
+                        <div class="card__header">
+                            <span class="card__title"><ion-icon name="receipt-outline" aria-hidden="true"></ion-icon> Podsumowanie zamówienia</span>
+                            <span class="card__badge">Koszyk</span>
+                        </div>
+
+                        <ul class="order-list" id="order-list">
+                            {% for item in cart %}
+                            <li class="order-item">
+                                <div class="order-item__media">
+                                    <div class="thumb" aria-hidden="true">{{ item.product.product_name|first|upper }}
+                                    </div>
+                                </div>
+                                <div class="order-item__info">
+                                    <div class="name">{{ item.product.product_name }}</div>
+                                    <div class="meta">x {{ item.quantity }}</div>
+                                </div>
+                                <div class="order-item__price">{{ item.total_price }} zł</div>
+                            </li>
+                            {% empty %}
+                            <li class="order-item order-item--empty">Brak produktów w koszyku</li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- Pokaż więcej -->
+                        <button type="button" class="order-toggle" id="order-toggle" hidden></button>
+
+                        <div class="order-totals" id="order-totals" data-subtotal="{{ cart.subtotal|default:0 }}">
+                            <div class="row">
+                                <span>Produkty</span>
+                                <strong id="subtotal-amount">{{ cart.subtotal }} zł</strong>
+                            </div>
+                            <div class="row">
+                                <span>Dostawa</span>
+                                <strong id="shipping-amount">{{ cart.shipping }} zł</strong>
+                            </div>
+                            <div class="row grand">
+                                <span>Do zapłaty</span>
+                                <strong id="grand-amount">{{ cart.grand_total }} zł</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metoda dostawy (dropdown jak "Sort by") -->
+                    <div class="card">
+                        <div class="card__header">
+                            <span class="card__title"><ion-icon name="cube-outline" aria-hidden="true"></ion-icon> Metoda dostawy</span>
+                        </div>
+                        <div class="card__body">
+                            <div class="ship-select" id="shipSelect">
+                                <button type="button"
+                                        class="ship-select__btn"
+                                        id="shipBtn"
+                                        aria-haspopup="listbox"
+                                        aria-expanded="false">
+                                    <span class="ship-select__current-title">Kurier InPost</span>
+                                    <span class="ship-select__current-price">18,00 zł</span>
+                                    <ion-icon name="chevron-down-outline" class="ship-select__chev"
+                                              aria-hidden="true"></ion-icon>
+                                </button>
+
+                                <ul class="ship-select__menu" id="shipMenu" role="listbox" tabindex="-1" hidden>
+                                    <li role="option" class="ship-option" data-value="inpost_courier" data-price="18.00"
+                                        aria-selected="true">
+                                        <span class="title">Kurier InPost</span>
+                                        <span class="price">18,00 zł</span>
+                                    </li>
+                                    <li role="option" class="ship-option" data-value="dpd_courier" data-price="18.00">
+                                        <span class="title">Kurier DPD</span>
+                                        <span class="price">18,00 zł</span>
+                                    </li>
+                                    <li role="option" class="ship-option" data-value="inpost_locker" data-price="18.00">
+                                        <span class="title">Paczkomaty InPost</span>
+                                        <span class="price">18,00 zł</span>
+                                    </li>
+                                    <li role="option" class="ship-option" data-value="dpd_cod" data-price="21.00">
+                                        <span class="title">Kurier DPD (pobranie)</span>
+                                        <span class="price">21,00 zł</span>
+                                    </li>
+                                    <li role="option" class="ship-option" data-value="inpost_cod" data-price="21.00">
+                                        <span class="title">Kurier InPost (pobranie)</span>
+                                        <span class="price">21,00 zł</span>
+                                    </li>
+                                    <li role="option" class="ship-option" data-value="pickup" data-price="0.00">
+                                        <span class="title">Odbiór osobisty</span>
+                                        <span class="price">0,00 zł</span>
+                                    </li>
+                                </ul>
+
+                                <!-- Faktyczne pola do POST (radia) – ukryte -->
+                                <div class="visually-hidden">
+                                    <label><input type="radio" name="shipping_method" value="inpost_courier"
+                                                  data-price="18.00" checked></label>
+                                    <label><input type="radio" name="shipping_method" value="dpd_courier"
+                                                  data-price="18.00"></label>
+                                    <label><input type="radio" name="shipping_method" value="inpost_locker"
+                                                  data-price="18.00"></label>
+                                    <label><input type="radio" name="shipping_method" value="dpd_cod"
+                                                  data-price="21.00"></label>
+                                    <label><input type="radio" name="shipping_method" value="inpost_cod"
+                                                  data-price="21.00"></label>
+                                    <label><input type="radio" name="shipping_method" value="pickup" data-price="0.00"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Metoda płatności (provider dropdown + lista kanałów) -->
+                    <div class="card" id="paymentCard">
+                        <div class="card__header">
+                            <span class="card__title">
+                              <ion-icon name="card-outline" aria-hidden="true"></ion-icon> Metoda płatności
+                            </span>
+                        </div>
+
+                        <div class="card__body">
+                            <!-- Provider (dropdown) -->
+                            <div class="pay-select" id="paySelect">
+                                <button type="button"
+                                        class="pay-select__btn"
+                                        id="payBtn"
+                                        aria-haspopup="listbox"
+                                        aria-expanded="false">
+                                    <span class="pay-select__current-title">Przelewy24</span>
+                                    <span class="pay-select__current-desc">BLIK i szybkie przelewy bankowe</span>
+                                    <ion-icon name="chevron-down-outline" class="pay-select__chev"
+                                              aria-hidden="true"></ion-icon>
+                                </button>
+
+                                <ul class="pay-select__menu" id="payMenu" role="listbox" tabindex="-1" hidden>
+                                    <li role="option" class="pay-option" data-value="p24"
+                                        data-desc="BLIK i szybkie przelewy bankowe" aria-selected="true">
+                                        <span class="title">Przelewy24</span>
+                                        <span class="desc">BLIK i szybkie przelewy bankowe</span>
+                                    </li>
+                                    <li role="option" class="pay-option" data-value="card"
+                                        data-desc="Visa, Mastercard, Apple/Google Pay">
+                                        <span class="title">Płatność kartą</span>
+                                        <span class="desc">Visa, Mastercard, Apple/Google Pay</span>
+                                    </li>
+                                    <li role="option" class="pay-option" data-value="transfer"
+                                        data-desc="Ręczny przelew bankowy">
+                                        <span class="title">Przelew tradycyjny</span>
+                                        <span class="desc">Ręczny przelew bankowy</span>
+                                    </li>
+                                </ul>
+
+                                <!-- Faktyczne pola POST (ukryte) -->
+                                <div class="visually-hidden">
+                                    <label><input type="radio" name="payment_provider" value="p24" checked></label>
+                                    <label><input type="radio" name="payment_provider" value="card"></label>
+                                    <label><input type="radio" name="payment_provider" value="transfer"></label>
+
+                                    <!-- kanał w obrębie providera -->
+                                    <input type="hidden" name="payment_channel" id="payment_channel" value="blik">
+                                </div>
+                            </div>
+
+                            <!-- Wybrany kanał -->
+                            <div class="pay-picked" id="payPicked">
+                                Wybrany kanał: <strong>BLIK</strong>
+                            </div>
+
+                            <!-- Wyszukiwarka kanałów -->
+                            <div class="channel-search">
+                                <input type="text" id="channelSearch" placeholder="Szukaj: BLIK, mBank, PKO…">
+                                <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+                            </div>
+
+                            <!-- Lista kanałów (IKONY z /static) -->
+                            <div class="channel-grid" id="channelGrid" data-icon-base="{% static 'payments/icons/' %}">
+                                <!-- JS wstawi kafelki -->
+                            </div>
+
+                            <!-- Pokaż więcej/mniej kanałów -->
+                            <button type="button" class="channel-more" id="channelMore" hidden></button>
+
+                            <!-- Info dla opcji bez sub-kanałów -->
+                            <div class="channel-info muted" id="channelInfo" hidden>
+                                Ten sposób płatności nie wymaga wyboru banku/kanału.
+                            </div>
+
+                            <!-- Walidacja -->
+                            <div class="channel-error" id="channelError" hidden>Wybierz kanał płatności.</div>
+                        </div>
+                    </div>
+
+
+                    <!-- Zgody + przycisk -->
+                    <div class="card">
+                        <div class="card__header">
+                            <span class="card__title"><ion-icon name="shield-checkmark-outline"
+                                                                aria-hidden="true"></ion-icon> Zgody</span>
+
+                            <!-- INFO/FORMY ZALEŻNE OD WYBORU PŁATNOŚCI -->
+                            <div id="payDynamic" class="pay-dynamic">
+
+                                <!-- Informacja o przekierowaniu (dla: p24, card) -->
+                                <div id="payNotice" class="notice-box" hidden>
+                                    <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+                                    <div>
+                                        <div class="notice-title">Płatność na bezpiecznej stronie operatora</div>
+                                        <div class="notice-desc">
+                                            Po kliknięciu <strong>„Zamawiam i płacę”</strong> przeniesiemy Cię do <span
+                                                id="noticeProvider">Przelewy24</span>, aby dokończyć płatność (BLIK,
+                                            karta, bank).
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Przelew tradycyjny: instrukcja przelewu -->
+                                <!-- Przelew tradycyjny: instrukcja przelewu (POPRAWIONE IF/ENDIF) -->
+                                <div id="transferBox" class="transfer-box" hidden>
+                                    <div class="transfer-title">Dane do przelewu</div>
+                                    <div class="transfer-grid">
+                                        <div>
+                                            <div class="t-label">Odbiorca</div>
+                                            <div class="t-value">
+                                                {% if company_name %}
+                                                {{ company_name }}
+                                                {% else %}
+                                                Twoja Firma Sp. z o.o.
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="t-label">Numer konta (IBAN)</div>
+                                            <div class="t-value">
+                                                {% if iban %}
+                                                {{ iban }}
+                                                {% else %}
+                                                PL12 3456 7890 1234 5678 9012 3456
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="t-label">Tytuł przelewu</div>
+                                            <div class="t-value">
+                                                Zamówienie
+                                                <span id="transferOrderNo">
+          {% if order_number %}
+            {{ order_number }}
+          {% else %}
+            (zostanie nadany)
+          {% endif %}
+        </span>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="t-label">Kwota</div>
+                                            <div class="t-value" id="transferAmount">
+                                                {% if cart.grand_total %}
+                                                {{ cart.grand_total }}
+                                                {% else %}
+                                                - <span id="transferAmountCalc"></span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- (opcjonalnie) załącz potwierdzenie -->
+                                    <div class="transfer-upload">
+                                        <label for="transfer_proof" class="t-label">Potwierdzenie przelewu
+                                            (opcjonalnie)</label>
+                                        <input type="file" id="transfer_proof" name="transfer_proof"
+                                               accept=".pdf,.jpg,.jpeg,.png">
+                                        <div class="hint">Możesz dodać plik PDF/JPG/PNG – przyspieszy weryfikację.</div>
+                                    </div>
+
+                                    <div class="transfer-note">
+                                        Realizację zamówienia rozpoczniemy po zaksięgowaniu środków. Dane do przelewu
+                                        prześlemy także na e-mail.
+                                    </div>
+                                </div>
+
+
+                                <!-- (opcjonalnie) BLIK inline – tylko jeśli wdrożysz oficjalny widget operatora
+                                <div id="blikBox" class="blik-box" hidden>
+                                  <label for="blik_code">Kod BLIK</label>
+                                  <input type="text" id="blik_code" name="blik_code" inputmode="numeric" maxlength="6" pattern="\\d{6}" placeholder="••••••">
+                                  <div class="hint">Wpisz 6-cyfrowy kod z aplikacji bankowej. Pamiętaj, że wymaga to integracji z SDK operatora.</div>
+                                </div>
+                                -->
+                            </div>
+
+                        </div>
+                        <div class="card__body">
+                            <label class="checkbox-row">
+                                <input type="checkbox" name="accept_terms" id="accept_terms" required>
+                                <span>Akceptuję i przeczytałem(am) <a href="#" target="_blank"
+                                                                      rel="noopener">Regulamin</a> oraz <a href="#"
+                                                                                                           target="_blank"
+                                                                                                           rel="noopener">Politykę prywatności</a>.</span>
+                            </label>
+                        </div>
+                        <div class="card__footer">
+                            <button type="submit" class="checkout-btn pretty">
+                                <ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>
+                                Zamawiam i płacę
+                            </button>
+                        </div>
+                    </div>
+
+                </aside>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% include "products/footer.html" %}
+
+<script src="{% static 'orders/checkout.js' %}"></script>
+
+</body>
+</html>

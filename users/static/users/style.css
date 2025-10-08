@@ -1,0 +1,198 @@
+/* ====== Reset + font ====== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+*{ box-sizing: border-box; margin: 0; padding: 0; }
+
+:root{
+    /* Jasna paleta */
+    --bg: #f7faf8;                 /* globalne tło */
+    --card: #ffffff;               /* karta */
+    --card-border: #e6efe9;        /* delikatna ramka */
+    --text: #0d2a1a;               /* główny tekst */
+    --muted: #5b7a67;              /* wtórny tekst */
+    --brand: #21b66a;              /* akcent zielony */
+    --brand-strong: #16a15b;
+    --error: #d93025;
+    --shadow: 0 10px 30px rgba(16, 38, 28, .08);
+    --radius: 18px;
+    --ease: cubic-bezier(.22,.61,.36,1);
+}
+
+html, body{ min-height: 100%; }
+
+body{
+    font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: var(--text);
+    background:
+            radial-gradient(1200px 600px at 8% 12%, rgba(33,182,106,.08), transparent 60%),
+            radial-gradient(1200px 600px at 92% 88%, rgba(33,182,106,.06), transparent 60%),
+            var(--bg);
+
+}
+
+/* ====== Karta (elevated white) ====== */
+.login-box{
+    width: min(440px, 92vw);
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 28px 26px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    margin:60px auto;
+}
+
+/* subtelny highlight przy krawędziach */
+.login-box::after{
+    content:"";
+    position:absolute; inset:-1px; border-radius:inherit; pointer-events:none;
+    background:
+            radial-gradient(600px 130px at 50% -10%, rgba(33,182,106,.12), transparent 60%),
+            radial-gradient(600px 130px at 50% 105%, rgba(33,182,106,.08), transparent 60%);
+}
+
+/* ====== Nagłówek ====== */
+h2{
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+    text-align: center;
+    color: #0f3a25;
+    font-weight: 600;
+    letter-spacing: .2px;
+    margin-bottom: 6px;
+}
+
+#registerForm{ margin-top: 8px; }
+
+/* ====== Pola z pływającą etykietą ====== */
+.input-box{ position: relative; width: 100%; margin: 18px 0 6px; }
+
+.input-box input{
+    width: 100%;
+    height: 56px;
+    background: #ffffff;
+    border: 1px solid #dfe9e3;
+    color: var(--text);
+    border-radius: 12px;
+    outline: none;
+    font-size: 0.98rem;
+    padding: 0 46px 0 14px;   /* miejsce na ikonę po prawej */
+    transition: border-color .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease), transform .05s;
+    box-shadow: inset 0 1px 0 rgba(16, 38, 28, .03);
+}
+.input-box input::placeholder{ color: transparent; }
+
+.input-box label{
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.98rem;
+    color: var(--muted);
+    pointer-events: none;
+    padding: 0 6px;
+    background: transparent;
+    transition: transform .2s var(--ease), color .2s var(--ease), top .2s var(--ease), font-size .2s var(--ease);
+}
+
+/* focus i niepuste */
+.input-box:has(input:focus) input{
+    border-color: rgba(33,182,106,.65);
+    box-shadow: 0 0 0 6px rgba(33,182,106,.14);
+    background: #ffffff;
+}
+.input-box input:focus ~ label,
+.input-box input:not(:placeholder-shown) ~ label{
+    top: 0;
+    transform: translateY(-55%) scale(.88);
+    color: #0f3a25;
+    background: #ffffff;
+    line-height: 1;
+}
+
+/* ikona po prawej */
+.input-box .icon{
+    position: absolute;
+    right: 12px; top: 50%; transform: translateY(-50%);
+    color: #2d8b5e;
+    font-size: 1.2rem;
+    opacity: .9;
+    pointer-events: none;
+}
+
+/* autofill – bez żółtego */
+input:-webkit-autofill{
+    -webkit-text-fill-color: var(--text) !important;
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ====== Przycisk ====== */
+.baton1{
+    width: 100%;
+    height: 48px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(180deg, var(--brand), var(--brand-strong));
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: .2px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(33,182,106,.18), inset 0 1px 0 rgba(255,255,255,.35);
+    transition: transform .06s ease, box-shadow .25s var(--ease), filter .2s var(--ease);
+}
+.baton1:hover{ filter: brightness(1.03); box-shadow: 0 14px 28px rgba(33,182,106,.22), inset 0 1px 0 rgba(255,255,255,.45); }
+.baton1:active{ transform: translateY(1px); }
+.baton1:focus-visible{ outline: 3px solid rgba(33,182,106,.45); outline-offset: 2px; }
+
+/* ====== Link pod formularzem ====== */
+.register-link{
+    text-align: center;
+    margin: 16px 0 2px;
+    color: var(--muted);
+    font-size: .95rem;
+}
+.register-link a{
+    color: #0f3a25;
+    font-weight: 600;
+    text-decoration: none;
+    position: relative;
+}
+.register-link a::after{
+    content:"";
+    position:absolute; left:0; bottom:-2px; width:100%; height:2px;
+    background: currentColor; transform: scaleX(0); transform-origin: left;
+    transition: transform .25s var(--ease);
+}
+.register-link a:hover::after{ transform: scaleX(1); }
+
+/* ====== Stany błędów (opcjonalnie .is-invalid) ====== */
+.input-box.is-invalid input{
+    border-color: rgba(217,48,37,.9);
+    box-shadow: 0 0 0 6px rgba(217,48,37,.12);
+}
+.input-box.is-invalid label{ color: #a23a32; }
+
+/* ====== Mobile ====== */
+@media (max-width: 420px){
+    .login-box{ padding: 22px 18px; }
+    .input-box input{ height: 52px; }
+}
+
+/* ====== Dark fallback dla użytkowników z dark mode ====== */
+@media (prefers-color-scheme: dark){
+    :root{
+        --bg: #0b0f0d;
+        --card: rgba(255,255,255,.08);
+        --card-border: rgba(255,255,255,.14);
+        --text: #e6f4ea;
+        --muted: #bcd7c6;
+        --brand: #2ecc71;
+        --brand-strong: #24b763;
+        --shadow: 0 20px 40px rgba(0,0,0,.35);
+    }
+    .input-box label{ background: transparent; }
+    .input-box input:focus ~ label,
+    .input-box input:not(:placeholder-shown) ~ label{
+        background: var(--bg);
+    }
+}

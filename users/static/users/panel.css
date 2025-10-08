@@ -1,0 +1,193 @@
+/* === Reset & bazowe === */
+:root{
+  --brand: rgb(95,172,33);
+  --brand-weak: rgba(95,172,33,.12);
+  --text: #222;
+  --muted: #666;
+  --bg: #f7f8f7;
+  --card: #fff;
+  --border: #e6e6e6;
+  --radius: 14px;
+  --shadow: 0 10px 24px rgba(0,0,0,.08);
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+/* === Layout kontenera === */
+.user-dashboard{
+  max-width: min(1100px, 92vw);
+  margin: 32px auto 64px;
+}
+
+.user-dashboard > h1{
+  font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+  font-weight: 700;
+  margin: 0 0 18px;
+}
+
+.user-dashboard > h1::after{
+  content:"";
+  display:block;
+  width: 64px; height: 4px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: var(--brand);
+  box-shadow: 0 4px 18px var(--brand-weak);
+}
+
+/* === Sekcje (karty) === */
+.user-dashboard > .user-details,
+.user-dashboard > .user-orders-section,
+.user-dashboard > .user-favorites-section,
+.user-dashboard > .user-addresses-section{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: clamp(16px, 2vw, 24px);
+  margin-top: 18px;
+}
+
+.user-dashboard h2{
+  font-size: clamp(1.1rem, 1rem + .6vw, 1.4rem);
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-dashboard h2::before{
+  content:"";
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 6px var(--brand-weak);
+}
+
+/* === Dane użytkownika === */
+.user-details ul{
+  list-style: none;
+  padding: 0; margin: 0 0 10px;
+  display: grid;
+  gap: 8px;
+}
+.user-details li{
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  border-bottom: 1px dashed var(--border);
+  padding: 6px 0;
+}
+.user-details li strong{ min-width: 110px; color: var(--muted); font-weight: 600; }
+
+/* === Tabela zamówień === */
+.user-orders-section table{
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: calc(var(--radius) - 6px);
+  border: 1px solid var(--border);
+}
+.user-orders-section thead th{
+  background: #fbfbfb;
+  color: #333;
+  text-align: left;
+  font-weight: 600;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: .95rem;
+}
+.user-orders-section tbody td{
+  padding: 12px 14px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+.user-orders-section tbody tr:hover{
+  background: #fcfffb;
+}
+.user-orders-section a{
+  color: var(--brand);
+  text-decoration: none;
+}
+.user-orders-section a:hover{
+  text-decoration: underline;
+}
+
+/* === Ulubione === */
+.user-favorites-section ul{
+  list-style: none;
+  padding: 0; margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+.user-favorites-section li{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.user-favorites-section li:hover{
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.user-favorites-section a{
+  color: #222;
+  text-decoration: none;
+}
+.user-favorites-section a:hover{ color: var(--brand); }
+
+/* === Adresy === */
+.user-addresses-section ul{
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  padding: 0; margin: 0;
+}
+.user-addresses-section li{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fff;
+  display: grid;
+  gap: 6px;
+}
+.user-addresses-section li a.action-button{
+  justify-self: start;
+}
+
+/* === Przyciski === */
+.action-button,
+.user-dashboard .action-button,
+.user-dashboard a.action-button{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: var(--brand);
+  color: #fff !important;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter .15s ease, transform .05s ease, box-shadow .15s ease;
+  box-shadow: 0 8px 18px var(--brand-weak);
+}
+.action-button:hover{ filter: brightness(.96); }
+.action-button:active{ transform: translateY(1px); }
+.action-button--ghost{
+  background: #fff;
+  color: var(--text) !important;
+  border-color: var(--border);
+  box-shadow: none;
+}
+.action-button--ghost:hover{ background: #f7f7f7; }

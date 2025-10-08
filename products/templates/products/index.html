@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Delius+Swash+Caps&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+
+    {% load static %}
+
+    <link rel="stylesheet" href="{% static 'products/index.css' %}">
+
+    <title>Szamanka sklep</title>
+
+    <script>
+        var cartAddUrl = "{% url 'orders:cart_add' %}";
+    </script>
+
+</head>
+<body>
+
+<form method="get" id="navFilterForm" action="{% url 'products:index' %}" style="display:none">
+    <input type="hidden" name="type" id="navTypeInput" value="{{ selected|default:'' }}">
+    {% csrf_token %}
+</form>
+
+
+<nav>
+    <div class="top-navbar">
+        <div class="logo-search-bar">
+            <a href="{% url 'home' %}"><h4 class="logo-name">Szamanka.pl</h4></a>
+        </div>
+        <div class="kategorie-nav">
+            <div class="dropdown" id="navCategories" data-target="/products/">
+
+                <div class="select">
+                    <a href="{% url 'products:produkty' %}" class="pasek1" id="navCurrent" aria-haspopup="listbox" aria-expanded="false">Produkty</a>
+                </div>
+                <ul class="menu">
+                    {% for c in categories %}
+                        <li data-value="{{ c.product_type }}">
+                            <a href="{% url 'products:produkty' %}?type={{ c.product_type }}">{{ c.product_type }} ({{ c.count }})</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <a href="#bestsellery-section" class="pasek1">Bestsellery</a>
+            </div>
+            <div>
+                <a href="#" class="pasek1">Promocje</a>
+            </div>
+            <div>
+                <a href="#o-nas-section" class="pasek1">O&nbsp;nas</a>
+            </div>
+            <div>
+                <a href="#location-section" class="pasek1">Kontakt</a>
+            </div>
+        </div>
+
+        <div class="search" id="search">
+            <label>
+                <input class="search__input" type="search" placeholder="Szukaj produktów..." disabled>
+            </label>
+            <button class="search__toggle" type="button" aria-label="Otwórz wyszukiwarkę">
+                <i class="bx bx-search"></i>
+            </button>
+            <button class="search__clear" type="button" aria-label="Wyczyść">
+                <i class="bx bx-x"></i>
+            </button>
+        </div>
+
+        <div class="ikonki_nav">
+            <a href="{% url 'users:login' %}"><img src="{% static 'products/images/user1.png' %}" alt="login" class="nav-icon"></a>
+            <a href="{% url 'users:favorites' %}"><img src="{% static 'products/images/heart.png' %}" alt="ulubione" class="nav-icon"></a>
+            <a href="{% url 'orders:cart' %}"><img src="{% static 'products/images/shopping-cart.png' %}" alt="cart" class="nav-icon"></a>
+        </div>
+    </div>
+    <button class="burger" aria-label="Menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+</nav>
+
+
+<main>
+    <section class="align-reklama">
+        <div class="swiper-reklamy">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="{% static 'products/images/photo1.jpg' %}" alt="zdjecie" class="zdjecie1"/>
+                </div>
+                <div class="swiper-slide">
+                    <img src="images/marcie-kennedy-2iuOo_mCwGA-unsplash.jpg" alt="zdjecie" class="zdjecie1"/>
+                </div>
+                <div class="swiper-slide">
+                    <img src="images/scott-webb-e6VmcXF8llA-unsplash.jpg" alt="zdjecie" class="zdjecie1"/>
+                </div>
+            </div>
+
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+
+            <div class="hero-comment"> Naturalne produkty,<br> zamow juz dzis!</div>
+        </div>
+
+    </section>
+
+<section>
+    <ul class="category-icons">
+        <li>
+            <a href="{% url 'products:index' %}?type=spozywcze">
+                <div class="category1-wrapper">
+                    <div class="category-image-wrapper" id="margin-cat-icon">
+                        <img src="{% static 'products/images/food2.jpg' %}" alt="food-basket" class="vegan">
+                    </div>
+                    <p class="text-category">Artykuly <br>spozywcze</p>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'products:index' %}?type=suplementy">
+                <div class="category1-wrapper">
+                    <div class="category-image-wrapper">
+                        <img src="{% static 'products/images/suple.png' %}" alt="heart" class="vegan">
+                    </div>
+                    <p class="text-category">Suplementy</p>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'products:index' %}?type=kosmetyki do włosów">
+                <div class="category1-wrapper">
+                    <div class="category-image-wrapper">
+                        <img src="{% static 'products/images/default-image.jpg' %}" alt="soap" class="vegan">
+                    </div>
+                    <p class="text-category">Kosmetyki</p>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'products:index' %}?type=masci">
+                <div class="category1-wrapper">
+                    <div class="category-image-wrapper" id="margin-cat-icon1">
+                        <img src="{% static 'products/images/154.jpg' %}" alt="oil" class="vegan">
+                    </div>
+                    <p class="text-category">Masci</p>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'products:index' %}?type=ziola">
+                <div class="category1-wrapper">
+                    <div class="category-image-wrapper">
+                        <img src="{% static 'products/images/spray.jpg' %}" alt="spray" class="vegan">
+                    </div>
+                    <p class="text-category">Ziola</p>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'products:index' %}?type=inne">
+                <div class="category1-wrapper">
+                    <div class="category-image-wrapper">
+                        <img src="{% static 'products/images/pasta-do-zebow.jpg' %}" alt="natural" class="vegan">
+                    </div>
+                    <p class="text-category">Inne</p>
+                </div>
+            </a>
+        </li>
+    </ul>
+</section>
+
+
+
+    <section class="articles-section">
+
+        <div class="articles-wrapper">
+            <div class="text-box">
+                <div class="text-container1">
+                    <img src="{% static 'products/images/leaf.png' %}" alt="leaf">
+                    <p><a href="{% url 'users:login' %}"><span>Transmisje</span></a> na zywo, nadajemy prosto z naszego sklepu!</p>
+                </div>
+                <div class="text-container1">
+                    <img src="{% static 'products/images/hibiscus.png' %}" alt="hibiscus">
+                    <p>Porady <span>zielarskie!</span></p>
+                </div>
+                <div class="text-container1">
+                    <img src="{% static 'products/images/like.png' %}" alt="like">
+                    <p>Dolacz do nas na <span>fb!</span></p>
+                </div>
+                <div class="text-container1">
+                    <img src="{% static 'products/images/magic.png' %}" alt="magic">
+                    <p>Odwiedz nasza strone, <span>ogladaj</span> i dowiaduj sie o promocjach!</p>
+                </div>
+
+
+                TRANSMISJE <br>
+                Chcesz być z nami na bieżąco? Regularnie prowadzimy transmisje na żywo na Facebooku, podczas których:
+                – opowiadamy o nowych produktach,
+                – pokazujemy, jak korzystać z ziół i naturalnych preparatów,
+                – odpowiadamy na Wasze pytania.
+                To świetna okazja, żeby nas lepiej poznać i być blisko zielarskiej społeczności Szamanki – nawet bez wychodzenia z domu.
+
+            </div>
+            <div class="a-photo-wrapper">
+                <img src="{% static 'products/images/a-photo1.jpg' %}" alt="a-photo" class="article-photo1">
+            </div>
+        </div>
+
+
+    </section>
+
+
+
+
+<section class="products-section" id="bestsellery-section">
+    <h2>Bestsellery</h2>
+    <div class="product-container-wrapper">
+        <!-- Debugowanie: Sprawdzamy zawartość bestsellers -->
+        {% if bestsellers %}
+            <p>Found {{ bestsellers.count }} bestsellers in context.</p>
+            {% for product in bestsellers %}
+                <div class="product">
+                    <a href="{% url 'products:detail' product.pk %}">
+                        <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-image.jpg' %}{% endif %}" alt="{{ product.product_name }}" class="product-image">
+                    </a>
+                    <h3><a href="{% url 'products:detail' product.pk %}">{{ product.product_name }}</a></h3>
+                    <h4 class="price">{{ product.price|floatformat:2 }} zł</h4>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Brak bestsellerów do wyświetlenia.</p>
+        {% endif %}
+    </div>
+</section>
+
+
+
+
+
+
+
+    <section class="transmisje">
+        <div class="transmisje-wrapper">
+
+            <div class="transmisje-image-wrapper">
+                <img src="{% static 'products/images/a-photo.jpg' %}" alt="transmisje">
+            </div>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur
+                adipiscing elit.Lorem ipsum dolor sit consectetur adipiscing elit.Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </p>
+
+        </div>
+
+
+    </section>
+
+    <section class="o-nas-section" id="o-nas-section">
+        <div class="o-nas-wrapper">
+            <div class="o-nas-info"><span class="o-nas-title">O nas</span><br>Jesteśmy rodzinną firmą, którą
+                stworzyliśmy z pasji do natury i zdrowego stylu życia. Sklep zielarski Szamanka powstał, aby dzielić się
+                z Wami bogactwem ziół, naturalnych kosmetyków oraz produktów wspierających dobre samopoczucie.
+                Codziennie dbamy o to, aby nasza oferta była różnorodna i sprawdzona – tak, żeby każdy mógł znaleźć coś
+                dla siebie.
+                Łączy nas tradycja zielarska, wiedza przekazywana w rodzinie i przekonanie, że natura ma ogromną moc.
+            </div>
+            <div class="o-nas-photo-wrapper">
+                <img src="{% static 'products/images/o-nas.jpg' %}" alt="o nas photo" class="o-nas-photo">
+            </div>
+        </div>
+    </section>
+    <section class="newsletter-section">
+        <div class="newsletter-wrapper">
+            <div class="newsletter">Newsletter<span class="newsletter-info">Podaj swój adres e-mail, jeżeli chcesz otrzymywać
+                informacje o nowościach i promocjach!</span>
+                <form>
+                    <label>
+                        <input type="search" placeholder="Podaj email" class="newsletter-input">
+                    </label>
+                </form>
+            </div>
+
+        </div>
+    </section>
+    <section id="location-section">
+        <div class="location-wrapper">
+            <div class="location-map">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2423.895587309471!2d20.806356712078408!3d52.58958097196297!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471e998d02ec47c5%3A0x1d494104163be50d!2sSklep%20Zielarski%20Szamanka!5e0!3m2!1spl!2spl!4v1752750873724!5m2!1spl!2spl"
+                        width="600"
+                        height="330"
+                        style="border:0;"
+                        allowfullscreen=""
+                        referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+            <div class="location-info">Nasz sklep znajdziesz w samym sercu Nasielska – w łatwo dostępnym miejscu, z
+                możliwością wygodnego dojazdu.
+                Adres: [tu wstaw dokładny adres]
+                Zapraszamy do odwiedzin – na miejscu chętnie doradzimy i pomożemy w wyborze odpowiednich ziół czy
+                produktów.
+                W naszej przestrzeni staramy się stworzyć przyjazną atmosferę, aby zakupy były nie tylko obowiązkiem,
+                ale i przyjemnością.
+            </div>
+        </div>
+    </section>
+</main>
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-box" id="socials-foot">
+            <h3><a href="#" class="footer-title">Szamanka</a></h3>
+            <p>Nasielsk 123/456</p>
+            <p>szamanka@nasielsk.pl</p>
+            <div class="footer-social">
+                <a href="#"><img src="{%static 'products/images/facebook.png' %}" alt="fb" class="footer-social-icons"></a>
+                <a href="#"><img src="{%static 'products/images/instagram.png' %}" class="footer-social-icons" alt="instagram"></a>
+                <a href="#"><img src="{%static 'products/images/tik-tok.png' %}" class="footer-social-icons" alt="tiktok"></a>
+            </div>
+        </div>
+
+        <div class="footer-box" id="info-foot">
+            <h3>Pomoc</h3>
+            <a href="#">Menu</a>
+            <a href="#">Kontakt</a>
+            <a href="#">Polityka prywatności</a>
+            <a href="#">Zwroty</a>
+        </div>
+
+        <div class="footer-box" id="call-to-mail">
+            <div class="nowrap-email">
+                <h3><a href="#" class="footer-newsletter">Podaj email</a></h3>
+                <p>Zapisz się do newslettera <br><br>i otrzymaj 10% znizki</p>
+
+                <form action="#">
+                    <i class="bx bx-mail-send"></i>
+                    <label class="input-box">
+                        <input type="email" placeholder="Email" class="email-footer">
+                    </label>
+                    <i class='bxr bx-arrow-right-stroke-square'></i>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</footer>
+<section class="copyright">
+    <div class="copyright-container">
+        <div class="copyright"><p>&copy; 2025 Szamanka. Wszelkie prawa zastrzeżone.</p></div>
+        <div class="payment-icons">
+            <img src="{% static 'products/images/visa.png' %}" alt="Visa" class="pay-icons">
+            <img src="{% static 'products/images/card.png' %}" alt="Mastercard" class="pay-icons">
+            <img src="{% static 'products/images/blik.png' %}" alt="BLIK" class="pay-icons" id="ikonka-blik">
+            <img src="{% static 'products/images/przelewy24.png' %}" alt="Przelewy24" class="pay-icons" id="przelewy24">
+            <img src="{% static 'products/images/payu.png' %}" alt="PayU" class="pay-icons">
+            <img src="{% static 'products/images/paypal.png' %}" alt="PeoPay" class="pay-icons">
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script src="{% static 'products/index.js' %}"></script>
+</body>
+</html>
+
+
+
+
+
+

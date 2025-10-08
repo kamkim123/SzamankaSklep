@@ -1,0 +1,31 @@
+<svg version="1.1" id="Layer_1" xmlns:x="ns_extend;" xmlns:i="ns_ai;" xmlns:graph="ns_graphs;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 125.7 88" style="enable-background:new 0 0 125.7 88;" xml:space="preserve">
+ <style type="text/css">
+  .st0{fill:#006F4E;}
+	.st1{fill:#F11926;}
+	.st2{fill:#009B9D;}
+	.st3{fill:#00664B;}
+ </style>
+ <metadata>
+  <sfw xmlns="ns_sfw;">
+   <slices>
+   </slices>
+   <sliceSourceBounds bottomLeftOrigin="true" height="88" width="125.7" x="169.1" y="-129.6">
+   </sliceSourceBounds>
+  </sfw>
+ </metadata>
+ <g>
+  <rect x="1.2" y="77.6" class="st0" width="115.9" height="10.4">
+  </rect>
+  <path class="st1" d="M125.7,0v12c0,0-18.2,10.5-22.5,12c-3.9,1.5-5.5-0.5-5.8-1.2c-0.8-0.8-3.1-7.7-3.1-7.7c0,0,1.2,0.2,3.4-0.4
+		C100.5,14,125.7,0,125.7,0">
+  </path>
+  <path class="st0" d="M74.9,21.2l7.8,19.6l13.8-7.3L84.6,7H67.1L42.7,52.6c0,0,12-0.4,19.7-6.2C64.4,45.3,69.9,30.9,74.9,21.2">
+  </path>
+  <path class="st2" d="M96.5,33.5l-13.8,7.3c-11.8,6.1-23,11.4-29.1,13.1c-15.9,4.6-35.4,7.3-42.4,1.2c-6.6-5.8,8.6-30.2,37.3-35.7
+		c4.7-1,7.4-0.8,7.4-0.7c0,0-2-8.3-3.5-10.1c-2.1-2.6-4.2-3.2-7.4-2.8c-6.2,0.4-32.6,7.4-43,29.4c-5.8,12.5,2.3,25.6,7.3,29.1
+		c1.5,1.2,17.1,14.8,51.5,1.2c34.2-13.2,64.7-34.1,64.8-34.1v-14C125.7,17.4,112.2,25.2,96.5,33.5">
+  </path>
+  <path class="st3" d="M87.6,53.5c1.3,3,4.9,11.7,5.9,14.3c1.2,2.8,4.3,2.8,4.3,2.7h15.9l-11.9-24.6C97.4,48.4,92.7,51,87.6,53.5">
+  </path>
+ </g>
+</svg>

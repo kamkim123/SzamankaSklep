@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Użytkownika</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'users/panel.css' %}">
+</head>
+<body>
+
+  {% include "products/navbar.html" %}
+
+  <!-- Daj minimalną wysokość i top-oddech pod sticky nav -->
+  <div class="user-dashboard" style="min-height:60vh; padding-top:12px;">
+    <h1>Witaj, {{ user.first_name|default:user.username }}!</h1>
+
+    <!-- Dane użytkownika — nie wywołuj user.profile gdy go brak -->
+    <div class="user-details">
+      <h2>Twoje dane</h2>
+      <ul>
+        <li><strong>Imię:</strong> {{ user.first_name|default:"-" }}</li>
+        <li><strong>Nazwisko:</strong> {{ user.last_name|default:"-" }}</li>
+        <li><strong>Email:</strong> {{ user.email }}</li>
+        <li>
+          <strong>Telefon:</strong>
+          {% if user.profile and user.profile.phone %}
+            {{ user.profile.phone }}
+          {% else %}
+            -
+          {% endif %}
+        </li>
+      </ul>
+      <a href="#" class="action-button">Edytuj dane</a>
+    </div>
+
+    <!-- Zamówienia -->
+    <div class="user-orders-section">
+      <h2>Twoje zamówienia</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID Zamówienia</th>
+            <th>Status</th>
+            <th>Data zamówienia</th>
+            <th>Kwota</th>
+            <th>Szczegóły</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+            <tr>
+              <td data-label="ID Zamówienia">{{ order.id }}</td>
+              <td data-label="Status">{{ order.status_label }}</td>
+              <td data-label="Data zamówienia">{{ order.created_at }}</td>
+              <td data-label="Kwota">{{ order.total_to_pay_display }}</td>
+              <td data-label="Szczegóły"><a href="#">Zobacz szczegóły</a></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5">Nie masz jeszcze żadnych zamówień.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Ulubione -->
+    <div class="user-favorites-section">
+      <h2>Twoje ulubione produkty</h2>
+      <ul>
+        {% for favorite in favorites %}
+          <li><a href="#">{{ favorite.product.name }}</a></li>
+        {% empty %}
+          <li>Nie masz żadnych ulubionych produktów.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Adresy -->
+    <div class="user-addresses-section">
+      <h2>Twoje adresy dostawy</h2>
+      <ul>
+        {% for address in addresses %}
+          <li>
+            {{ address.address_line_1 }}<br>
+            {{ address.city }}<br>
+            {{ address.postal_code }}<br>
+            <a href="{% url 'edit_address' address.id %}" class="action-button">Edytuj</a>
+            <a href="{% url 'delete_address' address.id %}" class="action-button action-button--ghost">Usuń</a>
+          </li>
+        {% empty %}
+          <li>Nie masz jeszcze zapisanych adresów.</li>
+        {% endfor %}
+      </ul>
+      <a href="#" class="action-button">Dodaj adres</a>
+    </div>
+  </div>
+
+  {% include "products/footer.html" %}
+</body>
+
+</html>
