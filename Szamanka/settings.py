@@ -7,7 +7,7 @@ DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 SECRET_KEY = os.getenv("SECRET_KEY", "dber74gf7%&DFcwcwdq!")
 ALLOWED_HOSTS = [
     "api.szamanka.pl",             # Twoja subdomena API
-    "https://szamankasklep.onrender.com",      # chwilowo adres z Render, podmienisz po deployu
+    "szamankasklep.onrender.com",      # chwilowo adres z Render, podmienisz po deployu
     "localhost", "127.0.0.1"
 ]
 
