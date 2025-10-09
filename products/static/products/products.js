@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             if (data.ok) {
                 // Zaktualizuj UI – np. wyświetl komunikat, zaktualizuj liczbę w koszyku w nagłówku
-                alert("Produkt dodany do koszyka!");
+
                 document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
             }
         })
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 console.log(data);  // Debugowanie odpowiedzi z serwera
                 if (data.ok) {
-                    alert("Produkt dodany do koszyka!");
+
                     document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
                 }
             })

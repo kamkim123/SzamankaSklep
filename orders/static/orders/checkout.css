@@ -61,7 +61,7 @@ body{
   font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
-  line-height:1.6;
+
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
 a{ color:var(--accent-600); text-decoration:none; }

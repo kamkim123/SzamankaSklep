@@ -27,9 +27,9 @@
         <div class="footer-box" id="info-foot">
             <h3>Pomoc</h3>
             <a href="{% url 'home' %}">Menu</a>
-            <a href="#">Kontakt</a>
-            <a href="#">Polityka prywatności</a>
-            <a href="#">Zwroty</a>
+            <a href="{% url 'home' %}#location-section">Kontakt</a>
+            <a href="{% url 'products:private' %}">Polityka prywatności</a>
+            <a href="{% url 'products:regulamin' %}">Zwroty</a>
         </div>
 
         <div class="footer-box" id="call-to-mail">

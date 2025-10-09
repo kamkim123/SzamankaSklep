@@ -97,3 +97,12 @@ def produkty(request):
 
 
 
+# products/views.py
+from django.shortcuts import render
+
+def regulamin(request):
+    return render(request, "products/regulamin.html")
+
+
+def private(request):  # Dodaj funkcję widoku dla polityki prywatności
+    return render(request, "products/private.html")

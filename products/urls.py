@@ -9,6 +9,8 @@ urlpatterns = [
     path("<int:pk>/", views.DetailView.as_view(), name="detail"),  # szczegóły produktu
     path('produkty/', views.produkty, name='produkty'),
     path('products/', ProductListView.as_view(), name='produkty'),# Dodaj ścieżkę do funkcji `produkty`
+    path("regulamin/", views.regulamin, name="regulamin"),
+    path("polityka-prywatnosci/", views.private, name="private"),  # Ścieżka do polityki prywatności
 ]
 
 

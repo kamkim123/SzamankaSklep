@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Polityka Prywatności</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'products/private.css' %}">
+</head>
+<body>
+
+{% include "products/navbar.html" %}
+
+<div class="privacy-policy-container">
+    <h1>Polityka Prywatności</h1>
+
+    <section class="privacy-section">
+        <h2>1. Wstęp</h2>
+        <p>W niniejszej Polityce Prywatności wyjaśniamy, jak zbieramy, przetwarzamy i chronimy Twoje dane osobowe, korzystając z naszej strony internetowej oraz usług. Dbamy o Twoją prywatność i zobowiązujemy się do przestrzegania odpowiednich przepisów prawnych.</p>
+    </section>
+
+    <section class="privacy-section">
+        <h2>2. Jakie dane zbieramy?</h2>
+        <p>Podczas korzystania z naszej strony, możemy zbierać następujące dane:</p>
+        <ul>
+            <li>Dane kontaktowe: imię, nazwisko, adres e-mail, numer telefonu.</li>
+            <li>Dane lokalizacyjne: Twoja lokalizacja geograficzna, jeżeli wyrazisz zgodę.</li>
+            <li>Informacje o korzystaniu ze strony: adres IP, czas spędzony na stronie, interakcje z treściami.</li>
+        </ul>
+    </section>
+
+    <section class="privacy-section">
+        <h2>3. Jak wykorzystujemy Twoje dane?</h2>
+        <p>Zebrane dane wykorzystywane są do następujących celów:</p>
+        <ul>
+            <li>Świadczenie usług zgodnie z Twoimi preferencjami.</li>
+            <li>Komunikacja z użytkownikami, odpowiedzi na zapytania.</li>
+            <li>Poprawa jakości naszej strony internetowej i usług.</li>
+        </ul>
+    </section>
+
+    <section class="privacy-section">
+        <h2>4. Jak chronimy Twoje dane?</h2>
+        <p>Twoje dane osobowe są chronione przy użyciu odpowiednich środków bezpieczeństwa, w tym szyfrowania danych i zabezpieczeń systemowych. Staramy się zapobiegać nieautoryzowanemu dostępowi lub ujawnieniu Twoich danych.</p>
+    </section>
+
+    <section class="privacy-section">
+        <h2>5. Przechowywanie danych</h2>
+        <p>Dane osobowe przechowujemy przez okres niezbędny do realizacji celów, do których zostały zebrane, a także przez czas wymagany przepisami prawa.</p>
+    </section>
+
+    <section class="privacy-section">
+        <h2>6. Twoje prawa</h2>
+        <p>Masz prawo do:</p>
+        <ul>
+            <li>Dostępu do swoich danych osobowych.</li>
+            <li>Poprawiania swoich danych osobowych.</li>
+            <li>Usunięcia swoich danych osobowych.</li>
+            <li>Ograniczenia przetwarzania swoich danych osobowych.</li>
+        </ul>
+    </section>
+
+    <section class="privacy-section">
+        <h2>7. Kontakt</h2>
+        <p>Jeśli masz pytania dotyczące naszej polityki prywatności lub chcesz skorzystać ze swoich praw, skontaktuj się z nami pod adresem: <a href="mailto:kontakt@twojastrona.pl">kontakt@twojastrona.pl</a></p>
+    </section>
+</div>
+
+{% include "products/footer.html" %}
+
+</body>
+</html>
+

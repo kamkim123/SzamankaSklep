@@ -363,8 +363,8 @@
                         <div class="card__body">
                             <label class="checkbox-row">
                                 <input type="checkbox" name="accept_terms" id="accept_terms" required>
-                                <span>Akceptuję i przeczytałem(am) <a href="#" target="_blank"
-                                                                      rel="noopener">Regulamin</a> oraz <a href="#"
+                                <span>Akceptuję i przeczytałem(am) <a href="{% url 'products:regulamin' %}" target="_blank"
+                                                                      rel="noopener">Regulamin</a> oraz <a href="{% url 'products:private' %}"
                                                                                                            target="_blank"
                                                                                                            rel="noopener">Politykę prywatności</a>.</span>
                             </label>

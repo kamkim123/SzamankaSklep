@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Regulamin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'products/regulamin.css' %}">
+</head>
+<body>
+{% include "products/navbar.html" %}
+
+<main class="regulamin">
+    <header class="regulamin__hero">
+        <h1>Regulamin serwisu</h1>
+        <p class="regulamin__meta">Wersja: 1.0 • Ostatnia aktualizacja: 08.10.2025</p>
+    </header>
+
+    <div aria-label="Spis treści" class="toc">
+        <ol>
+            <li><a href="#postanowienia-ogolne">Postanowienia ogólne</a></li>
+            <li><a href="#definicje">Definicje</a></li>
+            <li><a href="#warunki-korzystania">Warunki korzystania</a></li>
+            <li><a href="#platnosci">Płatności</a></li>
+            <li><a href="#reklamacje">Reklamacje i kontakt</a></li>
+            <li><a href="#postanowienia-koncowe">Postanowienia końcowe</a></li>
+        </ol>
+    </div>
+
+    <section id="postanowienia-ogolne" class="section">
+        <h2>1. Postanowienia ogólne</h2>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer in sapien a odio hendrerit
+            accumsan. Curabitur tristique, nibh in lacinia pharetra, urna magna volutpat nunc, eget
+            posuere mi quam id arcu. Mauris dapibus, nulla id dictum dictum, sem lorem bibendum nisi,
+            non fermentum velit lorem vel nisl.
+        </p>
+        <p>
+            Proin auctor, ipsum at fermentum rhoncus, nibh mauris commodo mauris, at aliquet turpis odio
+            ut tortor. Suspendisse potenti. Sed non mi vitae risus dapibus semper.
+        </p>
+    </section>
+
+    <section id="definicje" class="section">
+        <h2>2. Definicje</h2>
+        <dl class="definicje">
+            <dt>Serwis</dt>
+            <dd>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</dd>
+            <dt>Użytkownik</dt>
+            <dd>Praesent vehicula, risus non cursus ullamcorper, magna augue cursus nibh.</dd>
+            <dt>Konto</dt>
+            <dd>Etiam at velit ac nibh ultrices consequat. Integer finibus arcu at mauris.</dd>
+        </dl>
+    </section>
+
+    <section id="warunki-korzystania" class="section">
+        <h2>3. Warunki korzystania</h2>
+        <ol>
+            <li>Ut porttitor lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+            <li>Phasellus euismod, velit sed faucibus pellentesque, massa arcu porta purus.</li>
+            <li>Aliquam erat volutpat. Cras hendrerit, arcu nec feugiat porta, massa nisl volutpat nibh.</li>
+            <li>Nullam et turpis nec lectus aliquet iaculis. Duis vitae arcu sed justo luctus pharetra.</li>
+        </ol>
+        <p class="note">Uwaga: powyższe punkty to tekst zastępczy (lorem ipsum).</p>
+    </section>
+
+    <section id="platnosci" class="section">
+        <h2>4. Płatności</h2>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere, leo sed vulputate
+            vulputate, urna erat commodo justo, at fermentum arcu nibh in augue. Vivamus vitae metus
+            porttitor, porta augue ut, posuere arcu.
+        </p>
+    </section>
+
+    <section id="reklamacje" class="section">
+        <h2>5. Reklamacje i kontakt</h2>
+        <p>
+            Maecenas gravida, eros vel scelerisque placerat, enim nibh placerat nunc, non bibendum
+            nulla justo eget mauris. Sed mollis scelerisque dui, non dictum arcu pellentesque nec.
+        </p>
+        <ul>
+            <li>E-mail: kontakt@example.com</li>
+            <li>Adres: Ul. Przykładowa 1, 00-000 Miasto</li>
+        </ul>
+    </section>
+
+    <section id="postanowienia-koncowe" class="section">
+        <h2>6. Postanowienia końcowe</h2>
+        <p>
+            Nunc eu lorem ac metus venenatis rhoncus. Donec non tortor eget arcu consequat tincidunt.
+            Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.
+        </p>
+    </section>
+</main>
+
+{% include "products/footer.html" %}
+</body>
+</html>

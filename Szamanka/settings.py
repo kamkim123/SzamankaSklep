@@ -114,5 +114,5 @@ MEDIA_ROOT = os.getenv("DJANGO_MEDIA_ROOT", str(BASE_DIR / "media"))
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ===== Bezpieczeństwo (włączysz po HTTPS) =====
-SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "true").lower() == "true"
-CSRF_TRUSTED_ORIGINS = ["https://szamankasklep.pl", "https://www.szamankasklep.pl"]
+#SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "true").lower() == "true"
+#CSRF_TRUSTED_ORIGINS = ["https://szamankasklep.pl", "https://www.szamankasklep.pl"]

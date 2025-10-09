@@ -1,26 +1,21 @@
+document.addEventListener('DOMContentLoaded', function () {
+  // ===== BURGER =====
+  var burger = document.querySelector('.burger');
+  var kategorieNav = document.querySelector('.kategorie-nav');
 
-const burger = document.querySelector('.burger');
-const kategorieNav = document.querySelector('.kategorie-nav');
+  if (burger && kategorieNav) {
+    burger.addEventListener('click', function () {
+      burger.classList.toggle('active');
+      kategorieNav.classList.toggle('active');
+    });
 
-
-burger.addEventListener('click', () => {
-    burger.classList.toggle('active');
-    kategorieNav.classList.toggle('active');
-})
-
-document.querySelectorAll(".kategorie-nav").forEach(n=> n.
-addEventListener("click", ()=>{
-    burger.classList.remove('active');
-    kategorieNav.classList.remove('active');
-}));
-
-const mq = window.matchMedia('(max-width: 1150px)');
-
-mq.addEventListener('change', () => {
-    kategorieNav.classList.add('no-anim');
-    void kategorieNav.offsetWidth;
-    kategorieNav.classList.remove('no-anim');
-});
+    document.querySelectorAll('.kategorie-nav').forEach(function (n) {
+      n.addEventListener('click', function () {
+        burger.classList.remove('active');
+        kategorieNav.classList.remove('active');
+      });
+    });
+  }
 
 
 
@@ -118,66 +113,37 @@ box.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); })
 
 
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Obsługuje kliknięcie w ikonę koszyka dla bestsellerów
-    document.querySelectorAll('.cart-icon').forEach(button => {
-        button.addEventListener('click', function (e) {
-            e.preventDefault(); // Zapobiegamy domyślnemu wysłaniu formularza i przekierowaniu
+  // ===== IKONA KOSZYKA - Dodaj produkt do koszyka =====
+  document.querySelectorAll('.cart-icon').forEach(button => {
+    button.addEventListener('click', function () {
+        const productId = this.getAttribute('data-product-id'); // Pobieramy ID produktu
+        const quantity = 1; // Na razie zakładamy, że zawsze dodajemy 1 sztukę
 
-            const productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
-            const quantity = 1;  // Na razie zakładamy, że zawsze dodajemy 1 sztukę
-
-            // Debugowanie - sprawdzenie wartości productId
-            console.log("Dodaję do koszyka produkt o ID:", productId);
-
-            // Sprawdzenie, czy productId jest prawidłowe
-            if (!productId) {
-                console.error("Brak ID produktu!");
-                alert("Błąd: Brak ID produktu.");
-                return;
-            }
-
-            // Pobieramy poprawny token CSRF
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            if (!csrfToken) {
-                console.error("Brak tokenu CSRF");
-                alert("Błąd: Brak tokenu CSRF.");
-                return;
-            }
-
-            // Wysyłamy żądanie do serwera
-            fetch(cartAddUrl, {
-                method: 'POST',
-                headers: {
-                    "X-CSRFToken": csrfToken,  // CSRF token
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: new URLSearchParams({
-                    'product_id': productId,
-                    'quantity': quantity
-                })
+        // Wysyłamy żądanie do backendu, żeby dodać produkt do koszyka
+        fetch("{% url 'orders:cart_add' %}", {
+            method: 'POST',
+            headers: {
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                'product_id': productId,
+                'quantity': quantity
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);  // Debugowanie odpowiedzi z serwera
-                if (data.ok) {
-                    alert("Produkt dodany do koszyka!");
-                    // Zaktualizuj liczbę produktów w koszyku
-                    const cartCountElement = document.querySelector('.cart-count');
-                    if (cartCountElement) {
-                        cartCountElement.textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
-                    }
-                } else {
-                    alert("Nie udało się dodać produktu do koszyka!");
-                }
-            })
-            .catch(error => {
-                console.error("Wystąpił błąd:", error);
-                alert("Wystąpił błąd przy dodawaniu produktu do koszyka.");
-            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                // Zaktualizuj UI – np. wyświetl komunikat, zaktualizuj liczbę w koszyku w nagłówku
+                alert("hbgjfsbjbfbbsgr!");
+                document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
+            }
+        })
+        .catch(error => {
+            console.error("Wystąpił błąd:", error);
         });
     });
-});
+  });
 
 
 // --- User popover toggle (mobile + a11y) ---

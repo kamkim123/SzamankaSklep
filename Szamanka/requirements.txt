@@ -4,4 +4,4 @@ whitenoise
 django-cors-headers
 psycopg[binary]   # zostaw – przyda się, gdy kiedyś przejdziesz na Postgresa
 dj-database-url   # wygodna obsługa zmiennej DATABASE_URL (możesz zostawić nawet dla SQLite)
-import-export
+django-import-export

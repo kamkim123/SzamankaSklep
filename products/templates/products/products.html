@@ -32,62 +32,9 @@
 <form method="get" id="navFilterForm" style="display:none">
     <input type="hidden" name="type" id="navTypeInput" value="{{ selected|default:'' }}">
 </form>
-<nav>
-    <div class="top-navbar">
-        <div class="logo-search-bar">
-            <a href="{% url 'home' %}"><h4 class="logo-name">Szamanka.pl</h4></a>
-        </div>
-        <div class="kategorie-nav">
-            <div class="dropdown" id="navCategories" data-target="/products/">
 
-                <div class="select">
-                    <a href="{% url 'products:produkty' %}" class="pasek1" id="navCurrent" aria-haspopup="listbox" aria-expanded="false">Produkty</a>
-                </div>
-                <ul class="menu">
-                    {% for c in categories %}
-                        <li data-value="{{ c.product_type }}">
-                            <a href="{% url 'products:produkty' %}?type={{ c.product_type }}">{{ c.product_type }} ({{ c.count }})</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div>
-                <a href="{% url 'products:produkty' %}?bestsellers=true" class="pasek1">Bestsellery</a>
-            </div>
-            <div>
-                <a href="#" class="pasek1">Promocje</a>
-            </div>
-            <div>
-                <a href="#o-nas-section" class="pasek1">O&nbsp;nas</a>
-            </div>
-            <div>
-                <a href="#location-section" class="pasek1">Kontakt</a>
-            </div>
-        </div>
 
-        <div class="search" id="search">
-            <label>
-                <input class="search__input" type="search" placeholder="Szukaj produktów..." disabled>
-            </label>
-            <button class="search__toggle" type="button" aria-label="Otwórz wyszukiwarkę">
-                <i class="bx bx-search"></i>
-            </button>
-            <button class="search__clear" type="button" aria-label="Wyczyść">
-                <i class="bx bx-x"></i>
-            </button>
-        </div>
-
-        <div class="ikonki_nav">
-            <a href="{% url 'users:login' %}"><img src="{% static 'products/images/user1.png' %}" alt="login" class="nav-icon"></a>
-            <a href="{% url 'users:favorites' %}"><img src="{% static 'products/images/heart.png' %}" alt="ulubione" class="nav-icon"></a>
-            <a href="{% url 'orders:cart' %}"><img src="{% static 'products/images/shopping-cart.png' %}" alt="cart" class="nav-icon"></a>
-        </div>
-    </div>
-    <button class="burger" aria-label="Menu">
-        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
-    </button>
-</nav>
-
+{% include "products/navbar.html" %}
 
 <section class="products-section" id="products-section">
     <div class="products-wrapper">
@@ -305,9 +252,9 @@
         <div class="footer-box" id="info-foot">
             <h3>Pomoc</h3>
             <a href="#">Menu</a>
-            <a href="#">Kontakt</a>
-            <a href="#">Polityka prywatności</a>
-            <a href="#">Zwroty</a>
+            <a href="{% url 'home' %}#location-section">Kontakt</a>
+            <a href="{% url 'products:private' %}">Polityka prywatności</a>
+            <a href="{% url 'products:regulamin' %}">Zwroty</a>
         </div>
 
         <div class="footer-box" id="call-to-mail">
