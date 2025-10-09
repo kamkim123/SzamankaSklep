@@ -1,3 +1,4 @@
+import dj_database_url
 import os
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -70,13 +71,8 @@ WSGI_APPLICATION = "Szamanka.wsgi.application"
 
 DJANGO_DB_PATH = os.getenv("DJANGO_DB_PATH", str(BASE_DIR / "db.sqlite3"))
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": DJANGO_DB_PATH,
-        "OPTIONS": {"timeout": 10}
-    }
-}
+DATABASES = {"default": dj_database_url.parse(
+    "postgresql://kamyk3226:iTwmja0Urf3bGjj1ZQIJvzSrAlnK2gMj@dpg-d3jnr43ipnbc73clhnng-a.frankfurt-postgres.render.com/szamanka")}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -115,4 +111,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ===== Bezpieczeństwo (włączysz po HTTPS) =====
 #SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "true").lower() == "true"
-#CSRF_TRUSTED_ORIGINS = ["https://szamankasklep.pl", "https://www.szamankasklep.pl"]
+CSRF_TRUSTED_ORIGINS = ["https://szamankasklep.pl", "https://www.szamankasklep.pl"]
