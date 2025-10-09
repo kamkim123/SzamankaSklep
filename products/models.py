@@ -25,7 +25,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     product_category = models.CharField(max_length=50, db_index=True)
     product_brand = models.CharField(max_length=50, blank=True, db_index=True)
-    product_code = models.IntegerField(null=True, blank=True)
+    product_code = models.BigIntegerField(null=True, blank=True)
     product_stock = models.IntegerField(default=0)
     product_vat = models.CharField(
         max_length=10,
