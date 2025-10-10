@@ -34,8 +34,8 @@
                 </div>
                 <ul class="menu">
                     {% for c in categories %}
-                    <li data-value="{{ c.product_type }}">
-                        <a href="{% url 'products:produkty' %}?type={{ c.product_type }}">{{ c.product_type }}</a>
+                    <li>
+                        <a href="{% url 'products:produkty' %}">{{ c.product_type }}</a>
                     </li>
                     {% endfor %}
                 </ul>

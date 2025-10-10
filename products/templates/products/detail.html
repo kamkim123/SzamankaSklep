@@ -1,235 +1,103 @@
 <!doctype html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Szamanka-products</title>
-
-        {% load static %}
-
-    <!-- jeśli plik masz w static/ -> np. static/products.css -->
-    <link rel="stylesheet" href="{% static 'products/detail.css' %}">
-
-    <link rel="stylesheet" href="style.css">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-          rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Delius+Swash+Caps&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-          rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.product_name }} - Szamanka</title>
+    {% load static %}
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-
-    <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
-    />
-
+    <link rel="stylesheet" href="{% static 'products/detail.css' %}">
 </head>
 <body>
 
- {% include "products/navbar.html" %}
+{% include "products/navbar.html" %}
 
 <section class="one-product-page">
     <div class="page-wrapper">
+        <!-- Zdjęcie główne -->
         <div class="image-wrapper">
             <div class="image-wrapper2">
-
-                <img src="images/product2.png" alt="photo">
-
-                <div class="mini-photo1"><img src="images/product2.png" alt="p1"></div>
-                <div class="mini-photo2"><img src="images/product1.jpg" alt="p2"></div>
+                <img src="{{ product.image.url }}" alt="{{ product.product_name }}" class="main-image">
+                <div class="mini-photos">
+                    {% for img in product.gallery.all %}
+                    <div class="mini-photo"><img src="{{ img.image.url }}" data-full="{{ img.image.url }}"
+                                                 alt="{{ product.product_name }}"></div>
+                    {% endfor %}
+                </div>
             </div>
-
         </div>
+
+        <!-- Informacje o produkcie -->
         <div class="product-info">
-            <span class="directions">Home page/Products/olejki</span>
-            <span class="product-name">
-                Olejek do wlosow - <span>krotki opis firma taka i fajny olejek</span>
-            </span>
-            <span class="product-price">
-                19.99$
-            </span>
+            <span class="directions">Home / Produkty / {{ product.category.name }}</span>
+            <h1 class="product-name">{{ product.product_name }}</h1>
+            <p class="product-short-desc">{{ product.short_description }}</p>
+            <span class="product-price">{{ product.price|floatformat:2 }} zł</span>
+
             <div class="quantity">
                 <div class="calc-container">
                     <button class="minus">-</button>
                     <div class="calc-input">01</div>
                     <button class="plus">+</button>
                 </div>
-                <div class="cart">Dodaj&nbsp;do koszyka</div>
-                <div class="favorite">Dodaj do ulubionych</div>
+                <form method="post" action="{% url 'orders:cart_add' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <button class="cart" data-product-id="{{ product.id }}">Dodaj do koszyka</button>
+                </form>
+
+                {% if user.is_authenticated %}
+                {% if product in user.favorites.all %}
+                <a href="{% url 'users:favorite_toggle' product.id %}" class="favorite active">
+                    <i class="bx bxs-heart"></i> Ulubione
+                </a>
+                {% else %}
+                <a href="{% url 'users:favorite_toggle' product.id %}" class="favorite">
+                    <i class="bx bx-heart"></i> Dodaj do ulubionych
+                </a>
+                {% endif %}
+                {% else %}
+                <a href="{% url 'users:login' %}?next={{ request.path }}" class="favorite">
+                    <i class="bx bx-heart"></i> Zaloguj się aby dodać
+                </a>
+                {% endif %}
             </div>
+
             <div class="add-info-wrapper">
-                <div>
-                    <img src="#" alt="plus" class="add-icon">
-                </div>
+                <img src="{% static 'products/images/shipping.png' %}" alt="shipping" class="add-icon">
                 <div class="add-info">
-                    Twoje zamówienie wyślemy w ciągu 7 dni roboczych – najczęściej paczki docierają dużo szybciej!
-                    Zadbaliśmy o bezpieczne pakowanie i sprawną obsługę dostawy.
+                    Twoje zamówienie wyślemy w ciągu 7 dni roboczych.
                 </div>
             </div>
+
             <div class="more-info-wrapper">
-                <span>Kategoria: Olejki</span>
-                <span>Producent: Herbapol</span>
+                <span>Kategoria: {{ product.product_type }}</span>  <!-- Odwołanie do product_type -->
+                <span>Producent: {{ product.product_brand }}</span>  <!-- Zakładając, że masz pole product_brand -->
             </div>
 
         </div>
     </div>
 </section>
 
+<!-- Podobne produkty (tylko bestseller) -->
 <section class="information-section">
-    <div class="info-section-wrapper">
-        <div class="info-description-wrapper">
-            <div class="opis-wrapper">
-                <h3>Opis</h3>
-                <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-                    Lorem ipsum dolor sit amet
-                </span>
-            </div>
-            <div class="additional-info-wrapper">
-
-
-                <div class="trans-photo-container">
-                    <span class="trans-add">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    </span>
-                    <div class="trans-photo-wrapper">
-                        <img src="images/a-photo.jpg" alt="hi" class="info-icon">
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-page-newsletter">
-                <div class="p-newsletter-wrapper">
-                    <span>Dolacz do naszego newslettera<br>
-                    otrzymuj informacje o promocjach i nowosciach</span>
-                    <label>
-                        <input class="p-newsletter-input" type="email" placeholder="Email">
-                    </label>
-                </div>
-
-            </div>
-
+    <h3 class="title">Podobne produkty</h3>
+    <div class="diff-products-wrapper">
+        {% for p in similar_products %}
+        <div class="diff-product">
+            <a href="{% url 'products:detail' p.pk %}">
+                <img src="{{ p.image.url }}" alt="{{ p.product_name }}">
+                <h3>{{ p.product_name }}</h3>
+                <span class="price">{{ p.price|floatformat:2 }} zł</span>
+            </a>
         </div>
-
-        <div class="info-photo-container">
-            <h3 class="title">Podobne produkty:</h3>
-            <div class="diff-products-wrapper">
-                <div class="diff-product">
-                    <img src="images/product2.png" alt="produkty" class="product-image">
-                    <h3>Nazwa Produktu</h3>
-
-                    <h4 class="price">120.50 zl</h4>
-                    <div class="products-cart">
-                        <img src="images/shopping-cart-white.png" alt="cart" class="cart-icon">
-                    </div>
-                    <i class='bx  bx-heart'></i>
-                    <div class="calc-product">
-                        <button type="button" class="minus">-</button>
-
-                        <div class="calc-input">01</div>
-
-                        <button type="button" class="plus">+</button>
-                    </div>
-
-
-                </div>
-                <div class="diff-product">
-                    <img src="images/product2.png" alt="produkty" class="product-image">
-                    <h3>Olejek naturalny etja homogenizowany</h3>
-
-                    <h4 class="price">120.50 zl</h4>
-                    <div class="products-cart">
-                        <img src="images/shopping-cart-white.png" alt="cart" class="cart-icon">
-                    </div>
-                    <i class='bx  bx-heart'></i>
-                    <div class="calc-product">
-                        <button type="button" class="minus">-</button>
-
-                        <div class="calc-input">01</div>
-
-                        <button type="button" class="plus">+</button>
-                    </div>
-                </div>
-
-                <div class="diff-product">
-                    <img src="images/product2.png" alt="produkty" class="product-image">
-                    <h3>Olejek naturalny etja</h3>
-
-                    <h4 class="price">120.50 zl</h4>
-                    <div class="products-cart">
-                        <img src="images/shopping-cart-white.png" alt="cart" class="cart-icon">
-                    </div>
-                    <i class='bx  bx-heart'></i>
-                    <div class="calc-product">
-                        <button type="button" class="minus">-</button>
-
-                        <div class="calc-input">01</div>
-
-                        <button type="button" class="plus">+</button>
-                    </div>
-
-
-                </div>
-                <div class="diff-product">
-                    <img src="images/product2.png" alt="produkty" class="product-image">
-                    <h3>Olejek naturalny etja</h3>
-
-                    <h4 class="price">120.50 zl</h4>
-                    <div class="products-cart">
-                        <img src="images/shopping-cart-white.png" alt="cart" class="cart-icon">
-                    </div>
-                    <i class='bx  bx-heart'></i>
-                    <div class="calc-product">
-                        <button type="button" class="minus">-</button>
-
-                        <div class="calc-input">01</div>
-
-                        <button type="button" class="plus">+</button>
-                    </div>
-
-
-                </div>
-                <div class="diff-product">
-                    <img src="images/product2.png" alt="produkty" class="product-image">
-                    <h3>Olejek naturalny etja</h3>
-
-                    <h4 class="price">120.50 zl</h4>
-                    <div class="products-cart">
-                        <img src="images/shopping-cart-white.png" alt="cart" class="cart-icon">
-                    </div>
-                    <i class='bx  bx-heart'></i>
-                    <div class="calc-product">
-                        <button type="button" class="minus">-</button>
-
-                        <div class="calc-input">01</div>
-
-                        <button type="button" class="plus">+</button>
-                    </div>
-
-
-                </div>
-
-
-
-            </div>
-
-        </div>
+        {% endfor %}
     </div>
 </section>
 
-   {% include "products/footer.html" %}
+
+{% include "products/footer.html" %}
 
 <script src="{% static 'products/detail.js' %}"></script>
 

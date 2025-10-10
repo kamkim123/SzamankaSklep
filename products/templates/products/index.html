@@ -82,7 +82,7 @@
             <a href="{% url 'products:index' %}?type=suplementy">
                 <div class="category1-wrapper">
                     <div class="category-image-wrapper">
-                        <img src="{% static 'products/images/suple.png' %}" alt="heart" class="vegan">
+                        <img src="{% static 'products/images/suplements.jpg' %}" alt="heart" class="vegan">
                     </div>
                     <p class="text-category">Suplementy</p>
                 </div>
@@ -179,7 +179,6 @@
     <div class="product-container-wrapper">
         <!-- Debugowanie: Sprawdzamy zawartość bestsellers -->
         {% if bestsellers %}
-            <p>Found {{ bestsellers.count }} bestsellers in context.</p>
             {% for product in bestsellers %}
                 <div class="product">
                     <a href="{% url 'products:detail' product.pk %}">

@@ -106,3 +106,4 @@ def regulamin(request):
 
 def private(request):  # Dodaj funkcję widoku dla polityki prywatności
     return render(request, "products/private.html")
+

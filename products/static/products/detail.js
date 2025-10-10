@@ -102,3 +102,81 @@ if(g){
         m.alt = t.alt || '';
     });
 }
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Funkcja dodająca produkt do koszyka
+    function addToCart(productId, quantity = 1) {
+        if (!productId) return;
+        fetch(cartAddUrl, {
+            method: 'POST',
+            headers: {
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                'product_id': productId,
+                'quantity': quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                const cartCount = document.querySelector('.cart-count');
+                if (cartCount) cartCount.textContent = data.items;
+
+
+
+                setTimeout(() => alertDiv.remove(), 2000);
+            }
+        })
+        .catch(error => console.error("Wystąpił błąd:", error));
+    }
+
+    // --- Podstawowe produkty (strona główna / szczegóły) ---
+    document.querySelectorAll('.cart-icon').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+            addToCart(productId);
+        });
+    });
+
+    // --- Przyciski "Dodaj do koszyka" w sekcji podobnych produktów ---
+    document.querySelectorAll('.diff-product .products-cart').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Pobieramy product-id z atrybutu data-product-id
+            let productDiv = this.closest('.diff-product');
+            let productId = productDiv ? productDiv.getAttribute('data-product-id') : null;
+            addToCart(productId);
+        });
+    });
+
+    // --- Jeśli główny przycisk "Dodaj do koszyka" na stronie produktu ---
+    const mainCartBtn = document.querySelector('.one-product-page .cart');
+    if(mainCartBtn) {
+        mainCartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+            addToCart(productId);
+        });
+    }
+});
+
+
+document.querySelectorAll('.mini-photo img').forEach(img => {
+    img.addEventListener('click', () => {
+      document.querySelector('.main-image').src = img.dataset.full;
+    });
+  });
+
+  // Kalkulator ilości
+  document.querySelectorAll('.calc-container').forEach(calc => {
+    const minus = calc.querySelector('.minus');
+    const plus = calc.querySelector('.plus');
+    const input = calc.querySelector('.calc-input');
+    let qty = parseInt(input.textContent);
+    minus.addEventListener('click', () => { if(qty>1) input.textContent=--qty; });
+    plus.addEventListener('click', () => { input.textContent=++qty; });
+  });
