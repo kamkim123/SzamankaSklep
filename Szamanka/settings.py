@@ -7,6 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 SECRET_KEY = os.getenv("SECRET_KEY", "dber74gf7%&DFcwcwdq!")
 ALLOWED_HOSTS = [
+    "szamankasklep.pl",
+    "www.szamankasklep.pl",
     "api.szamanka.pl",             # Twoja subdomena API
     "szamankasklep.onrender.com",      # chwilowo adres z Render, podmienisz po deployu
     "localhost", "127.0.0.1"
@@ -112,3 +114,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ===== Bezpieczeństwo (włączysz po HTTPS) =====
 #SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "true").lower() == "true"
 CSRF_TRUSTED_ORIGINS = ["https://szamankasklep.pl", "https://www.szamankasklep.pl"]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
