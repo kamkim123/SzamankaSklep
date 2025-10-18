@@ -1,0 +1,7 @@
+Cześć {{ user_display }},
+
+Dziękujemy za rejestrację w naszym sklepie.
+Kliknij, aby potwierdzić adres e-mail i aktywować konto:
+{{ activate_url }}
+
+Jeśli to nie Ty, zignoruj tę wiadomość.

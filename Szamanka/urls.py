@@ -10,5 +10,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include(("orders.urls", "orders"), namespace="orders")),
     path("u/", include(("users.urls", "users"), namespace="users")),
+    path("accounts/", include("allauth.urls")),  # to dodaje ~30 endpointów allauth
     path("products/", include(("products.urls", "products"), namespace="products")),
 ]

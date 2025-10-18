@@ -12,6 +12,7 @@
 <body>
 
   {% include "products/navbar.html" %}
+  {% load i18n %}
 
   <div class="login-box">
     {% if auth_error %}
@@ -22,8 +23,9 @@
         {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
       </ul>
     {% endif %}
-    <form action="{% url 'users:register' %}" method="post" id="registerForm">
+    <form action="{% url 'account_signup' %}" method="post" id="registerForm">
       {% csrf_token %}
+      {{ form.non_field_errors }}
       <h2>Rejestracja</h2>
 
       <!-- Email -->
@@ -53,7 +55,7 @@
       <button type="submit" class="baton1">Utwórz konto</button>
 
       <div class="register-link">
-        <p>Masz już konto? <a href="{% url 'users:login' %}">Zaloguj się</a></p>
+        <p>Masz już konto? <a href="{% url 'account_login' %}">Zaloguj się</a></p>
       </div>
     </form>
   </div>
@@ -64,8 +66,6 @@
   <!-- Skrypty Ionicons -->
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
-<script src="{% static 'products/detail.js' %}"></script>
 
 </body>
 </html>

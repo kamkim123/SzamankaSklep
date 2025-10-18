@@ -104,65 +104,7 @@ if(g){
 }
 
 
-  document.addEventListener('DOMContentLoaded', function () {
-    // Funkcja dodająca produkt do koszyka
-    function addToCart(productId, quantity = 1) {
-        if (!productId) return;
-        fetch(cartAddUrl, {
-            method: 'POST',
-            headers: {
-                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: new URLSearchParams({
-                'product_id': productId,
-                'quantity': quantity
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.ok) {
-                const cartCount = document.querySelector('.cart-count');
-                if (cartCount) cartCount.textContent = data.items;
 
-
-
-                setTimeout(() => alertDiv.remove(), 2000);
-            }
-        })
-        .catch(error => console.error("Wystąpił błąd:", error));
-    }
-
-    // --- Podstawowe produkty (strona główna / szczegóły) ---
-    document.querySelectorAll('.cart-icon').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.getAttribute('data-product-id');
-            addToCart(productId);
-        });
-    });
-
-    // --- Przyciski "Dodaj do koszyka" w sekcji podobnych produktów ---
-    document.querySelectorAll('.diff-product .products-cart').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Pobieramy product-id z atrybutu data-product-id
-            let productDiv = this.closest('.diff-product');
-            let productId = productDiv ? productDiv.getAttribute('data-product-id') : null;
-            addToCart(productId);
-        });
-    });
-
-    // --- Jeśli główny przycisk "Dodaj do koszyka" na stronie produktu ---
-    const mainCartBtn = document.querySelector('.one-product-page .cart');
-    if(mainCartBtn) {
-        mainCartBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.getAttribute('data-product-id');
-            addToCart(productId);
-        });
-    }
-});
 
 
 document.querySelectorAll('.mini-photo img').forEach(img => {
@@ -180,3 +122,42 @@ document.querySelectorAll('.mini-photo img').forEach(img => {
     minus.addEventListener('click', () => { if(qty>1) input.textContent=--qty; });
     plus.addEventListener('click', () => { input.textContent=++qty; });
   });
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.cart').forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault(); // Zapobiegamy domyślnemu wysłaniu formularza i przekierowaniu
+
+            const productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
+            const quantity = 1;  // Zakładamy, że zawsze dodajemy 1 sztukę
+
+            console.log("Dodaję do koszyka produkt o ID:", productId);  // Debugowanie
+
+            // Używamy wygenerowanego URL do wysłania żądania
+            fetch(cartAddUrl, {
+                method: 'POST',
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    'product_id': productId,
+                    'quantity': quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);  // Debugowanie odpowiedzi z serwera
+                if (data.ok) {
+
+                    document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
+                }
+            })
+            .catch(error => {
+                console.error("Wystąpił błąd:", error);
+            });
+        });
+    });
+});

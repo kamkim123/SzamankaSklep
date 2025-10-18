@@ -19,9 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
-
-
 const dropdowns = document.querySelectorAll('.dropdown');
 
 dropdowns.forEach((dropdown) => {
@@ -172,3 +169,28 @@ box.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); })
     if (e.key === 'Escape') close();
   });
 })();
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  const loginLink = document.querySelector('#burger-icon1 a');
+  const logoutLink = document.querySelector('#burger-icon2 form');
+
+  if (loginLink && logoutLink) {
+    // Warunek, który sprawdza czy użytkownik jest zalogowany
+    {% if user.is_authenticated %}
+        // Jeśli zalogowany, zmień "Zaloguj" na "Mój profil"
+        loginLink.textContent = 'Mój profil';
+
+        // Jeśli zalogowany, pokazujemy formularz wylogowania
+        logoutLink.style.display = 'block'; // Pokaż wylogowanie w menu
+    {% else %}
+        // Jeśli niezalogowany, pokazujemy formularz logowania
+        loginLink.textContent = 'Zaloguj';
+        logoutLink.style.display = 'none'; // Ukryj wylogowanie w menu
+    {% endif %}
+  }
+});
+
+
+
+

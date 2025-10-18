@@ -1,10 +1,11 @@
 import dj_database_url
 import os
 from pathlib import Path
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== Podstawy produkcyjne =====
-DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+DEBUG = False
 SECRET_KEY = os.getenv("SECRET_KEY", "dber74gf7%&DFcwcwdq!")
 ALLOWED_HOSTS = [
     "szamankasklep.pl",
@@ -13,6 +14,23 @@ ALLOWED_HOSTS = [
     "szamankasklep.onrender.com",      # chwilowo adres z Render, podmienisz po deployu
     "localhost", "127.0.0.1"
 ]
+
+import os
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True          # STARTTLS
+EMAIL_USE_SSL = False
+
+EMAIL_HOST_USER = "jaystar1003@gmail.com"                  # konto, którym wysyłasz
+EMAIL_HOST_PASSWORD = "vzbigvgrxktftohf" # ← TU wstaw hasło aplikacji (lub użyj env)
+DEFAULT_FROM_EMAIL = "jaystar1003@gmail.com"               # na początek ustaw tak samo
+SERVER_EMAIL = "jaystar1003@gmail.com"
+
+
+import certifi
+os.environ.setdefault("SSL_CERT_FILE", certifi.where())
 
 
 INSTALLED_APPS = [
@@ -25,21 +43,27 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "import_export",
     "corsheaders",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
 ]
+
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",       # ⬅️ przenieś tu
+    "corsheaders.middleware.CorsMiddleware",            # ⬅️ przed CommonMiddleware
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 WHITENOISE_USE_FINDERS = True
@@ -64,6 +88,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",   # <— ważne
                 "django.contrib.messages.context_processors.messages",  # <— ważne
                 "Szamanka.context_processors.categories_ctx",
+                "orders.context_processors.cart_counts",
             ],
         },
     },
@@ -83,17 +108,30 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",      # standardowy
+    "allauth.account.auth_backends.AuthenticationBackend",  # allauth
+]
 
 CSRF_COOKIE_NAME = "csrftoken"
 
+SITE_ID = 1
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
-LOGIN_URL = "users:login"
+
+LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "home"   # albo inny istniejący widok
 LOGOUT_REDIRECT_URL = "home"
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_USERNAME_REQUIRED = False
 
+ACCOUNT_SIGNUP_FIELDS = {'email*'}
+
+ACCOUNT_ADAPTER = "users.adapter.MyAccountAdapter"
+
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
+ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300
 
 
 # Lokalizacja
@@ -101,6 +139,15 @@ LANGUAGE_CODE = "pl"           # było en-us
 TIME_ZONE = "Europe/Warsaw"
 USE_I18N = True
 USE_TZ = True
+
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_PRESERVE_USERNAME_CASING = False
+ACCOUNT_EMAIL_SUBJECT_PREFIX = ""
+
+ACCOUNT_FORMS = {
+    "signup": "users.forms.MySignupForm",
+}
+
 
 # Statyczne i media
 STATIC_URL = "/static/"
@@ -113,8 +160,25 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ===== Bezpieczeństwo (włączysz po HTTPS) =====
 #SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "true").lower() == "true"
-CSRF_TRUSTED_ORIGINS = ["https://szamankasklep.pl", "https://www.szamankasklep.pl"]
+CSRF_TRUSTED_ORIGINS = ["https://szamankasklep.pl", "https://www.szamankasklep.pl",  "http://127.0.0.1:8000",  # Lokalny adres
+    "http://localhost:8000"]
+
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+
+LOGGING = {
+    "version": 1,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "loggers": {
+        "allauth": {"handlers": ["console"], "level": "DEBUG"},
+        "django.request": {"handlers": ["console"], "level": "ERROR"},
+    },
+}
+
+ACCOUNT_EMAIL_REQUIRED = True
+
+
+

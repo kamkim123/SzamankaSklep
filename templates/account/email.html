@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>email</title>
+</head>
+<body>
+{% load i18n account %}
+
+{% block content %}
+<h1>Twój adres e-mail</h1>
+
+{% if user.emailaddress_set.all %}
+  <ul>
+    {% for emailaddress in user.emailaddress_set.all %}
+      <li>
+        {{ emailaddress.email }}
+        {% if emailaddress.verified %} — zweryfikowany ✅
+        {% else %} — niezweryfikowany ❌
+          <form method="post" action="{% url 'account_resend_confirmation' %}">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{ emailaddress.email }}">
+            <button type="submit">Wyślij ponownie link</button>
+          </form>
+        {% endif %}
+        {% if emailaddress.primary %} (główny){% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Brak przypisanych adresów e-mail.</p>
+{% endif %}
+
+<form method="post" action="{% url 'account_email' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Zapisz</button>
+</form>
+{% endblock %}
+
+</body>
+</html>

@@ -131,37 +131,20 @@ box.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); })
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Obsługuje kliknięcie w ikonę koszyka dla bestsellerów
     document.querySelectorAll('.cart-icon').forEach(button => {
         button.addEventListener('click', function (e) {
             e.preventDefault(); // Zapobiegamy domyślnemu wysłaniu formularza i przekierowaniu
 
             const productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
-            const quantity = 1;  // Na razie zakładamy, że zawsze dodajemy 1 sztukę
+            const quantity = 1;  // Zakładamy, że zawsze dodajemy 1 sztukę
 
-            // Debugowanie - sprawdzenie wartości productId
-            console.log("Dodaję do koszyka produkt o ID:", productId);
+            console.log("Dodaję do koszyka produkt o ID:", productId);  // Debugowanie
 
-            // Sprawdzenie, czy productId jest prawidłowe
-            if (!productId) {
-                console.error("Brak ID produktu!");
-                alert("Błąd: Brak ID produktu.");
-                return;
-            }
-
-            // Pobieramy poprawny token CSRF
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            if (!csrfToken) {
-                console.error("Brak tokenu CSRF");
-                alert("Błąd: Brak tokenu CSRF.");
-                return;
-            }
-
-            // Wysyłamy żądanie do serwera
+            // Używamy wygenerowanego URL do wysłania żądania
             fetch(cartAddUrl, {
                 method: 'POST',
                 headers: {
-                    "X-CSRFToken": csrfToken,  // CSRF token
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: new URLSearchParams({
@@ -173,19 +156,12 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 console.log(data);  // Debugowanie odpowiedzi z serwera
                 if (data.ok) {
-                    alert("Produkt dodany do koszyka!");
-                    // Zaktualizuj liczbę produktów w koszyku
-                    const cartCountElement = document.querySelector('.cart-count');
-                    if (cartCountElement) {
-                        cartCountElement.textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
-                    }
-                } else {
-                    alert("Nie udało się dodać produktu do koszyka!");
+
+                    document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
                 }
             })
             .catch(error => {
                 console.error("Wystąpił błąd:", error);
-                alert("Wystąpił błąd przy dodawaniu produktu do koszyka.");
             });
         });
     });

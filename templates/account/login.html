@@ -14,11 +14,13 @@
 
 
 {% include "products/navbar.html" %}
+{% load i18n %}
 
 <section>
     <div class="login-box">
-        <form action="{% url 'users:login' %}" method="post">
+        <form action="{% url 'account_login' %}" method="post">
             {% csrf_token %}
+            {{ form.non_field_errors }}
             <h2>Login</h2>
 
             {% if form and form.non_field_errors %}
@@ -48,13 +50,15 @@
                 <label>
                     <input type="checkbox" name="remember"> Zapamiętaj mnie
                 </label>
-                <a href="#">Zapomniałeś hasła?</a>
+                <a href="{% url 'account_reset_password' %}">Zapomniałeś hasła?</a>
+                <p>Nie dostałeś maila? <a href="{% url 'account_email' %}">Wyślij ponownie</a></p>
+
             </div>
 
             <button type="submit" class="baton">Zaloguj</button>
 
             <div class="register-link">
-                <p>Nie masz jeszcze konta? <a href="{% url 'users:register' %}">Zarejestruj się</a></p>
+                <p>Nie masz jeszcze konta? <a href="{% url 'account_signup' %}">Zarejestruj się</a></p>
             </div>
         </form>
 
@@ -67,8 +71,6 @@
 <!-- Skrypty dla Ionicons -->
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
-<script src="{% static 'products/detail.js' %}"></script>
 
 </body>
 </html>

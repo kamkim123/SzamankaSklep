@@ -58,8 +58,6 @@
             </div>
 
             <div class="swiper-pagination"></div>
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
 
             <div class="hero-comment"> Naturalne produkty,<br> zamow juz dzis!</div>
         </div>
@@ -177,7 +175,6 @@
 <section class="products-section" id="bestsellery-section">
     <h2>Bestsellery</h2>
     <div class="product-container-wrapper">
-        <!-- Debugowanie: Sprawdzamy zawartość bestsellers -->
         {% if bestsellers %}
             {% for product in bestsellers %}
                 <div class="product">
@@ -186,6 +183,31 @@
                     </a>
                     <h3><a href="{% url 'products:detail' product.pk %}">{{ product.product_name }}</a></h3>
                     <h4 class="price">{{ product.price|floatformat:2 }} zł</h4>
+
+                    <!-- Dodanie do koszyka -->
+                    <form method="post" action="{% url 'orders:cart_add' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.pk }}">
+                        <input type="hidden" name="quantity" value="1">
+
+                        <div class="products-cart{% if product.product_stock|default:0 <= 0 %} disabled{% endif %}">
+                            <!-- Formularz wysyłający dane produktu do koszyka -->
+                            <button type="submit" class="cart-icon" data-product-id="{{ product.pk }}">
+                                <img src="{% static 'products/images/shopping-cart-white.png' %}" alt="cart" class="cart-icon" />
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Serce do ulubionych -->
+                    {% if product in request.user.favorites.all %}
+                        <a href="{% url 'users:favorite_toggle' product.pk %}">
+                            <i class="bx bx-heart" style="color: red;"></i>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'users:favorite_toggle' product.pk %}">
+                            <i class="bx bx-heart"></i>
+                        </a>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}
@@ -193,8 +215,6 @@
         {% endif %}
     </div>
 </section>
-
-
 
 
 
@@ -298,7 +318,7 @@
                     <label class="input-box">
                         <input type="email" placeholder="Email" class="email-footer">
                     </label>
-                    <i class='bxr bx-arrow-right-stroke-square'></i>
+                    <i class="bx bx-right-arrow-alt"></i>
                 </form>
             </div>
         </div>

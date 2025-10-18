@@ -37,10 +37,24 @@ class IndexView(generic.ListView):
         return ctx
 
 
-class DetailView(generic.DetailView):
+from django.views.generic import DetailView
+
+
+
+class DetailView(DetailView):
     model = Product
     template_name = "products/detail.html"
     context_object_name = "product"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Dodanie podobnych produktów (bestsellerów)
+        product = self.object  # Produkt, który jest oglądany
+        similar_products = Product.objects.filter(is_bestseller=True).exclude(
+            pk=product.pk)  # Wykluczenie obecnego produktu
+
+        context['similar_products'] = similar_products
+        return context
 
 
 # Jeśli naprawdę potrzebujesz ResultsView pod oddzielny template,
@@ -96,7 +110,6 @@ def produkty(request):
 
 
 
-
 # products/views.py
 from django.shortcuts import render
 
@@ -106,4 +119,5 @@ def regulamin(request):
 
 def private(request):  # Dodaj funkcję widoku dla polityki prywatności
     return render(request, "products/private.html")
+
 

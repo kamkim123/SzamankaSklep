@@ -13,6 +13,7 @@
     <!-- jeśli plik masz w static/ -> np. static/products.css -->
     <link rel="stylesheet" href="{% static 'products/products.css' %}">
 
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
@@ -27,6 +28,7 @@
     <script>
         var cartAddUrl = "{% url 'orders:cart_add' %}";
     </script>
+
 </head>
 <body>
 <form method="get" id="navFilterForm" style="display:none">
@@ -49,7 +51,7 @@
             </div>
 
             <div class="products-menu-item">
-                <span class="title-link" data-type="spozywcze">Artykuly&nbsp;spozywcze</span>
+                <span class="title-link" data-type="spozywcze">Artykuly spozywcze</span>
                 <a href="#" class="products-menu-link" data-type="Maki">Maki</a>
                 <a href="#" class="products-menu-link" data-type="Orzechy">orzechy</a>
                 <a href="#" class="products-menu-link" data-type="Przekaski">przekaski</a>
@@ -58,7 +60,7 @@
             </div>
 
             <div class="products-menu-item">
-                <span class="title-link" data-type="suplementy">Suplementy&nbsp;diety</span>
+                <span class="title-link" data-type="suplementy">Suplementy diety</span>
             </div>
 
             <div class="products-menu-item">
@@ -138,7 +140,7 @@
                 {% for c in categories %}
                 <option value="{{ c.product_type }}"
                         {% if selected == c.product_type %}selected{% endif %}>
-                    {{ c.product_type }} ({{ c.count }})
+                    {{ c.product_type }}
                 </option>
                 {% endfor %}
             </select>
@@ -182,6 +184,7 @@
 
 
                 <h4 class="price">{{ p.price|floatformat:2 }}&nbsp;zł</h4>
+
                 <form method="post" action="{% url 'orders:cart_add' %}">
                     {% csrf_token %}
                     <input type="hidden" name="product_id" value="{{ p.pk }}">
@@ -189,12 +192,11 @@
 
                     <div class="products-cart{% if p.product_stock|default:0 <= 0 %} disabled{% endif %}">
                         <!-- Formularz wysyłający dane produktu do koszyka -->
-                        <button type="submit" class="cart-icon" data-product-id="{{ p.pk }}">
+                        <button type="submit" class="cart-icon" data-product-id="{{ p.pk }}" >
                             <img src="{% static 'products/images/shopping-cart-white.png' %}" alt="cart" class="cart-icon" />
                         </button>
                     </div>
                 </form>
-
                 {% if p in request.user.favorites.all %}
                     <a href="{% url 'users:favorite_toggle' p.pk %}">
                         <i class="bx bx-heart" style="color: red;"></i>  <!-- Czerwone serce, jeśli produkt jest w ulubionych -->
@@ -214,19 +216,17 @@
             {% endfor %}
 
             <!-- „Więcej produktów” = następna strona paginacji -->
-            <nav class="pagination">
+            <div class="pagination">
                 {% if page_obj.has_previous %}
-                <a href="?{% if selected %}type={{ selected }}&{% endif %}page={{ page_obj.previous_page_number }}">←
-                    Poprzednia</a>
+                <a href="?{% if selected %}type={{ selected }}&{% endif %}page={{ page_obj.previous_page_number }}">←&nbsp;Poprzednia</a>
                 {% endif %}
 
                 <span>Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}</span>
 
                 {% if page_obj.has_next %}
-                <a href="?{% if selected %}type={{ selected }}&{% endif %}page={{ page_obj.next_page_number }}">Następna
-                    →</a>
+                <a href="?{% if selected %}type={{ selected }}&{% endif %}page={{ page_obj.next_page_number }}">Następna&nbsp;→</a>
                 {% endif %}
-            </nav>
+            </div>
             {% else %}
             <p>Brak produktów.</p>
             {% endif %}
@@ -235,61 +235,9 @@
     </div>
 </section>
 
-<footer class="footer">
-    <div class="footer-container">
 
-        <div class="footer-box" id="socials-foot">
-            <h3><a href="{% url 'home' %}" class="footer-title">Szamanka</a></h3>
-            <p>Nasielsk 123/456</p>
-            <p>szamanka@nasielsk.pl</p>
-            <div class="footer-social">
-                <a href="#"><img src="{% static 'products/images/facebook.png' %}" alt="fb" class="footer-social-icons"></a>
-                <a href="#"><img src="{% static 'products/images/instagram.png' %}" class="footer-social-icons" alt="instagram"></a>
-                <a href="#"><img src="{% static 'products/images/tik-tok.png' %}" class="footer-social-icons" alt="tiktok"></a>
-            </div>
-        </div>
 
-        <div class="footer-box" id="info-foot">
-            <h3>Pomoc</h3>
-            <a href="#">Menu</a>
-            <a href="{% url 'home' %}#location-section">Kontakt</a>
-            <a href="{% url 'products:private' %}">Polityka prywatności</a>
-            <a href="{% url 'products:regulamin' %}">Zwroty</a>
-        </div>
-
-        <div class="footer-box" id="call-to-mail">
-            <div class="nowrap-email">
-                <h3><a href="#" class="footer-newsletter">Podaj email</a></h3>
-                <p>Zapisz się do newslettera <br><br>i otrzymaj 10% znizki</p>
-
-                <form action="#">
-                    <i class="bx bx-mail-send"></i>
-                    <label class="input-box">
-                        <input type="email" placeholder="Email" class="email-footer">
-                    </label>
-                    <i class="bxr bx-arrow-right-stroke-square"></i>
-                </form>
-            </div>
-        </div>
-
-    </div>
-</footer>
-
-<section class="copyright">
-    <div class="copyright-container">
-        <div class="copyright">
-            <p>&copy; 2025 Szamanka. Wszelkie prawa zastrzeżone.</p>
-        </div>
-        <div class="payment-icons">
-            <img src="{% static 'products/images/visa.png' %}" alt="Visa" class="pay-icons">
-            <img src="{% static 'products/images/card.png' %}" alt="Mastercard" class="pay-icons">
-            <img src="{% static 'products/images/blik.png' %}" alt="BLIK" class="pay-icons" id="ikonka-blik">
-            <img src="{% static 'products/images/przelewy24.png' %}" alt="Przelewy24" class="pay-icons">
-            <img src="{% static 'products/images/payu.png' %}" alt="PayU" class="pay-icons">
-            <img src="{% static 'products/images/paypal.png' %}" alt="PeoPay" class="pay-icons">
-        </div>
-    </div>
-</section>
+{% include "products/footer.html" %}
 
 
 

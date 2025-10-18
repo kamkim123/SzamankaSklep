@@ -1,0 +1,214 @@
+/* pozycjonowanie licznika */
+.nav-cart { position: relative; display:inline-block;}
+#cart-count{
+  position:absolute; right:-6px; top:-6px;
+  min-width:18px; height:18px; padding:0 5px;
+  border-radius:999px; background:red; color:#fff;
+  font: 600 12px/18px Poppins,system-ui,sans-serif;
+  text-align:center; transform:translateZ(0);
+}
+
+/* wzmocniona animacja koszyka */
+#cart-icon.bump { animation: cart-bump .35s ease-out; }
+@keyframes cart-bump {
+  0%{transform:scale(1)}
+  35%{transform:translateY(-2px) scale(1.2) rotate(-5deg)}
+  100%{transform:translateY(0) scale(1) rotate(0)}
+}
+
+/* kropka: lekki łuk + „puf” przy końcu */
+.fly-dot{
+  position:fixed; left:0; top:0;
+  width:12px; height:12px; border-radius:50%;
+  background:#111; pointer-events:none; z-index:9999;
+  animation: fly-arc .6s cubic-bezier(.2,.7,.2,1) forwards, pop .6s ease-out forwards;
+  opacity:.9;
+}
+@keyframes fly-arc {
+  0%   { transform: translate(0,0) scale(1); }
+  50%  { transform: translate(calc(var(--dx)*.5), calc(var(--dy)*.5 - var(--lift))) scale(.8); }
+  100% { transform: translate(var(--dx), var(--dy)) scale(.25); opacity:.2; }
+}
+/* delikatny rozbłysk przy koszyku (pseudo – na tym samym elemencie) */
+@keyframes pop {
+  85% { box-shadow: 0 0 0 0 rgba(17,17,17,0.0); }
+  100%{ box-shadow: 0 0 0 8px rgba(17,17,17,0.0); }
+}
+
+
+
+
+
+
+
+@media (max-width: 1150px) {
+
+    .nav-cart { position: fixed; display:inline-block;
+        bottom: 10px;
+        left:10px;
+
+    }
+
+       /* Kontener koszyka, który umożliwia pozycjonowanie licznika */
+    .cart-container {
+        position: fixed;/* Pozwoli to pozycjonować licznik względem tego elementu */
+
+        bottom:15px;
+        left:15px;
+
+    }
+
+    #cart-icon {
+
+
+        z-index: 9999;
+        width: 60px;      /* Zwiększ rozmiar ikony */
+        height: 60px;     /* Zwiększ rozmiar ikony */
+        cursor: pointer;
+        border-radius: 20%;  /* Zaokrąglony kształt */
+        background-color: rgba(95, 172, 33, 1); /* Tło w kolorze zielonym */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Efekt cienia */
+        transition: all 0.3s ease; /* Płynne przejście */
+    }
+
+/* Licznik w koszyku */
+    #cart-count {
+        position: absolute;  /* Pozycjonowanie licznika względem kontenera koszyka */
+        top: -6px;  /* Pozycja nad koszykiem */
+        right: -6px; /* Pozycja w prawo, nad prawym rogiem ikony */
+        min-width: 18px; /* Ustawienie minimalnej szerokości */
+        width: 18px;  /* Określona szerokość */
+        height: 18px; /* Ustawienie wysokości */
+        padding: 0 5px;
+        font: 600 12px/18px Poppins, system-ui, sans-serif;
+        text-align: center;
+        z-index: 10000;
+
+        /* Wyśrodkowanie liczby w liczniku */
+        display: flex;
+        justify-content: center;  /* Wyśrodkowanie w poziomie */
+        align-items: center;      /* Wyśrodkowanie w pionie */
+    }
+
+    /* Animacja kliknięcia na koszyk */
+    #cart-icon.clicked {
+        background-color: #ff6f61; /* Zmiana koloru tła na czerwony po kliknięciu */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5); /* Większy cień */
+        transform: scale(1.15); /* Jeszcze większe powiększenie */
+    }
+
+    /* Animacja kropki przy dodawaniu produktu do koszyka */
+    .fly-dot {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #111;
+        pointer-events: none;
+        z-index: 9999;
+        animation: fly .6s cubic-bezier(.2, .7, .2, 1) forwards;
+        opacity: .9;
+    }
+
+    @keyframes fly {
+        to {
+            transform: translate(var(--dx), var(--dy)) scale(.2);
+            opacity: .2;
+        }
+    }
+
+}
+
+@media (max-width:768px){
+
+#cart-icon {
+
+
+
+        width: 50px;      /* Zwiększ rozmiar ikony */
+        height: 50px;     /* Zwiększ rozmiar ikony */
+    }
+
+/* Licznik w koszyku */
+    #cart-count {
+        position: absolute;  /* Pozycjonowanie licznika względem kontenera koszyka */
+        top: -6px;  /* Pozycja nad koszykiem */
+        right: -6px; /* Pozycja w prawo, nad prawym rogiem ikony */
+        min-width: 14px; /* Ustawienie minimalnej szerokości */
+        width: 14px;  /* Określona szerokość */
+        height: 14px; /* Ustawienie wysokości */
+        padding: 0 5px;
+        font: 600 10px/16px Poppins, system-ui, sans-serif;
+
+}
+
+
+@media (max-width:600px){
+
+#cart-icon {
+
+
+
+        width: 40px;      /* Zwiększ rozmiar ikony */
+        height: 40px;     /* Zwiększ rozmiar ikony */
+    }
+
+/* Licznik w koszyku */
+    #cart-count {
+        position: absolute;  /* Pozycjonowanie licznika względem kontenera koszyka */
+        top: -5px;  /* Pozycja nad koszykiem */
+        right: -5px; /* Pozycja w prawo, nad prawym rogiem ikony */
+        min-width: 12px; /* Ustawienie minimalnej szerokości */
+        width: 12px;  /* Określona szerokość */
+        height: 12px; /* Ustawienie wysokości */
+        padding: 0 5px;
+        font: 600 8px/14px Poppins, system-ui, sans-serif;
+        text-align: center;
+        z-index: 10000;
+
+        /* Wyśrodkowanie liczby w liczniku */
+        display: flex;
+        justify-content: center;  /* Wyśrodkowanie w poziomie */
+        align-items: center;      /* Wyśrodkowanie w pionie */
+    }
+
+
+
+}
+
+
+@media (max-width:450px){
+
+#cart-icon {
+
+
+
+        width: 35px;      /* Zwiększ rozmiar ikony */
+        height: 35px;     /* Zwiększ rozmiar ikony */
+    }
+
+/* Licznik w koszyku */
+    #cart-count {
+        position: absolute;  /* Pozycjonowanie licznika względem kontenera koszyka */
+        top: -3px;  /* Pozycja nad koszykiem */
+        right: -3px; /* Pozycja w prawo, nad prawym rogiem ikony */
+        min-width: 10px; /* Ustawienie minimalnej szerokości */
+        width: 10px;  /* Określona szerokość */
+        height: 10px; /* Ustawienie wysokości */
+        padding: 0 5px;
+        font: 600 6px/12px Poppins, system-ui, sans-serif;
+        text-align: center;
+        z-index: 10000;
+
+        /* Wyśrodkowanie liczby w liczniku */
+        display: flex;
+        justify-content: center;  /* Wyśrodkowanie w poziomie */
+        align-items: center;      /* Wyśrodkowanie w pionie */
+    }
+
+
+
+}
+

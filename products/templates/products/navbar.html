@@ -6,6 +6,7 @@
     {% load static %}
 
     <link rel="stylesheet" href="{% static 'products/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'products/animations.css' %}">
 
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +16,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Delius+Swash+Caps&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
+
+
 </head>
 <body>
 
@@ -26,6 +29,9 @@
             <a href="{% url 'home' %}"><h4 class="logo-name">Szamanka.pl</h4></a>
         </div>
         <div class="kategorie-nav">
+            <div class="only-burger">
+                <a href="{% url 'home' %}" class="pasek1">Strona&nbsp;główna</a>
+            </div>
             <div class="dropdown" id="navCategories" data-target="/products/">
 
                 <div class="select">
@@ -51,6 +57,25 @@
             </div>
             <div>
                 <a href="{% url 'home' %}#location-section" class="pasek1">Kontakt</a>
+            </div>
+            <div class="only-burger" id="burger-icon1">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'users:user-panel' %}" class="pasek1">Mój profil</a>
+                {% else %}
+                    <a href="{% url 'users:login' %}" class="pasek1">Zaloguj</a>
+                {% endif %}
+            </div>
+            <div class="only-burger" id="burger-icon3">
+                <a href="{% url 'users:favorites' %}" class="pasek1">Ulubione</a>
+            </div>
+            <div class="only-burger" id="burger-icon2">
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'users:logout' %}">
+                        {% csrf_token %}
+                        <!-- Przenieś link "Wyloguj" do formularza -->
+                        <button type="submit" class="pasek1">Wyloguj</button>
+                    </form>
+                {% endif %}
             </div>
         </div>
 
@@ -106,8 +131,11 @@
 
             <a href="{% url 'users:favorites' %}"><img src="{% static 'products/images/heart.png' %}" alt="ulubione"
                                                        class="nav-icon"></a>
-            <a href="{% url 'orders:cart' %}"><img src="{% static 'products/images/shopping-cart.png' %}" alt="cart"
-                                                   class="nav-icon"></a>
+
+            <a href="{% url 'orders:cart' %}" class="cart-container"><img src="{% static 'products/images/shopping-cart-white.png' %}" alt="cart"
+                                                   class="nav-icon" id="cart-icon">
+            <span id="cart-count">{{ cart_items|default:0 }}</span>
+            </a>
         </div>
     </div>
     <button class="burger" aria-label="Menu">
@@ -116,5 +144,6 @@
 </nav>
 
 <script src="{% static 'products/navbar.js' %}"></script>
+<script src="{% static 'products/cart-animations.js' %}"></script>
 </body>
 </html>

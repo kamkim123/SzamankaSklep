@@ -11,25 +11,29 @@
 <body>
 
 
- {% include "products/navbar.html" %}
+{% include "products/navbar.html" %}
 
 <div class="container">
     <section class="card">
         <h2>Koszyk</h2>
         <ul class="cart-list" id="cartList">
             {% for item in cart %}
-           <li class="item"
+            <li class="item"
                 data-product-id="{{ item.product.id }}"
                 data-price="{{ item.price|floatformat:2 }}">
 
                 <div class="thumb" aria-hidden="true"></div>
                 <div class="info">
-                    <h3>{{ item.product.name }}</h3>
+                    <h3>{{ item.product.product_name }}</h3>
                     <!-- Jeśli masz warianty/kolor, wyświetl tu -->
                 </div>
-                <div class="price">{{ item.price }}&nbsp;zł</div>
+                <div class="price" data-unit-price="{{ item.price|floatformat:2 }}">
+                    {{ item.price }}&nbsp;zł
+                </div>
                 <div class="qty">
-                    <input class="qty-input" type="number" min="1" value="{{ item.quantity }}" aria-label="Ilość">
+                    <button class="qty-btn qty-minus" aria-label="Zmniejsz ilość">-</button>
+                    <span class="qty-display">{{ item.quantity }}</span>
+                    <button class="qty-btn qty-plus" aria-label="Zwiększ ilość">+</button>
                 </div>
 
                 <button class="remove" aria-label="Usuń" data-url="{% url 'orders:cart_remove' %}">×</button>
@@ -49,14 +53,17 @@
                 <span id="shipping">{{ cart.shipping }} zł</span>
             </div>
             <div class="row total"><span>Do zapłaty</span><span id="grand">{{ cart.grand_total }} zł</span></div>
-            <a href="{% url 'orders:checkout' %}"><button class="btn" id="checkoutBtn">Przejdź do płatności</button></a>
+            <a href="{% url 'orders:checkout' %}">
+                <button class="btn" id="checkoutBtn">Przejdź do płatności</button>
+            </a>
         </div>
     </aside>
 </div>
 
-     {% include "products/footer.html" %}
+{% include "products/footer.html" %}
 
 <script src="{% static 'orders/cart.js' %}"></script>
+<script src="{% static 'products/detail.js' %}"></script>
 
 </body>
 </html>

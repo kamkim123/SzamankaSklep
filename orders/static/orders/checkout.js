@@ -362,3 +362,52 @@ updatePaymentUI();
 try { updatePaymentUI(); } catch(_) {}
 
 
+
+(function() {
+  // Funkcja formatowania ceny
+  const fmt = n => (n || 0).toFixed(2).replace('.', ',') + ' zł';
+
+  // Odczytanie koszyka z localStorage
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  // Zaktualizowanie ilości produktów i cen na stronie checkout
+  document.addEventListener('DOMContentLoaded', () => {
+    // Iteracja po produktach w koszyku
+    cart.forEach(item => {
+      // Znajdź element produktu w liście na stronie checkout
+      const li = document.querySelector(`.order-item[data-product-id='${item.productId}']`);
+      if (li) {
+        const quantityElement = li.querySelector('.meta'); // Element, gdzie wyświetlana jest ilość
+        const priceElement = li.querySelector('.order-item__price'); // Element, gdzie wyświetlana jest cena
+
+        // Zaktualizuj ilość
+        quantityElement.textContent = `x ${item.quantity}`;
+
+        // Zaktualizuj cenę na podstawie jednostkowej ceny i ilości
+        const unitPrice = parseFloat(priceElement.dataset.unitPrice); // Cena jednostkowa
+        const newPrice = (unitPrice * item.quantity).toFixed(2);
+        priceElement.textContent = fmt(newPrice); // Wyświetl nową cenę z formatowaniem
+      }
+    });
+
+    // Zaktualizowanie podsumowania koszyka
+    updateOrderSummary();
+  });
+
+  // Funkcja do obliczenia i zaktualizowania podsumowania
+  function updateOrderSummary() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let subtotal = 0;
+
+    cart.forEach(item => {
+      const priceElement = document.querySelector(`.order-item[data-product-id='${item.productId}'] .order-item__price`);
+      const unitPrice = parseFloat(priceElement.dataset.unitPrice); // Cena jednostkowa
+      subtotal += unitPrice * item.quantity;
+    });
+
+    // Zaktualizowanie wartości podsumowania
+    document.getElementById('subtotal-amount').textContent = fmt(subtotal);
+    document.getElementById('grand-amount').textContent = fmt(subtotal); // Można dodać koszt dostawy
+  }
+})();
+

@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model, authenticate
 
+
 User = get_user_model()
 
 def unique_username_from_email(email: str) -> str:
@@ -65,3 +66,15 @@ class EmailAuthenticationForm(AuthenticationForm):
             self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
+
+
+class MySignupForm(SignupForm):
+    first_name = forms.CharField(label="Imię", max_length=30, required=False)
+    terms_accepted = forms.BooleanField(label="Akceptuję regulamin", required=True)
+
+    def save(self, request):
+        user = super().save(request)
+        user.first_name = self.cleaned_data["first_name"]
+        user.save()
+        # jeśli musisz coś zapisać poza userem — zrób to tutaj
+        return user

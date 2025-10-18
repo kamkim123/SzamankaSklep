@@ -41,6 +41,7 @@ body{
     position: relative;
     overflow: hidden;
     margin:60px auto;
+    margin-bottom:6rem;
 }
 
 /* subtelny highlight przy krawędziach */

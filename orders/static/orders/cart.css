@@ -53,7 +53,7 @@ body {
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     overflow: hidden;
-    min-width: 400px;
+    min-width: 300px;
 }
 
 .card h2 {
@@ -641,5 +641,72 @@ body {
 @media (prefers-reduced-motion: reduce) {
     * {
         transition: none !important;
+    }
+}
+
+
+
+
+
+
+
+/* =============== Stylowanie przycisków + i - obok wyświetlanej ilości =============== */
+.qty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+
+}
+
+.qty-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    font-size: 16px;
+    color: var(--ink);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.qty-btn:hover {
+    background: var(--green-100);
+    color: var(--green-strong);
+}
+
+.qty-btn:active {
+    background: var(--green);
+    color: white;
+}
+
+.qty-btn:focus {
+    outline: none;
+}
+
+/* Stylizacja dla wyświetlania ilości */
+.qty-display {
+    display:flex;
+    justify-content: center;
+    align-content:center;
+    align-items:center;
+    width: 60px;
+    height: 36px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+}
+
+
+@media (max-width: 640px){
+
+    .qty{
+        margin-left:5rem;
     }
 }

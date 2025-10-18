@@ -176,8 +176,8 @@ nav {
 
 .ikonki_nav {
     display: flex;
-    gap: 1rem;
     width: auto;
+    gap:0.5rem;
     margin-right: 0;
     margin-left: 1rem;
     align-items: center;
@@ -185,11 +185,25 @@ nav {
 
 .nav-icon {
     width: auto;
-    height: 2rem;
+    height: 2.5rem;
+    padding:0.4rem;
+    border-radius: 0.7rem;
     display: flex;
     cursor: pointer;
+}
+
+#cart-icon{
+    background-color: rgba(104, 188, 37, 0.9);
+
 
 }
+
+#cart-icon:hover{
+
+    background-color: rgb(104, 188, 37);
+    transition: background-color 0.3s ease;
+}
+
 
 
 .kategorie-nav {
@@ -210,7 +224,7 @@ nav {
     color: black;
     font-size: 16px;
     padding: 0.5rem 1.1rem;
-    border-radius: 1rem;
+
 }
 
 
@@ -464,6 +478,8 @@ nav {
     display: block;
 }
 
+.kategorie-nav .only-burger { display: none; }
+
 
 
 a {
@@ -602,6 +618,63 @@ a {
   .burger.active .bar:nth-child(1){ transform:translateY(8px) rotate(45deg); }
   .burger.active .bar:nth-child(3){ transform:translateY(-8px) rotate(-45deg); }
   .burger .bar{ display:block; width:24px; height:2px; background-color:black; transition:.3s ease-in-out; }
+  .kategorie-nav .only-burger {
+        display: flex;            /* tak jak inne wiersze menu */
+   }
+  .kategorie-nav .only-burger .pasek1 {
+        width: 100%;
+        padding: 0.5rem 2rem;     /* spójnie z resztą pozycji */
+   }
+
+   .kategorie-nav .only-burger button {
+        width: 100%;
+     /* spójnie z resztą pozycji */
+   }
+
+   .kategorie-nav .only-burger form{
+
+    width:100%;
+   }
+
+   button.pasek1 {
+    all: unset; /* Usuwa domyślne style przycisków (np. border, padding, background) */
+    display: inline-block;
+    width: 100%; /* Rozciąga na całą szerokość */
+
+    font-size: 16px;
+    color: black;
+    cursor: pointer;
+
+    border-radius: 0.5em;
+    text-decoration: none;
+    background-color: transparent; /* Brak tła */
+}
+
+button.pasek1:hover {
+    background-color: rgba(246, 246, 246, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+button.logout-button {
+    width: 100%; /* Zapewnia, że przycisk będzie rozciągał się na całą szerokość */
+    display: block; /* Sprawia, że przycisk jest blokiem (rozciąga się na pełną szerokość) */
+    font-size: 16px;
+    color: black;
+    cursor: pointer;
+    border-radius: 0.5em;
+    text-decoration: none;
+    background-color: transparent; /* Brak tła */
+}
+
+button.logout-button:hover {
+    background-color: rgba(246, 246, 246, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+
+
 
   .kategorie-nav{
     position:fixed; top:0; right:0; height:100vh; width:270px;
@@ -609,9 +682,54 @@ a {
     text-align:start; flex-direction:column; z-index:1000000; letter-spacing:1px; padding:4rem 0;
     transform:translateX(100%); transition:transform .5s ease-in-out;
   }
-  .pasek1{ padding:.5rem 2rem; color:black; width:100%; }
+  .pasek1{ padding:.5rem 2rem; color:black; width:100%; background: linear-gradient(to bottom, rgba(255, 255, 255, 0.12), rgba(255, 235, 187, 0.4)); }
   .pasek1:hover{ background-color:rgba(246,246,246,.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); text-decoration:none; border-radius:2px; }
-  .ikonki_nav{ display:none; }
+  .ikonki_nav {
+        display: flex;  /* Wyświetl ikonki w elastycznym układzie */
+      /* Odstęp pomiędzy ikonami */
+
+    }
+
+    .nav-icon:not(#cart-icon) {
+        display: none;
+    }
+
+
+
+    /* Efekt najechania na koszyk */
+    #cart-icon:hover {
+        background-color: rgba(95, 172, 33, 0.9); /* Jaśniejszy zielony przy hoverze */
+        transform: scale(1.1); /* Powiększenie przy hoverze */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Zwiększony cień */
+    }
+
+    /* Dodajemy ikonę do środka, aby była idealnie wyśrodkowana */
+    #cart-icon img {
+        width: 40px;   /* Dopasowanie rozmiaru ikony */
+        height: 40px;  /* Dopasowanie rozmiaru ikony */
+    }
+
+    /* Efekt, gdy ikona koszyka jest kliknięta (na przykład po dodaniu produktu do koszyka) */
+    #cart-icon.clicked {
+        background-color: #ff6f61; /* Zmiana koloru tła na czerwony po kliknięciu */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5); /* Większy cień */
+        transform: scale(1.15); /* Jeszcze większe powiększenie */
+    }
+    #burger-icon1{
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.12), rgba(141, 248, 105, 0.4));
+    }
+
+    #burger-icon2{
+        background: linear-gradient(to bottom, white, rgba(255, 192, 203, 0.5));
+        width:100%;
+
+    }
+
+    #burger-icon3{
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.12), rgba(255, 192, 203, 0.5));
+    }
+
+
   .kategorie-nav.active{
     display:flex; flex-direction:column; position:fixed; top:0; right:0; transform:translateX(0);
     transition:.5s ease-in-out; box-shadow:rgba(0,0,0,.3) -10px 0 10px;
@@ -648,15 +766,243 @@ a {
 
 
 @media (max-width:768px){
-  .nav-search-bar{ position:absolute; top:7.3rem; width:100%; left:0; justify-content:start; }
-  .nav-search-bar label{ width:100%; }
-  .nav-search-bar input{ width:100%; border-radius:0; height:3rem; box-shadow:none; border:none; background-color:#fff; }
+
   nav{ border-radius:0; }
-  .logo-name{ font-size:5vw; margin-left:-3rem; }
+  .logo-name{ font-size:3.5vw; margin-left:-3.3rem; }
   .burger{ margin-right:-1.5rem; }
-  .kategorie-nav{ width:210px; }
-  .search{ margin-left:1.5rem; margin-right:.5rem; }
+  .kategorie-nav{ width:220px; }
+
+  .pasek1{
+        font-size: 2.5vw;
+    }
+
+
+  .search {
+
+        width: 36px;
+        height: 36px;
+
+        margin-left:auto;
+        margin-right: 0;
+    }
+
+    .search__toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;    /* mniejsza ikona lupy */
+    }
+
+    .search__toggle .bx-search{
+        font-size: 22px;
+    }
+
+    .search.active-search {
+        width: min(260px, 86vw); /* w trybie otwartym też trochę węższa */
+    }
+
+    .search.active-search .search__toggle {
+        left: 8px;             /* wyrównanie po zmniejszeniu */
+        width: 30px;
+        height: 30px;
+    }
+
+    .search__input {
+        padding-left: 42px;    /* dopasuj odstęp do mniejszego przycisku */
+        font-size: 14px;
+    }
+
+    .search__clear {
+        width: 30px;
+        height: 30px;
+        right: 6px;
+        top:17px;
+    }
+
+    nav {
+        height: 3.4rem;         /* było 4.5rem */
+           /* trochę ciaśniejsze odstępy */
+    }
+
+    .burger {
+
+        width: 30px;
+        height: 35px;
+        margin-left:0;
+        right:3rem;
+
+    }
+
+    .burger .bar {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background-color: black;
+        transition: 0.3s ease-in-out;
+    }
+
+    .burger.active {
+        position: fixed;
+        top: 0.6rem;
+        right: 3rem;
+        border-radius: 50%;
+    }
+
+
+    .burger.active .bar:nth-child(2) {
+        opacity: 0;
+    }
+
+    .burger.active .bar:nth-child(1) {
+        transform: translateY(4px) rotate(45deg);
+    }
+
+    .burger.active .bar:nth-child(3) {
+        transform: translateY(-10px) rotate(-45deg);
+    }
+
+    #cart-icon {
+        width: 45px;    /* Zwiększ rozmiar ikony */
+        height: 45px;   /* Zwiększ rozmiar ikony */
+
+    }
+
+    /* Dodajemy ikonę do środka, aby była idealnie wyśrodkowana */
+    #cart-icon img {
+        width: 30px;   /* Dopasowanie rozmiaru ikony */
+        height: 30px;  /* Dopasowanie rozmiaru ikony */
+    }
+
 }
+
+
+
+@media (max-width: 700px) {
+
+    .category-icons li {
+
+        min-width: 180px;
+    }
+
+    .newsletter {
+        height: 60%;
+        width: 91%;
+        gap: 1.5rem;
+        font-size: 1.8rem;
+
+
+    }
+
+    .newsletter-info {
+        font-size: 0.9rem;
+    }
+}
+
+
+@media (max-width: 529px){
+
+
+    .search.active-search {
+        width: min(200px, 72vw);
+        background: #fff;
+    }
+
+}
+
+@media (max-width: 450px) {
+
+    .search {
+
+        width: 30px;
+        height: 30px;
+
+        margin-left:auto;
+        margin-right: -1.5rem;
+        font-size: 2px;
+    }
+
+    .search__toggle .bx-search{
+        font-size: 18px;
+    }
+
+    .search__clear {
+        width: 27px;
+        height: 27px;
+        right: 6px;
+
+    }
+    .search__clear .bx-x{
+
+        font-size: 21px;
+    }
+
+    .search__input {
+        font-size: 10px;
+    }
+
+
+
+    .category-icons li {
+
+        min-width: 80px;
+    }
+    .category-image-wrapper {
+
+        width: 80px;
+        height: 80px;
+    }
+
+    .category-icons {
+        display: flex;
+        column-gap:  2rem;
+        height: 30rem;
+        margin-top: 1.5rem;
+
+    }
+
+    .search.active-search {
+        width: min(190px, 72vw);
+
+    }
+
+
+}
+
+
+@media (max-width: 600px) {
+
+    .search__clear {
+        width: 25px;
+        height: 25px;
+        right: 6px;
+        top:17px;
+    }
+
+    .search__clear .bx-x{
+        font-size: 25px;
+    }
+
+}
+
+
+@media (max-width: 450px){
+
+    .search.active-search {
+        width: min(170px, 62vw);
+        background: #fff;
+    }
+
+     .pasek1{
+        font-size: 3.2vw;
+    }
+
+
+}
+
+
+
+
+
+
 
 
 

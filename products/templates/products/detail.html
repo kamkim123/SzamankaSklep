@@ -1,105 +1,159 @@
 <!doctype html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.product_name }} - Szamanka</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{{ product.product_name }} – Szamanka</title>
     {% load static %}
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'products/detail.css' %}">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'products/detail.css' %}"/>
+
+
+    <script>
+        var cartAddUrl = "{% url 'orders:cart_add' %}";
+    </script>
 </head>
 <body>
 
 {% include "products/navbar.html" %}
 
-<section class="one-product-page">
-    <div class="page-wrapper">
-        <!-- Zdjęcie główne -->
-        <div class="image-wrapper">
-            <div class="image-wrapper2">
-                <img src="{{ product.image.url }}" alt="{{ product.product_name }}" class="main-image">
-                <div class="mini-photos">
-                    {% for img in product.gallery.all %}
-                    <div class="mini-photo"><img src="{{ img.image.url }}" data-full="{{ img.image.url }}"
-                                                 alt="{{ product.product_name }}"></div>
-                    {% endfor %}
-                </div>
-            </div>
+<main class="one-product-page">
+    <div class="container">
+        <div class="breadcrumbs" aria-label="okruszki nawigacji">
+            <a href="/">Home</a>
+            <span aria-hidden="true">/</span>
+            <a href="/products/">Produkty</a>
+            <span aria-hidden="true">/</span>
+            <span class="current">{{ product.category.name }}</span>
         </div>
 
-        <!-- Informacje o produkcie -->
-        <div class="product-info">
-            <span class="directions">Home / Produkty / {{ product.category.name }}</span>
-            <h1 class="product-name">{{ product.product_name }}</h1>
-            <p class="product-short-desc">{{ product.short_description }}</p>
-            <span class="product-price">{{ product.price|floatformat:2 }} zł</span>
-
-            <div class="quantity">
-                <div class="calc-container">
-                    <button class="minus">-</button>
-                    <div class="calc-input">01</div>
-                    <button class="plus">+</button>
+        <section class="product-grid" aria-labelledby="product-title">
+            <!-- LEWA KOLUMNA: GALERIA + OPIS POD ZDJĘCIEM -->
+            <div class="left-col">
+                <!-- GALERIA -->
+                <div class="image-card card">
+                    <div class="image-wrapper2">
+                        <img src="{{ product.image.url }}" alt="{{ product.product_name }}" class="main-image"/>
+                        <div class="mini-photos" role="list" aria-label="Dodatkowe zdjęcia">
+                            {% for img in product.gallery.all %}
+                            <button class="mini-photo" type="button" role="listitem"
+                                    aria-label="Pokaż zdjęcie {{ forloop.counter }}">
+                                <img src="{{ img.image.url }}" data-full="{{ img.image.url }}"
+                                     alt="{{ product.product_name }} – miniatura {{ forloop.counter }}"/>
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
-                <form method="post" action="{% url 'orders:cart_add' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="product_id" value="{{ product.id }}">
-                    <input type="hidden" name="quantity" value="1">
-                    <button class="cart" data-product-id="{{ product.id }}">Dodaj do koszyka</button>
-                </form>
 
-                {% if user.is_authenticated %}
-                {% if product in user.favorites.all %}
-                <a href="{% url 'users:favorite_toggle' product.id %}" class="favorite active">
-                    <i class="bx bxs-heart"></i> Ulubione
-                </a>
-                {% else %}
-                <a href="{% url 'users:favorite_toggle' product.id %}" class="favorite">
-                    <i class="bx bx-heart"></i> Dodaj do ulubionych
-                </a>
-                {% endif %}
-                {% else %}
-                <a href="{% url 'users:login' %}?next={{ request.path }}" class="favorite">
-                    <i class="bx bx-heart"></i> Zaloguj się aby dodać
-                </a>
-                {% endif %}
+                <!-- OPIS PRODUKTU POD ZDJĘCIEM -->
+                <article class="product-description card" id="opis">
+                    <h2>Opis produktu</h2>
+                    <div class="prose">
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet
+                            sollicitudin sodales, purus felis dapibus felis, sit amet interdum metus magna vel urna.
+                            Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;
+                            Aenean sit amet felis ac turpis tincidunt fringilla non nec eros.
+                        </p>
+                    </div>
+
+                    <div class="meta-grid">
+                        <div>
+                            <span class="meta-label">Kategoria</span>
+                            <span class="meta-value">{{ product.product_type }}</span>
+                        </div>
+                        <div>
+                            <span class="meta-label">Producent</span>
+                            <span class="meta-value">{{ product.product_brand }}</span>
+                        </div>
+                    </div>
+                </article>
             </div>
 
-            <div class="add-info-wrapper">
-                <img src="{% static 'products/images/shipping.png' %}" alt="shipping" class="add-icon">
-                <div class="add-info">
-                    Twoje zamówienie wyślemy w ciągu 7 dni roboczych.
+            <!-- PRAWA KOLUMNA: INFORMACJE I CTA -->
+            <div class="product-info card">
+                <h1 id="product-title" class="product-name">{{ product.product_name }}</h1>
+                <p class="product-short-desc">{{ product.short_description }}</p>
+
+                <div class="price-row">
+                    <span class="product-price">{{ product.price|floatformat:2 }} zł</span>
                 </div>
-            </div>
 
-            <div class="more-info-wrapper">
-                <span>Kategoria: {{ product.product_type }}</span>  <!-- Odwołanie do product_type -->
-                <span>Producent: {{ product.product_brand }}</span>  <!-- Zakładając, że masz pole product_brand -->
-            </div>
+                <div class="quantity">
+                    <div class="calc-container" aria-label="Wybierz ilość" role="group">
+                        <button class="minus" type="button" aria-label="Zmniejsz ilość">−</button>
+                        <div class="calc-input" role="spinbutton" aria-valuemin="1" aria-valuenow="1"
+                             aria-valuemax="99">01
+                        </div>
+                        <button class="plus" type="button" aria-label="Zwiększ ilość">+</button>
+                    </div>
 
-        </div>
+                    <form method="post" action="{% url 'orders:cart_add' %}" class="cart-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}"/>
+                        <input type="hidden" name="quantity" value="1"/>
+                        <button class="cart" data-product-id="{{ product.id }}" type="submit">
+                            <i class='bx bx-cart'></i> Dodaj do koszyka
+                        </button>
+                    </form>
+
+                    {% if user.is_authenticated %}
+                    {% if product in user.favorites.all %}
+                    <a href="{% url 'users:favorite_toggle' product.id %}" class="favorite active">
+                        <i class="bx bxs-heart" aria-hidden="true"></i> Ulubione
+                    </a>
+                    {% else %}
+                    <a href="{% url 'users:favorite_toggle' product.id %}" class="favorite">
+                        <i class="bx bx-heart" aria-hidden="true"></i> Dodaj do ulubionych
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'users:login' %}?next={{ request.path }}" class="favorite">
+                        <i class="bx bx-heart" aria-hidden="true"></i> Zaloguj się aby dodać
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="add-info-wrapper subtle">
+                    <img src="{% static 'products/images/shipping.png' %}" alt="Wysyłka" class="add-icon"/>
+                    <div class="add-info">Twoje zamówienie wyślemy w ciągu 7 dni roboczych.</div>
+                </div>
+
+                <ul class="bullets">
+                    <li><i class='bx bx-package'></i> Darmowa dostawa od 199 zł</li>
+                    <li><i class='bx bx-refresh'></i> 30 dni na zwrot</li>
+                    <li><i class='bx bx-shield'></i> Gwarancja oryginalności</li>
+                </ul>
+            </div>
+        </section>
     </div>
-</section>
+</main>
 
-<!-- Podobne produkty (tylko bestseller) -->
+<!-- PODOBNE PRODUKTY -->
 <section class="information-section">
-    <h3 class="title">Podobne produkty</h3>
-    <div class="diff-products-wrapper">
-        {% for p in similar_products %}
-        <div class="diff-product">
-            <a href="{% url 'products:detail' p.pk %}">
-                <img src="{{ p.image.url }}" alt="{{ p.product_name }}">
-                <h3>{{ p.product_name }}</h3>
-                <span class="price">{{ p.price|floatformat:2 }} zł</span>
-            </a>
+    <div class="container">
+        <h3 class="title">Podobne produkty</h3>
+        <div class="diff-products-wrapper">
+            {% if similar_products %}
+            {% for p in similar_products %}
+            <div class="diff-product">
+                <a href="{% url 'products:detail' p.pk %}">
+                    <img src="{{ p.image.url }}" alt="{{ p.product_name }}"/>
+                    <h3>{{ p.product_name }}</h3>
+                    <span class="price">{{ p.price|floatformat:2 }} zł</span>
+                </a>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p>Brak podobnych produktów do wyświetlenia.</p>
+            {% endif %}
         </div>
-        {% endfor %}
     </div>
 </section>
-
 
 {% include "products/footer.html" %}
 
 <script src="{% static 'products/detail.js' %}"></script>
-
 </body>
 </html>

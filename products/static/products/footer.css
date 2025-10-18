@@ -68,7 +68,7 @@ footer{
     cursor: pointer;
 }
 
-.bx-mail-send {
+.bx{
     font-size: 30px;
     margin-top: 10px;
     margin-right: 0.5rem;
@@ -76,11 +76,17 @@ footer{
     cursor: pointer;
 }
 
+.bx-right-arrow-alt {
+    font-size: 30px;
+    margin-top: 10px;
+    margin-right: 0.5rem;
+    border-radius:10px;
+    border: 1px solid white;
+    cursor: pointer;
+}
 
-.bx-arrow-right-stroke-square {
-    font-size: 35px;
-    margin-top: 0.5rem;
-    color: white;
+.bx-right-arrow-alt:hover {
+    background-color: rgba(255, 255, 255, 0.16);
 }
 
 .email-footer {
@@ -127,7 +133,7 @@ footer{
 
 .copyright {
     text-align: center;
-    white-space: nowrap;
+    white-space: wrap;
 }
 
 .pay-icons {
@@ -195,7 +201,6 @@ footer{
     .nowrap-email form {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
         align-items: flex-start;
     }
 
@@ -222,12 +227,25 @@ footer{
     .footer-container .footer-box a {
         padding: 0.5rem 0;
         color: white;
+        font-size: 0.9rem;
     }
 
     .footer-container .footer-box h3 {
         padding: 0.5rem 0;
-        font-size: 1.5rem;
+        font-size: 1.3rem !important;
         color: white;
     }
+
+
+.footer-container .footer-box p {
+    display: block;
+    padding: 0.5rem 0;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.footer-title, .footer-newsletter{
+font-size: 1.3rem !important;
+}
 
 }

@@ -66,6 +66,53 @@
       });
   });
 
+
+  // Zmiana ilości (zwiększ/zmniejsz) i aktualizacja ceny
+list.addEventListener('click', e => {
+  if (e.target.classList.contains('qty-btn')) { // Sprawdź, czy kliknięto przycisk zmiany ilości
+    const li = e.target.closest('.item'); // Znajdź element listy
+    const display = li.querySelector('.qty-display'); // Element wyświetlający ilość
+    const priceElement = li.querySelector('.price'); // Element wyświetlający cenę
+    const unitPrice = parseFloat(priceElement.dataset.unitPrice); // Cena jednostkowa
+    let newQuantity = parseInt(display.textContent); // Bieżąca ilość
+
+    // Zwiększ lub zmniejsz ilość
+    if (e.target.classList.contains('qty-minus')) {
+      newQuantity = Math.max(1, newQuantity - 1); // Upewnij się, że ilość nie jest mniejsza niż 1
+    } else if (e.target.classList.contains('qty-plus')) {
+      newQuantity = newQuantity + 1;
+    }
+
+    display.textContent = newQuantity; // Zaktualizuj wyświetlaną ilość
+
+    // Oblicz nową cenę
+    const newPrice = (unitPrice * newQuantity).toFixed(2);
+    priceElement.textContent = `${newPrice} zł`; // Wyświetl zaktualizowaną cenę
+
+    const pid = li.dataset.productId; // ID produktu
+
+    // Zapisz ilość w localStorage
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const productIndex = cart.findIndex(item => item.productId === pid);
+
+    if (productIndex !== -1) {
+      cart[productIndex].quantity = newQuantity; // Zaktualizuj ilość produktu w koszyku
+    } else {
+      cart.push({
+        productId: pid,
+        quantity: newQuantity,
+        unitPrice: unitPrice // Zapisywanie ceny jednostkowej
+      });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart)); // Zapisz zaktualizowany koszyk
+
+    // Zaktualizuj podsumowanie koszyka
+    updateCartSummary();
+  }
+});
+
+
   // start
   updateTotalsUI({
     subtotal: parseFloat(els.subtotal.textContent.replace(" zł", "")),

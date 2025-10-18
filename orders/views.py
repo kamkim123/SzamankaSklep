@@ -22,8 +22,6 @@ def cart_add(request):
     quantity = request.POST.get("quantity", 1)
     override = request.POST.get("override", "false") == "true"
 
-    # Debugowanie: sprawdzenie otrzymanych danych
-    print("Otrzymane dane:", product_id, quantity, override)
 
     # Sprawdzenie, czy produkt istnieje
     try:
@@ -32,14 +30,9 @@ def cart_add(request):
         print(f"Błąd podczas szukania produktu: {e}")
         return JsonResponse({"ok": False, "error": "Produkt nie znaleziony"}, status=404)
 
-    # Debugowanie: Sprawdzenie produktu
-    print("Produkt znaleziony:", product.product_name, product.id)
 
     cart = Cart(request)
     cart.add(product, quantity=quantity, override_quantity=override)
-
-    # Debugowanie: stan koszyka po dodaniu produktu
-    print("Stan koszyka po dodaniu:", cart.__dict__)  # Może zawierać informacje o liczbie produktów, subtotalu itp.
 
     return JsonResponse({
         "ok": True,
