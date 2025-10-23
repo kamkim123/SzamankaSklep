@@ -1,7 +1,7 @@
 # products/urls.py
 from django.urls import path, include
 from . import views
-from .views import ProductListView
+from .views import ProductListView, ProductSearchView, ProductSearchAPI
 
 app_name = "products"
 urlpatterns = [
@@ -11,6 +11,8 @@ urlpatterns = [
     path('products/', ProductListView.as_view(), name='produkty'),# Dodaj ścieżkę do funkcji `produkty`
     path("regulamin/", views.regulamin, name="regulamin"),
     path("polityka-prywatnosci/", views.private, name="private"),  # Ścieżka do polityki prywatności
+    path("search/", ProductSearchView.as_view(), name="search_products"),
+    path("api/szukaj", ProductSearchAPI.as_view(), name="product_search_api"),
 ]
 
 

@@ -166,3 +166,59 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+
+
+
+document.querySelectorAll('.favorite-toggle').forEach(item => {
+    item.addEventListener('click', function(event) {
+        event.preventDefault();  // Zapobiegamy domyślnemu zachowaniu
+
+        let productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
+        let icon = this.querySelector('i');  // Pobieramy ikonę serca
+        let url = `/u/favorite/${productId}/toggle/`;  // URL do widoku
+
+        // Wykonaj zapytanie AJAX, aby dodać/usunąć produkt z ulubionych
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken'),  // Pobieramy CSRF token
+            },
+        })
+        .then(response => response.json())  // Odbieramy odpowiedź w formacie JSON
+        .then(data => {
+            if (data.success) {
+                // Jeśli produkt został dodany do ulubionych lub usunięty, zmieniamy kolor serca
+                if (data.is_favorite) {
+                    icon.classList.remove('bx-heart');    // Usuwamy puste serce
+                    icon.classList.add('bxs-heart');       // Dodajemy pełne serce
+                    icon.style.color = 'red';              // Ustawiamy czerwony kolor
+                } else {
+                    icon.classList.remove('bxs-heart');   // Usuwamy pełne serce
+                    icon.classList.add('bx-heart');        // Dodajemy puste serce
+                    icon.style.color = '';                 // Resetujemy kolor
+                }
+            }
+        })
+        .catch(error => console.error('Błąd AJAX:', error));  // Obsługujemy błąd AJAX
+    });
+});
+
+// Funkcja do pobierania CSRF token z ciasteczek
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+

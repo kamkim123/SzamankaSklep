@@ -85,27 +85,57 @@ dropdowns.forEach((dropdown) => {
 
 
 
-const box = document.getElementById('search');
-const btn = box.querySelector('.search__toggle');
-const inp = box.querySelector('.search__input');
-const clearBtn = box.querySelector('.search__clear');
 
 
-function openSearch(){
-    box.classList.add('active-search');
-    inp.disabled = false; inp.focus();
+const inp = document.querySelector('.search__input'); // Pole wyszukiwania
+const resultsBox = document.getElementById('search-results'); // Kontener dla wyników wyszukiwania
+const btn = document.querySelector('.search__toggle'); // Przycisk do otwierania wyszukiwarki
+const clearBtn = document.querySelector('.search__clear'); // Przycisk do czyszczenia wyszukiwania
+
+// Funkcja wyświetlająca wyniki wyszukiwania
+function showResults() {
+    const query = inp.value.trim(); // Pobieramy tekst z inputa
+    if (query.length > 0) {
+        // Wysyłamy zapytanie do backendu za pomocą AJAX (fetch)
+        fetch(`/products/search/?q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                resultsBox.innerHTML = ''; // Czyszczenie poprzednich wyników
+                if (data.results.length > 0) {
+                    // Jeśli są wyniki, wyświetlamy je w kontenerze
+                    data.results.forEach(product => {
+                        const resultItem = document.createElement('div');
+                        resultItem.textContent = product.name; // Nazwa produktu
+                        resultsBox.appendChild(resultItem);
+                    });
+                } else {
+                    resultsBox.innerHTML = '<div>Brak wyników</div>'; // Jeśli brak wyników
+                }
+            })
+            .catch(error => console.error('Błąd wyszukiwania:', error));
+    } else {
+        resultsBox.innerHTML = '';  // Usuwa wyniki, gdy pole jest puste
+    }
 }
-function closeSearch(){
-    box.classList.remove('active-search');
-    inp.value=''; inp.blur(); inp.disabled = true;
-}
 
+// Aktywacja wyszukiwania po kliknięciu w przycisk otwierający wyszukiwarkę
 btn.addEventListener('click', () => {
-    if (!box.classList.contains('active-search')) openSearch();
-    else inp.focus(); // gdy otwarte, tylko focus na input
+    if (!inp.disabled) {
+        inp.disabled = false;  // Odblokowanie input po kliknięciu
+        inp.focus();  // Ustawienie kursora w input
+        document.getElementById('search').classList.add('active-search');  // Dodanie klasy do rozwinięcia wyszukiwarki
+    }
 });
-clearBtn.addEventListener('click', closeSearch);
-box.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+
+// Wyczyść wyniki po kliknięciu w przycisk czyszczenia
+clearBtn.addEventListener('click', () => {
+    inp.value = '';  // Wyczyść pole
+    resultsBox.innerHTML = '';  // Wyczyść wyniki
+    inp.focus();  // Ustawienie kursora w input
+});
+
+// Reagowanie na każde wpisanie tekstu w pole wyszukiwania
+inp.addEventListener('input', showResults);  // Zainicjowanie funkcji pokazującej wyniki
 
 
 
@@ -190,6 +220,109 @@ document.addEventListener('DOMContentLoaded', function () {
     {% endif %}
   }
 });
+
+
+
+
+
+
+function() {
+  const input = document.getElementById("search__input");
+  const box = document.getElementById("live-results");
+  const apiUrl = "{% url 'product_search_api' %}";
+  let lastController = null;
+  let activeIndex = -1; // do nawigacji klawiaturą
+  let items = [];
+
+  function debounce(fn, delay) {
+    let t;
+    return function(...args) {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
+  function clearBox() {
+    box.innerHTML = "";
+    box.style.display = "none";
+    items = [];
+    activeIndex = -1;
+  }
+
+  function render(results) {
+    if (!results.length) { clearBox(); return; }
+    box.innerHTML = results.map(r => `
+    <div class="live-result">${escapeHtml(r.name)}</div>
+    `).join("");
+    box.style.display = "block";
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, s => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[s]));
+  }
+
+  function formatPrice(val) {
+    try {
+      return new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(val);
+    } catch {
+      return val;
+    }
+  }
+
+  const fetchLive = debounce(async function(q) {
+    if (!q) { clearBox(); return; }
+    try {
+      // anuluj poprzedni request, by uniknąć wyścigów
+      if (lastController) lastController.abort();
+      lastController = new AbortController();
+      const url = `${apiUrl}?q=${encodeURIComponent(q)}&limit=8`;
+      const res = await fetch(url, { signal: lastController.signal, headers: { "Accept": "application/json" }});
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      render(data.results || []);
+    } catch (e) {
+      if (e.name !== "AbortError") {
+        clearBox();
+        // opcjonalnie pokaż komunikat błędu
+      }
+    }
+  }, 250);
+
+  input.addEventListener("input", (e) => {
+    fetchLive(e.target.value.trim());
+  });
+
+  // zamykanie po wyjściu z pola
+  input.addEventListener("blur", () => setTimeout(clearBox, 120));
+
+  // nawigacja klawiaturą
+  input.addEventListener("keydown", (e) => {
+    if (!items.length) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeIndex = (activeIndex + 1) % items.length;
+      updateActive();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeIndex = (activeIndex - 1 + items.length) % items.length;
+      updateActive();
+    } else if (e.key === "Enter") {
+      if (activeIndex >= 0 && items[activeIndex]) {
+        const url = items[activeIndex].getAttribute("data-url");
+        if (url) { e.preventDefault(); window.location.href = url; }
+      }
+    } else if (e.key === "Escape") {
+      clearBox();
+    }
+  });
+
+  function updateActive() {
+    items.forEach((el, i) => el.setAttribute("aria-selected", i === activeIndex ? "true" : "false"));
+    if (items[activeIndex]) items[activeIndex].scrollIntoView({ block: "nearest" });
+  }
+}();
 
 
 

@@ -1,8 +1,13 @@
-from django.views import generic
+from django.views import generic, View
 from django.shortcuts import render
+
+
+from users.models import Favorite
 from .models import Product
 from django.db.models import Count
 from django.views.generic import ListView
+
+from django.db.models import Q
 
 # views.py
 
@@ -34,6 +39,10 @@ class IndexView(generic.ListView):
         bestsellers = Product.objects.filter(is_bestseller=True)
         ctx["bestsellers"] = bestsellers  # Dodajemy bestsellery do kontekstu
 
+        if self.request.user.is_authenticated:
+            favorite_product_ids = Favorite.objects.filter(user=self.request.user).values_list('product_id', flat=True)
+            ctx["favorite_product_ids"] = favorite_product_ids
+
         return ctx
 
 
@@ -48,12 +57,18 @@ class DetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Dodanie podobnych produktów (bestsellerów)
-        product = self.object  # Produkt, który jest oglądany
-        similar_products = Product.objects.filter(is_bestseller=True).exclude(
-            pk=product.pk)  # Wykluczenie obecnego produktu
 
+        product = self.object  # Produkt, który jest oglądany
+
+        # Dodanie podobnych produktów (bestsellerów)
+        similar_products = Product.objects.filter(is_bestseller=True).exclude(pk=product.pk)  # Wykluczamy obecny produkt
         context['similar_products'] = similar_products
+
+        # Dodajemy listę produktów w ulubionych, jeśli użytkownik jest zalogowany
+        if self.request.user.is_authenticated:
+            favorite_product_ids = Favorite.objects.filter(user=self.request.user).values_list('product_id', flat=True)
+            context["favorite_product_ids"] = favorite_product_ids
+
         return context
 
 
@@ -85,6 +100,7 @@ class ProductListView(ListView):
 
         return qs
 
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         selected = self.request.GET.get("type", "").strip()
@@ -95,8 +111,39 @@ class ProductListView(ListView):
             .annotate(count=Count("id"))
             .order_by("product_type")
         )
+
+        if self.request.user.is_authenticated:
+            favorite_product_ids = Favorite.objects.filter(user=self.request.user).values_list('product_id', flat=True)
+            ctx["favorite_product_ids"] = favorite_product_ids
         return ctx
 
+
+class ProductSearchView(ProductListView):
+    def get_queryset(self):
+        qs = super().get_queryset()
+        q = (self.request.GET.get("q") or "").strip()
+        if q:
+            qs = qs.filter(product_name__icontains=q)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["q"] = (self.request.GET.get("q") or "").strip()
+        return ctx
+
+class ProductSearchAPI(View):
+    def get(self, request):
+        q = (request.GET.get("q") or "").strip()
+        limit = int(request.GET.get("limit") or 10)
+
+        qs = Product.objects.all()
+        if q:
+            qs = qs.filter(Q(product_name__icontains=q))
+        qs = qs.order_by("product_name")[:limit]
+
+        data = [{"product_name": p.name} for p in qs]
+
+        return JsonResponse({"results": data})
 
 
 def produkty(request):
@@ -121,3 +168,18 @@ def private(request):  # Dodaj funkcję widoku dla polityki prywatności
     return render(request, "products/private.html")
 
 
+
+
+
+from django.http import JsonResponse
+from .models import Product
+
+def search_products(request):
+    query = request.GET.get('q', '')  # Pobieramy zapytanie 'q'
+    if query:
+        # Filtrujemy produkty na podstawie nazwy
+        products = Product.objects.filter(name__icontains=query)
+        results = [{'id': product.id, 'name': product.name} for product in products]
+    else:
+        results = []
+    return JsonResponse({'results': results})

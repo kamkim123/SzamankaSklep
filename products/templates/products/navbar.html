@@ -80,15 +80,16 @@
         </div>
 
         <div class="search" id="search">
-            <label>
-                <input class="search__input" type="search" placeholder="Szukaj produktów..." disabled>
-            </label>
+            <form method="get" action="{% url 'products:search_products' %}">
+                <input class="search__input" type="text" name="q" value="{{ q }}" placeholder="Szukaj produktów...">
+            </form>
             <button class="search__toggle" type="button" aria-label="Otwórz wyszukiwarkę">
                 <i class="bx bx-search"></i>
             </button>
             <button class="search__clear" type="button" aria-label="Wyczyść">
                 <i class="bx bx-x"></i>
             </button>
+            <div class="live-results" id="live-results" role="listbox" aria-label="Podpowiedzi"></div>
         </div>
 
         <div class="ikonki_nav">

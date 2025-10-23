@@ -417,7 +417,7 @@ body {
   bottom: .4rem;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 20px;
+  font-size: 19px;
   font-weight: normal;
   width: 5.7rem;
   cursor: default;
@@ -462,20 +462,51 @@ body {
   transition: background-color .4s;
 }
 
-.product .bx.bx-heart {
+
+
+
+.product .bx, .product .bxs-heart {
   position: absolute;
   top: .5rem;
   right: .8rem;
-  font-size: 40px;
-  color: rgb(255, 59, 0);
+  font-size: 35px;
   cursor: pointer;
-  transition: transform .3s ease;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.product .bx.bx-heart:hover {
+.product .bx:hover, .product .bxs-heart:hover {
   transform: scale(1.1);
-  color: #e74c3c;
 }
+
+.product .bxs-heart {
+  color: red; /* Czerwony kolor dla pełnego serca */
+}
+
+.product .bx {
+  color: rgb(255, 59, 0); /* Kolor pustego serca */
+}
+
+.product .bx, .product .bxs-heart {
+  transition: transform 0.3s ease, opacity 0.3s ease; /* Animacja przejścia zmiany rozmiaru i przezroczystości */
+}
+
+/* Opcjonalna animacja wejścia przy pojawianiu się serca */
+.product .bx-heart,
+.product .bxs-heart {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.product .favorite-toggle {
+  transition: opacity 0.4s ease;
+}
+
+.product .favorite-toggle:hover .bx {
+  opacity: 1;
+  transform: scale(1.15);  /* Powiększamy serce na hover */
+}
+
+
+
 
 .products-page {
   display: flex;
@@ -519,9 +550,11 @@ body {
   width: 2.2rem;
   text-align: center;
   height: 80%;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   user-select: none;
   font-family: 'Montserrat', sans-serif;
+  margin-top:3px;
+  margin-left: 2px;
 }
 
 .calc-product button {

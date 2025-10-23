@@ -64,23 +64,82 @@ body {
 .calc-container button { width: 2.4rem; height: 2.4rem; font-size: 1.25rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; cursor: pointer; line-height: 1; }
 .calc-input { width: 3rem; text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; }
 
-.cart, .favorite { padding: 0 0.9rem; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: transform .02s ease, box-shadow .25s ease, background .25s ease, color .25s ease; display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; }
-.cart { background-color: var(--brand); color: #fff; border: 1px solid var(--brand); box-shadow: 0 8px 16px rgba(110,198,39,.2); }
-.cart:hover { background-color: var(--brand-700); box-shadow: 0 12px 24px rgba(110,198,39,.28); }
-.favorite { background: #fff; color: var(--brand); border: 1.5px solid var(--ring); }
-.favorite:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
-.favorite.active { background: var(--brand); color: #fff; border-color: var(--brand); }
 
-.cart .bx-cart{
 
-    margin-bottom:.5rem;
 
+/* Podstawowy styl dla przycisku koszyka i ulubionych */
+.cart, .favorite-toggle {
+    padding: 0 0.9rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: transform .02s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    text-decoration: none;
 }
 
-.favorite .bxs-heart, .favorite-active .bxs-heart, .favorite .bx-heart{
-
-    margin-bottom:.5rem;
+/* Styl przycisku koszyka */
+.cart {
+    background-color: var(--brand);
+    color: #fff;
+    border: 1px solid var(--brand);
+    box-shadow: 0 8px 16px rgba(110, 198, 39, .2);
 }
+
+/* Efekt hover na przycisku koszyka */
+.cart:hover {
+    background-color: var(--brand-700);
+    box-shadow: 0 12px 24px rgba(110, 198, 39, .28);
+}
+
+/* Styl przycisku ulubionych (puste serce) */
+.favorite-toggle {
+    background: #fff;
+    color: var(--brand);
+    border: 1.5px solid var(--ring);
+}
+
+/* Efekt hover na przycisku ulubionych */
+.favorite-toggle:hover {
+    background: var(--brand);
+    color: #fff;
+    border-color: var(--brand);
+}
+
+/* Styl przycisku ulubionych, gdy produkt jest w ulubionych */
+.favorite-toggle.active {
+    background: var(--brand);
+    color: #fff;
+    border-color: var(--brand);
+}
+
+/* Stylizacja serca */
+.cart .bx-cart, .favorite-toggle .bxs-heart,
+.favorite-toggle.active .bxs-heart,
+.favorite-toggle .bx-heart {
+    margin-bottom: .5rem;
+}
+
+/* Pełne serce, gdy produkt jest w ulubionych */
+.favorite-toggle.active .bxs-heart {
+    color: red;  /* Czerwony kolor pełnego serca */
+}
+
+/* Puste serce przed dodaniem do ulubionych */
+.favorite-toggle .bx-heart {
+    color: rgb(255, 59, 0);  /* Kolor pustego serca */
+}
+
+/* Dodatkowe efekty - animacja powiększenia przy najechaniu */
+.favorite-toggle:hover .bx-heart,
+.favorite-toggle.active .bxs-heart {
+    transform: scale(1.1);
+}
+
+
 
 .add-info-wrapper { display: flex; gap: .75rem; align-items: center; padding: .5rem .75rem; border-radius: 12px; }
 .add-icon { width: 36px; height: 36px; }

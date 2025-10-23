@@ -100,19 +100,21 @@
 
                     {% if user.is_authenticated %}
                     {% if product in user.favorites.all %}
-                    <a href="{% url 'users:favorite_toggle' product.id %}" class="favorite active">
-                        <i class="bx bxs-heart" aria-hidden="true"></i> Ulubione
-                    </a>
+                    <span class="favorite-toggle active" data-product-id="{{ product.id }}">
+            <i class="bx bxs-heart" aria-hidden="true"></i> Ulubione
+        </span>
                     {% else %}
-                    <a href="{% url 'users:favorite_toggle' product.id %}" class="favorite">
-                        <i class="bx bx-heart" aria-hidden="true"></i> Dodaj do ulubionych
-                    </a>
+                    <span class="favorite-toggle" data-product-id="{{ product.id }}">
+            <i class="bx bx-heart" aria-hidden="true"></i> Dodaj do ulubionych
+        </span>
                     {% endif %}
                     {% else %}
                     <a href="{% url 'users:login' %}?next={{ request.path }}" class="favorite">
                         <i class="bx bx-heart" aria-hidden="true"></i> Zaloguj się aby dodać
                     </a>
                     {% endif %}
+
+
                 </div>
 
                 <div class="add-info-wrapper subtle">

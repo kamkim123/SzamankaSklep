@@ -3,67 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Koszyk</title>
-    {% load static %}
+    <title>Koszyk</title> {% load static %}
     <link rel="stylesheet" href="{% static 'orders/cart.css' %}">
-
 </head>
-<body>
-
-
-{% include "products/navbar.html" %}
-
+<body> {% include "products/navbar.html" %}
 <div class="container">
-    <section class="card">
-        <h2>Koszyk</h2>
-        <ul class="cart-list" id="cartList">
-            {% for item in cart %}
-            <li class="item"
-                data-product-id="{{ item.product.id }}"
-                data-price="{{ item.price|floatformat:2 }}">
-
+    <section class="card"><h2>Koszyk</h2>
+        <ul class="cart-list" id="cartList"> {% for item in cart %}
+            <li class="item" data-product-id="{{ item.product.id }}" data-price="{{ item.price|floatformat:2 }}"
+                data-update-url="{% url 'orders:cart_update' %}">
                 <div class="thumb" aria-hidden="true"></div>
-                <div class="info">
-                    <h3>{{ item.product.product_name }}</h3>
-                    <!-- Jeśli masz warianty/kolor, wyświetl tu -->
-                </div>
-                <div class="price" data-unit-price="{{ item.price|floatformat:2 }}">
-                    {{ item.price }}&nbsp;zł
-                </div>
+                <div class="info"><h3>{{ item.product.product_name }}</h3>
+                    <!-- Jeśli masz warianty/kolor, wyświetl tu --> </div>
+                <div class="price" data-unit-price="{{ item.price|floatformat:2 }}"> {{ item.price }}&nbsp;zł</div>
                 <div class="qty">
                     <button class="qty-btn qty-minus" aria-label="Zmniejsz ilość">-</button>
                     <span class="qty-display">{{ item.quantity }}</span>
                     <button class="qty-btn qty-plus" aria-label="Zwiększ ilość">+</button>
                 </div>
-
                 <button class="remove" aria-label="Usuń" data-url="{% url 'orders:cart_remove' %}">×</button>
-
             </li>
             {% empty %}
             <li>Twój koszyk jest pusty.</li>
             {% endfor %}
         </ul>
     </section>
-
-    <aside class="card">
-        <h2>Podsumowanie</h2>
+    <aside class="card"><h2>Podsumowanie</h2>
         <div class="summary">
             <div class="row"><span>Wartość produktów</span><span id="subtotal">{{ cart.subtotal }} zł</span></div>
-            <div class="row"><span>Dostawa <span class="badge">0 zł od 200 zł</span></span>
-                <span id="shipping">{{ cart.shipping }} zł</span>
+            <div class="row"><span>Dostawa <span class="badge">0 zł od 200 zł</span></span> <span id="shipping">{{ cart.shipping }} zł</span>
             </div>
             <div class="row total"><span>Do zapłaty</span><span id="grand">{{ cart.grand_total }} zł</span></div>
             <a href="{% url 'orders:checkout' %}">
                 <button class="btn" id="checkoutBtn">Przejdź do płatności</button>
-            </a>
-        </div>
+            </a></div>
     </aside>
 </div>
-
 {% include "products/footer.html" %}
-
 <script src="{% static 'orders/cart.js' %}"></script>
 <script src="{% static 'products/detail.js' %}"></script>
-
 </body>
 </html>

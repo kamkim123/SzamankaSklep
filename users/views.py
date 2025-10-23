@@ -94,17 +94,24 @@ def favorites_list(request):
     return render(request, "users/favorites.html", {"favorites": favs, "empty": empty})
 
 
+from django.http import JsonResponse
+
 @login_required
 def favorite_toggle(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
 
-    # Sprawdzenie, czy produkt jest już w ulubionych
-    fav, created = Favorite.objects.get_or_create(user=request.user, product=product)
+    # Sprawdzamy, czy produkt jest w ulubionych
+    favorite = Favorite.objects.filter(user=request.user, product=product).first()
 
-    if not created:
-        fav.delete()  # Jeśli produkt już jest w ulubionych, usuwamy go
+    if favorite:
+        favorite.delete()  # Usuwamy produkt z ulubionych
+        is_favorite = False
+    else:
+        Favorite.objects.create(user=request.user, product=product)  # Dodajemy produkt do ulubionych
+        is_favorite = True
 
-    return redirect(request.META.get("HTTP_REFERER") or "users:favorites")  # Powrót do poprzedniej strony
+    # Zwracamy odpowiedź JSON
+    return JsonResponse({'success': True, 'is_favorite': is_favorite})
 
 
 @login_required

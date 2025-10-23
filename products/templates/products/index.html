@@ -47,7 +47,7 @@
         <div class="swiper-reklamy">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <img src="{% static 'products/images/photo1.jpg' %}" alt="zdjecie" class="zdjecie1"/>
+                    <img src="{% static 'products/images/a-photo.jpg' %}" alt="zdjecie" class="zdjecie1"/>
                 </div>
                 <div class="swiper-slide">
                     <img src="images/marcie-kennedy-2iuOo_mCwGA-unsplash.jpg" alt="zdjecie" class="zdjecie1"/>
@@ -64,71 +64,70 @@
 
     </section>
 
-<section>
-    <ul class="category-icons">
-        <li>
-            <a href="{% url 'products:index' %}?type=spozywcze">
-                <div class="category1-wrapper">
-                    <div class="category-image-wrapper" id="margin-cat-icon">
-                        <img src="{% static 'products/images/food2.jpg' %}" alt="food-basket" class="vegan">
+    <section>
+        <ul class="category-icons">
+            <li>
+                <a href="{% url 'products:index' %}?type=spozywcze">
+                    <div class="category1-wrapper">
+                        <div class="category-image-wrapper" id="margin-cat-icon">
+                            <img src="{% static 'products/images/food2.jpg' %}" alt="food-basket" class="vegan">
+                        </div>
+                        <p class="text-category">Artykuly <br>spozywcze</p>
                     </div>
-                    <p class="text-category">Artykuly <br>spozywcze</p>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'products:index' %}?type=suplementy">
-                <div class="category1-wrapper">
-                    <div class="category-image-wrapper">
-                        <img src="{% static 'products/images/suplements.jpg' %}" alt="heart" class="vegan">
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'products:index' %}?type=suplementy">
+                    <div class="category1-wrapper">
+                        <div class="category-image-wrapper">
+                            <img src="{% static 'products/images/suplements.jpg' %}" alt="heart" class="vegan">
+                        </div>
+                        <p class="text-category">Suplementy</p>
                     </div>
-                    <p class="text-category">Suplementy</p>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'products:index' %}?type=kosmetyki do włosów">
-                <div class="category1-wrapper">
-                    <div class="category-image-wrapper">
-                        <img src="{% static 'products/images/bottles.jpg' %}" alt="soap" class="vegan">
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'products:index' %}?type=kosmetyki do włosów">
+                    <div class="category1-wrapper">
+                        <div class="category-image-wrapper">
+                            <img src="{% static 'products/images/bottles.jpg' %}" alt="soap" class="vegan">
+                        </div>
+                        <p class="text-category">Kosmetyki</p>
                     </div>
-                    <p class="text-category">Kosmetyki</p>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'products:index' %}?type=masci">
-                <div class="category1-wrapper">
-                    <div class="category-image-wrapper" id="margin-cat-icon1">
-                        <img src="{% static 'products/images/154.jpg' %}" alt="oil" class="vegan">
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'products:index' %}?type=masci">
+                    <div class="category1-wrapper">
+                        <div class="category-image-wrapper" id="margin-cat-icon1">
+                            <img src="{% static 'products/images/154.jpg' %}" alt="oil" class="vegan">
+                        </div>
+                        <p class="text-category">Masci</p>
                     </div>
-                    <p class="text-category">Masci</p>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'products:index' %}?type=ziola">
-                <div class="category1-wrapper">
-                    <div class="category-image-wrapper">
-                        <img src="{% static 'products/images/spray.jpg' %}" alt="spray" class="vegan">
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'products:index' %}?type=ziola">
+                    <div class="category1-wrapper">
+                        <div class="category-image-wrapper">
+                            <img src="{% static 'products/images/spray.jpg' %}" alt="spray" class="vegan">
+                        </div>
+                        <p class="text-category">Ziola</p>
                     </div>
-                    <p class="text-category">Ziola</p>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'products:index' %}?type=inne">
-                <div class="category1-wrapper">
-                    <div class="category-image-wrapper">
-                        <img src="{% static 'products/images/pasta-do-zebow.jpg' %}" alt="natural" class="vegan">
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'products:index' %}?type=inne">
+                    <div class="category1-wrapper">
+                        <div class="category-image-wrapper">
+                            <img src="{% static 'products/images/pasta-do-zebow.jpg' %}" alt="natural" class="vegan">
+                        </div>
+                        <p class="text-category">Inne</p>
                     </div>
-                    <p class="text-category">Inne</p>
-                </div>
-            </a>
-        </li>
-    </ul>
-</section>
-
+                </a>
+            </li>
+        </ul>
+    </section>
 
 
     <section class="articles-section">
@@ -137,7 +136,8 @@
             <div class="text-box">
                 <div class="text-container1">
                     <img src="{% static 'products/images/leaf.png' %}" alt="leaf">
-                    <p><a href="{% url 'users:login' %}"><span>Transmisje</span></a> na zywo, nadajemy prosto z naszego sklepu!</p>
+                    <p><a href="{% url 'users:login' %}"><span>Transmisje</span></a> na zywo, nadajemy prosto z naszego
+                        sklepu!</p>
                 </div>
                 <div class="text-container1">
                     <img src="{% static 'products/images/hibiscus.png' %}" alt="hibiscus">
@@ -158,11 +158,12 @@
                 – opowiadamy o nowych produktach,
                 – pokazujemy, jak korzystać z ziół i naturalnych preparatów,
                 – odpowiadamy na Wasze pytania.
-                To świetna okazja, żeby nas lepiej poznać i być blisko zielarskiej społeczności Szamanki – nawet bez wychodzenia z domu.
+                To świetna okazja, żeby nas lepiej poznać i być blisko zielarskiej społeczności Szamanki – nawet bez
+                wychodzenia z domu.
 
             </div>
             <div class="a-photo-wrapper">
-                <img src="{% static 'products/images/a-photo1.jpg' %}" alt="a-photo" class="article-photo1">
+                <img src="{% static 'products/images/Agnieszka3.jpg' %}" alt="a-photo" class="article-photo1">
             </div>
         </div>
 
@@ -170,54 +171,49 @@
     </section>
 
 
-
-
-<section class="products-section" id="bestsellery-section">
-    <h2>Bestsellery</h2>
-    <div class="product-container-wrapper">
-        {% if bestsellers %}
+    <section class="products-section" id="bestsellery-section">
+        <h2>Bestsellery</h2>
+        <div class="product-container-wrapper">
+            {% if bestsellers %}
             {% for product in bestsellers %}
-                <div class="product">
-                    <a href="{% url 'products:detail' product.pk %}">
-                        <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-image.jpg' %}{% endif %}" alt="{{ product.product_name }}" class="product-image">
-                    </a>
-                    <h3><a href="{% url 'products:detail' product.pk %}">{{ product.product_name }}</a></h3>
-                    <h4 class="price">{{ product.price|floatformat:2 }} zł</h4>
+            <div class="product">
+                <a href="{% url 'products:detail' product.pk %}">
+                    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-image.jpg' %}{% endif %}"
+                         alt="{{ product.product_name }}" class="product-image">
+                </a>
+                <h3><a href="{% url 'products:detail' product.pk %}">{{ product.product_name }}</a></h3>
+                <h4 class="price">{{ product.price|floatformat:2 }} zł</h4>
 
-                    <!-- Dodanie do koszyka -->
-                    <form method="post" action="{% url 'orders:cart_add' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="product_id" value="{{ product.pk }}">
-                        <input type="hidden" name="quantity" value="1">
+                <!-- Dodanie do koszyka -->
+                <form method="post" action="{% url 'orders:cart_add' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.pk }}">
+                    <input type="hidden" name="quantity" value="1">
 
-                        <div class="products-cart{% if product.product_stock|default:0 <= 0 %} disabled{% endif %}">
-                            <!-- Formularz wysyłający dane produktu do koszyka -->
-                            <button type="submit" class="cart-icon" data-product-id="{{ product.pk }}">
-                                <img src="{% static 'products/images/shopping-cart-white.png' %}" alt="cart" class="cart-icon" />
-                            </button>
-                        </div>
-                    </form>
+                    <div class="products-cart{% if product.product_stock|default:0 <= 0 %} disabled{% endif %}">
+                        <!-- Formularz wysyłający dane produktu do koszyka -->
+                        <button type="submit" class="cart-icon" data-product-id="{{ product.pk }}">
+                            <img src="{% static 'products/images/shopping-cart-white.png' %}" alt="cart"
+                                 class="cart-icon"/>
+                        </button>
+                    </div>
+                </form>
 
-                    <!-- Serce do ulubionych -->
-                    {% if product in request.user.favorites.all %}
-                        <a href="{% url 'users:favorite_toggle' product.pk %}">
-                            <i class="bx bx-heart" style="color: red;"></i>
-                        </a>
-                    {% else %}
-                        <a href="{% url 'users:favorite_toggle' product.pk %}">
-                            <i class="bx bx-heart"></i>
-                        </a>
-                    {% endif %}
-                </div>
+                <!-- Serce do ulubionych -->
+                <span class="favorite-toggle" data-product-id="{{ product.pk }}">
+                        {% if product.pk in favorite_product_ids %}
+                            <i class="bx bxs-heart" style="color: red;"></i> <!-- Czerwone, pełne serce -->
+                        {% else %}
+                            <i class="bx bx-heart"></i> <!-- Puste serce -->
+                        {% endif %}
+                    </span>
+            </div>
             {% endfor %}
-        {% else %}
+            {% else %}
             <p>Brak bestsellerów do wyświetlenia.</p>
-        {% endif %}
-    </div>
-</section>
-
-
-
+            {% endif %}
+        </div>
+    </section>
 
 
     <section class="transmisje">
@@ -239,12 +235,19 @@
 
     <section class="o-nas-section" id="o-nas-section">
         <div class="o-nas-wrapper">
-            <div class="o-nas-info"><span class="o-nas-title">O nas</span><br>Jesteśmy rodzinną firmą, którą
-                stworzyliśmy z pasji do natury i zdrowego stylu życia. Sklep zielarski Szamanka powstał, aby dzielić się
-                z Wami bogactwem ziół, naturalnych kosmetyków oraz produktów wspierających dobre samopoczucie.
-                Codziennie dbamy o to, aby nasza oferta była różnorodna i sprawdzona – tak, żeby każdy mógł znaleźć coś
-                dla siebie.
-                Łączy nas tradycja zielarska, wiedza przekazywana w rodzinie i przekonanie, że natura ma ogromną moc.
+            <div class="o-nas-info"><span class="o-nas-title">O nas</span><br>
+
+                Witaj w naszym zielarsko-kosmetycznym świecie, w którym natura i troska o zdrowie spotykają się każdego
+                dnia.
+                Prowadzimy rodzinny sklep.
+                Zioła, suplementacja i zdrowy styl życia to nasza pasja, a zarazem sposób na życie. Jako dyplomowana
+                naturopatka starannie wybieram każdy produkt, który trafia na nasze półki. Znajdziesz tu tylko to, co ma
+                dobry skład, wysoką jakość i potwierdzoną standaryzację. Nigdy nie dopuszczamy do sprzedaży produktów,
+                które nie spełniają naszych wysokich standardów — to zasada, której trzymamy się od początku istnienia
+                sklepu.
+                Poza sklepem prowadzę gabinet terapii naturalnych, w którym pomagam holistycznie zadbać o zdrowie,
+                równowagę i dobre samopoczucie.
+                Wierzę, że siła natury potrafi naprawdę wiele — wystarczy jej zaufać.
             </div>
             <div class="o-nas-photo-wrapper">
                 <img src="{% static 'products/images/o-nas.jpg' %}" alt="o nas photo" class="o-nas-photo">
@@ -295,8 +298,10 @@
             <p>szamanka@nasielsk.pl</p>
             <div class="footer-social">
                 <a href="#"><img src="{%static 'products/images/facebook.png' %}" alt="fb" class="footer-social-icons"></a>
-                <a href="#"><img src="{%static 'products/images/instagram.png' %}" class="footer-social-icons" alt="instagram"></a>
-                <a href="#"><img src="{%static 'products/images/tik-tok.png' %}" class="footer-social-icons" alt="tiktok"></a>
+                <a href="#"><img src="{%static 'products/images/instagram.png' %}" class="footer-social-icons"
+                                 alt="instagram"></a>
+                <a href="#"><img src="{%static 'products/images/tik-tok.png' %}" class="footer-social-icons"
+                                 alt="tiktok"></a>
             </div>
         </div>
 

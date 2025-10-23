@@ -17,37 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ===== IKONA KOSZYKA - Dodaj produkt do koszyka =====
-  document.querySelectorAll('.cart-icon').forEach(button => {
-    button.addEventListener('click', function () {
-        const productId = this.getAttribute('data-product-id'); // Pobieramy ID produktu
-        const quantity = 1; // Na razie zakładamy, że zawsze dodajemy 1 sztukę
 
-        // Wysyłamy żądanie do backendu, żeby dodać produkt do koszyka
-        fetch("{% url 'orders:cart_add' %}", {
-            method: 'POST',
-            headers: {
-                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: new URLSearchParams({
-                'product_id': productId,
-                'quantity': quantity
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.ok) {
-                // Zaktualizuj UI – np. wyświetl komunikat, zaktualizuj liczbę w koszyku w nagłówku
-
-                document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
-            }
-        })
-        .catch(error => {
-            console.error("Wystąpił błąd:", error);
-        });
-    });
-  });
 
   // ===== DROPDOWNY =====
   var dropdowns = document.querySelectorAll('.dropdown');
@@ -249,9 +219,11 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault(); // Zapobiegamy domyślnemu wysłaniu formularza i przekierowaniu
 
             const productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
-            const quantity = 1;  // Zakładamy, że zawsze dodajemy 1 sztukę
+            const productDiv = this.closest('.product'); // Pobieramy najbliższy kontener produktu
+            const quantity = parseInt(productDiv.querySelector('.calc-input').textContent);  // Pobieramy ilość z licznika
 
             console.log("Dodaję do koszyka produkt o ID:", productId);  // Debugowanie
+            console.log("Ilość:", quantity);  // Debugowanie
 
             // Używamy wygenerowanego URL do wysłania żądania
             fetch(cartAddUrl, {
@@ -262,14 +234,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: new URLSearchParams({
                     'product_id': productId,
-                    'quantity': quantity
+                    'quantity': quantity  // Wysyłamy ilość pobraną z licznika
                 })
             })
             .then(response => response.json())
             .then(data => {
                 console.log(data);  // Debugowanie odpowiedzi z serwera
                 if (data.ok) {
-
                     document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
                 }
             })
@@ -279,6 +250,125 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+
+
+
+// ====== ILOŚĆ: plus/minus na kafelkach produktów ======
+(function () {
+  const pad2 = n => String(Math.max(1, n|0)).padStart(2, '0');
+
+  function setQty(productEl, q) {
+    const cell = productEl.querySelector('.calc-input');
+    const min  = parseInt(cell?.dataset.min || '1', 10);
+    const max  = parseInt(cell?.dataset.max || productEl.dataset.stock || '9999', 10);
+    const qty  = Math.min(Math.max(q, min), max);
+
+    if (cell) cell.textContent = pad2(qty);
+    const hidden = productEl.querySelector('input[name="quantity"]');
+    if (hidden) hidden.value = String(qty);
+
+    // (opcjonalnie) wizualna blokada przy brzegach
+    const minus = productEl.querySelector('.minus');
+    const plus  = productEl.querySelector('.plus');
+    minus?.setAttribute('aria-disabled', String(qty <= min));
+    plus?.setAttribute('aria-disabled',  String(qty >= max));
+  }
+
+  // Inicjalizacja: ustaw hidden quantity z tego, co w liczniku
+  document.querySelectorAll('.product').forEach(card => {
+    const cell = card.querySelector('.calc-input');
+    const start = parseInt((cell?.textContent || '01').replace(/\D/g, ''), 10) || 1;
+    setQty(card, start);
+  });
+
+  // Delegacja klików dla +/-
+  const productsRoot = document.querySelector('.all-products') || document;
+  productsRoot.addEventListener('click', (e) => {
+    const plus  = e.target.closest('.plus');
+    const minus = e.target.closest('.minus');
+    if (!plus && !minus) return;
+
+    const productEl = e.target.closest('.product');
+    if (!productEl) return;
+
+    const cell = productEl.querySelector('.calc-input');
+    const cur  = parseInt((cell?.textContent || '01').replace(/\D/g, ''), 10) || 1;
+    const delta = plus ? 1 : -1;
+    setQty(productEl, cur + delta);
+  });
+})();
+
+
+
+
+document.querySelectorAll('.favorite-toggle').forEach(item => {
+  item.addEventListener('click', function(event) {
+    event.preventDefault(); // Zapobiegaj domyślnemu zachowaniu linku
+
+    let icon = this.querySelector('i');  // Pobieramy ikonę serca
+    let productId = this.getAttribute('data-product-id'); // Pobieramy ID produktu
+    let url = `/u/favorite/${productId}/toggle/`; // URL do widoku
+
+    // Wykonaj zapytanie AJAX, aby dodać/usunąć produkt z ulubionych
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': getCookie('csrftoken'), // Pobieramy CSRF token
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Błąd serwera: ' + response.status);
+      }
+      return response.json(); // Jeśli odpowiedź jest ok, zwróć JSON
+    })
+    .then(data => {
+      if (data.success) {
+        // Zmieniamy kolor i klasę serca
+        if (data.is_favorite) {
+          icon.classList.remove('bx-heart');        // Usuwamy puste serce
+          icon.classList.add('bxs-heart');           // Dodajemy pełne serce
+          icon.style.color = 'red';                   // Ustawiamy czerwony kolor
+        } else {
+          icon.classList.remove('bxs-heart');       // Usuwamy pełne serce
+          icon.classList.add('bx-heart');           // Dodajemy puste serce
+          icon.style.color = '';                     // Resetujemy kolor
+        }
+      } else {
+        console.error('Błąd podczas dodawania do ulubionych');
+      }
+    })
+    .catch(error => console.error('Błąd AJAX:', error)); // Błąd w zapytaniu AJAX
+  });
+});
+
+// Funkcja do pobierania CSRF token z ciasteczek
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -104,60 +104,153 @@ if(g){
 }
 
 
-
-
-
 document.querySelectorAll('.mini-photo img').forEach(img => {
     img.addEventListener('click', () => {
       document.querySelector('.main-image').src = img.dataset.full;
     });
   });
 
-  // Kalkulator ilości
-  document.querySelectorAll('.calc-container').forEach(calc => {
-    const minus = calc.querySelector('.minus');
-    const plus = calc.querySelector('.plus');
-    const input = calc.querySelector('.calc-input');
-    let qty = parseInt(input.textContent);
-    minus.addEventListener('click', () => { if(qty>1) input.textContent=--qty; });
-    plus.addEventListener('click', () => { input.textContent=++qty; });
-  });
+
+
 
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.cart').forEach(button => {
-        button.addEventListener('click', function (e) {
-            e.preventDefault(); // Zapobiegamy domyślnemu wysłaniu formularza i przekierowaniu
+    // Znajdź przycisk "Dodaj do koszyka" i licznik ilości
+    const cartButton = document.querySelector('.cart');
+    const quantityInput = document.querySelector('.calc-input');
+    const productId = cartButton.getAttribute('data-product-id');  // Pobieramy ID produktu
 
-            const productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
-            const quantity = 1;  // Zakładamy, że zawsze dodajemy 1 sztukę
+    // Funkcja do aktualizacji ilości produktu
+    function setQty(q) {
+        const min  = parseInt(quantityInput?.dataset.min || '1', 10);
+        const max  = 9999; // Usuwamy ograniczenie max, ustawiamy na 9999 (brak limitu)
 
-            console.log("Dodaję do koszyka produkt o ID:", productId);  // Debugowanie
+        // Sprawdzamy, żeby ilość była w granicach minimum i maksimum
+        const qty  = Math.min(Math.max(q, min), max);
 
-            // Używamy wygenerowanego URL do wysłania żądania
-            fetch(cartAddUrl, {
-                method: 'POST',
-                headers: {
-                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: new URLSearchParams({
-                    'product_id': productId,
-                    'quantity': quantity
-                })
+        // Zaktualizowanie wyświetlanej ilości w elemencie calc-input
+        quantityInput.textContent = String(qty).padStart(2, '0');
+        document.querySelector('input[name="quantity"]').value = String(qty);  // Ustawienie wartości w ukrytym polu formularza
+    }
+
+    // Obsługuje kliknięcia przycisków +/-
+    document.querySelector('.plus').addEventListener('click', function() {
+        // Zwiększamy ilość o 1
+        const currentQty = parseInt(quantityInput.textContent);
+        setQty(currentQty + 1);
+    });
+
+    document.querySelector('.minus').addEventListener('click', function() {
+        // Zmniejszamy ilość o 1
+        const currentQty = parseInt(quantityInput.textContent);
+        setQty(currentQty - 1);
+    });
+
+    // Obsługuje kliknięcie w przycisk "Dodaj do koszyka"
+    cartButton.addEventListener('click', function (e) {
+        e.preventDefault(); // Zapobiegamy domyślnemu zachowaniu formularza
+
+        // Aktualizujemy ilość z licznika
+        const quantity = parseInt(quantityInput.textContent);  // Pobieramy ilość z licznika
+
+        console.log("Dodaję do koszyka produkt o ID:", productId);  // Debugowanie
+        console.log("Ilość:", quantity);  // Debugowanie
+
+        // Wysyłamy zapytanie do serwera
+        fetch(cartAddUrl, {
+            method: 'POST',
+            headers: {
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                'product_id': productId,
+                'quantity': quantity  // Wysyłamy ilość z licznika
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);  // Debugowanie odpowiedzi z serwera
-                if (data.ok) {
-
-                    document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
-                }
-            })
-            .catch(error => {
-                console.error("Wystąpił błąd:", error);
-            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);  // Debugowanie odpowiedzi z serwera
+            if (data.ok) {
+                // Zaktualizowanie liczby produktów w koszyku
+                document.querySelector('.cart-count').textContent = data.items;
+            }
+        })
+        .catch(error => {
+            console.error("Wystąpił błąd:", error);
         });
     });
 });
+
+
+
+
+
+
+
+
+document.querySelectorAll('.favorite-toggle').forEach(item => {
+    item.addEventListener('click', function(event) {
+        event.preventDefault();  // Zapobiegamy domyślnemu zachowaniu (czyli przeładowaniu strony)
+
+        let productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
+        let icon = this.querySelector('i');  // Pobieramy ikonę serca
+        let text = this.querySelector('span');  // Pobieramy tekst w przycisku
+        let url = `/u/favorite/${productId}/toggle/`;  // URL do widoku
+
+        // Wykonaj zapytanie AJAX, aby dodać/usunąć produkt z ulubionych
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken'),  // Pobieramy CSRF token
+            },
+        })
+        .then(response => response.json())  // Odbieramy odpowiedź w formacie JSON
+        .then(data => {
+            if (data.success) {
+                // Jeśli produkt został dodany do ulubionych lub usunięty, zmieniamy klasę
+                if (data.is_favorite) {
+                    icon.classList.remove('bx-heart');    // Usuwamy puste serce
+                    icon.classList.add('bxs-heart');       // Dodajemy pełne serce
+                    this.classList.add('active');          // Dodajemy klasę 'active' dla przycisku
+                    text.textContent = 'Dodano do ulubionych'; // Zmieniamy tekst
+                } else {
+                    icon.classList.remove('bxs-heart');   // Usuwamy pełne serce
+                    icon.classList.add('bx-heart');        // Dodajemy puste serce
+                    this.classList.remove('active');       // Usuwamy klasę 'active' dla przycisku
+                    text.textContent = 'Dodaj do ulubionych'; // Zmieniamy tekst
+                }
+            }
+        })
+        .catch(error => console.error('Błąd AJAX:', error));  // Obsługujemy błąd AJAX
+    });
+});
+
+// Funkcja do pobierania CSRF token z ciasteczek
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+
+
+
+
+
+
+
+
+
