@@ -29,7 +29,7 @@ def send_activation_email(user, request):
     uid = urlsafe_base64_encode(str(user.pk).encode())  # Kodujemy ID użytkownika
 
 
-    szamanka = f"https://www.szamankasklep.pl"
+    szamanka = "www.szamankasklep.pl"
     domain = get_current_site(request).domain
     link = f"https://{szamanka}/u/activate/{uid}/{token}/"  # Tworzymy link do aktywacji
 
