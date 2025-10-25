@@ -80,8 +80,8 @@
         </div>
 
         <div class="search" id="search">
-            <form method="get" action="{% url 'products:search_products' %}">
-                <input class="search__input" type="text" name="q" value="{{ q }}" placeholder="Szukaj produktów...">
+            <form method="get" action="{% url 'products:search_products' %}" id="search-form">
+                <input class="search__input" id="search-input" type="text" name="q" value="{{ q }}" placeholder="Szukaj produktów...">
             </form>
             <button class="search__toggle" type="button" aria-label="Otwórz wyszukiwarkę">
                 <i class="bx bx-search"></i>
@@ -89,7 +89,7 @@
             <button class="search__clear" type="button" aria-label="Wyczyść">
                 <i class="bx bx-x"></i>
             </button>
-            <div class="live-results" id="live-results" role="listbox" aria-label="Podpowiedzi"></div>
+            <div class="live-results not-visible" id="live-results" role="listbox" aria-label="Podpowiedzi"></div>
         </div>
 
         <div class="ikonki_nav">
@@ -124,7 +124,7 @@
                     <div class="user-actions">
                         <a class="btn1 btn-primary" href="{% url 'users:login' %}?next={{ request.path }}">Zaloguj
                             się</a>
-                        <a class="btn1 btn-link" href="{% url 'users:signup' %}">Załóż konto</a>
+                        <a class="btn1 btn-link" href="{% url 'users:register' %}">Załóż konto</a>
                     </div>
                     {% endif %}
                 </div>
@@ -143,8 +143,9 @@
         <span class="bar"></span><span class="bar"></span><span class="bar"></span>
     </button>
 </nav>
-
+<script src="{% static 'products/searching.js' %}"></script>
 <script src="{% static 'products/navbar.js' %}"></script>
 <script src="{% static 'products/cart-animations.js' %}"></script>
+
 </body>
 </html>

@@ -87,36 +87,13 @@ dropdowns.forEach((dropdown) => {
 
 
 
-const inp = document.querySelector('.search__input'); // Pole wyszukiwania
+
 const resultsBox = document.getElementById('search-results'); // Kontener dla wyników wyszukiwania
 const btn = document.querySelector('.search__toggle'); // Przycisk do otwierania wyszukiwarki
 const clearBtn = document.querySelector('.search__clear'); // Przycisk do czyszczenia wyszukiwania
 
 // Funkcja wyświetlająca wyniki wyszukiwania
-function showResults() {
-    const query = inp.value.trim(); // Pobieramy tekst z inputa
-    if (query.length > 0) {
-        // Wysyłamy zapytanie do backendu za pomocą AJAX (fetch)
-        fetch(`/products/search/?q=${query}`)
-            .then(response => response.json())
-            .then(data => {
-                resultsBox.innerHTML = ''; // Czyszczenie poprzednich wyników
-                if (data.results.length > 0) {
-                    // Jeśli są wyniki, wyświetlamy je w kontenerze
-                    data.results.forEach(product => {
-                        const resultItem = document.createElement('div');
-                        resultItem.textContent = product.name; // Nazwa produktu
-                        resultsBox.appendChild(resultItem);
-                    });
-                } else {
-                    resultsBox.innerHTML = '<div>Brak wyników</div>'; // Jeśli brak wyników
-                }
-            })
-            .catch(error => console.error('Błąd wyszukiwania:', error));
-    } else {
-        resultsBox.innerHTML = '';  // Usuwa wyniki, gdy pole jest puste
-    }
-}
+
 
 // Aktywacja wyszukiwania po kliknięciu w przycisk otwierający wyszukiwarkę
 btn.addEventListener('click', () => {
@@ -127,11 +104,18 @@ btn.addEventListener('click', () => {
     }
 });
 
+
+
+
+
 // Wyczyść wyniki po kliknięciu w przycisk czyszczenia
 clearBtn.addEventListener('click', () => {
-    inp.value = '';  // Wyczyść pole
-    resultsBox.innerHTML = '';  // Wyczyść wyniki
-    inp.focus();  // Ustawienie kursora w input
+
+     resultsBox.classList.add('not-visible');
+     searchInput.value = '';
+     resultsBox.innerHTML = '';
+     console.log('hello')
+
 });
 
 // Reagowanie na każde wpisanie tekstu w pole wyszukiwania
@@ -230,8 +214,9 @@ function() {
   const input = document.getElementById("search__input");
   const box = document.getElementById("live-results");
   const apiUrl = "{% url 'product_search_api' %}";
+  console.log("API URL:", apiUrl);  // Logowanie URL API
   let lastController = null;
-  let activeIndex = -1; // do nawigacji klawiaturą
+  let activeIndex = -1;
   let items = [];
 
   function debounce(fn, delay) {
@@ -249,13 +234,14 @@ function() {
     activeIndex = -1;
   }
 
-  function render(results) {
-    if (!results.length) { clearBox(); return; }
-    box.innerHTML = results.map(r => `
-    <div class="live-result">${escapeHtml(r.name)}</div>
-    `).join("");
-    box.style.display = "block";
-  }
+function render(results) {
+  console.log("Rendering results: ", results);  // Logowanie wyników
+  if (!results.length) { clearBox(); return; }
+  box.innerHTML = results.map(r => `
+    <div class="live-result">${escapeHtml(r.product_name)}</div>
+  `).join("");
+  box.style.display = "block";
+}
 
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, s => ({
@@ -263,41 +249,38 @@ function() {
     }[s]));
   }
 
-  function formatPrice(val) {
-    try {
-      return new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(val);
-    } catch {
-      return val;
+const fetchLive = debounce(async function(q) {
+  if (!q) {
+    clearBox();
+    return;
+  }
+  console.log("Fetching API with query: ", q);  // Sprawdzenie, czy zapytanie jest wysyłane
+  try {
+    if (lastController) lastController.abort();
+    lastController = new AbortController();
+    const url = `${apiUrl}?q=${encodeURIComponent(q)}&limit=8`;
+    console.log("Request URL: ", url);  // Logowanie pełnego URL
+    const res = await fetch(url, { signal: lastController.signal, headers: { "Accept": "application/json" }});
+    console.log("API response status: ", res.status);  // Sprawdzamy status odpowiedzi
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    console.log("API response data: ", data);  // Logowanie odpowiedzi z API
+    render(data.results || []);
+  } catch (e) {
+    console.error("API fetch error: ", e);  // Logowanie błędów
+    if (e.name !== "AbortError") {
+      clearBox();
     }
   }
-
-  const fetchLive = debounce(async function(q) {
-    if (!q) { clearBox(); return; }
-    try {
-      // anuluj poprzedni request, by uniknąć wyścigów
-      if (lastController) lastController.abort();
-      lastController = new AbortController();
-      const url = `${apiUrl}?q=${encodeURIComponent(q)}&limit=8`;
-      const res = await fetch(url, { signal: lastController.signal, headers: { "Accept": "application/json" }});
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const data = await res.json();
-      render(data.results || []);
-    } catch (e) {
-      if (e.name !== "AbortError") {
-        clearBox();
-        // opcjonalnie pokaż komunikat błędu
-      }
-    }
-  }, 250);
+}, 250);
 
   input.addEventListener("input", (e) => {
-    fetchLive(e.target.value.trim());
+    console.log("Input value:", e.target.value);  // Logowanie wartości wejściowej
+    fetchLive(e.target.value.trim());  // Wysyłanie zapytania
   });
 
-  // zamykanie po wyjściu z pola
   input.addEventListener("blur", () => setTimeout(clearBox, 120));
 
-  // nawigacja klawiaturą
   input.addEventListener("keydown", (e) => {
     if (!items.length) return;
     if (e.key === "ArrowDown") {
@@ -323,6 +306,14 @@ function() {
     if (items[activeIndex]) items[activeIndex].scrollIntoView({ block: "nearest" });
   }
 }();
+
+
+
+
+
+
+
+
 
 
 

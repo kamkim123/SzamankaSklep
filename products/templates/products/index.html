@@ -26,6 +26,10 @@
 
     <title>Szamanka sklep</title>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+
+        crossorigin="anonymous"></script>
+
     <script>
         var cartAddUrl = "{% url 'orders:cart_add' %}";
     </script>
@@ -80,7 +84,7 @@
                 <a href="{% url 'products:index' %}?type=suplementy">
                     <div class="category1-wrapper">
                         <div class="category-image-wrapper">
-                            <img src="{% static 'products/images/suplements.jpg' %}" alt="heart" class="vegan">
+                            <img src="{% static 'products/images/vitamins.jpeg' %}" alt="heart" class="vegan">
                         </div>
                         <p class="text-category">Suplementy</p>
                     </div>
@@ -90,7 +94,7 @@
                 <a href="{% url 'products:index' %}?type=kosmetyki do włosów">
                     <div class="category1-wrapper">
                         <div class="category-image-wrapper">
-                            <img src="{% static 'products/images/bottles.jpg' %}" alt="soap" class="vegan">
+                            <img src="{% static 'products/images/cosmeticsAI.jpeg' %}" alt="soap" class="vegan">
                         </div>
                         <p class="text-category">Kosmetyki</p>
                     </div>
@@ -100,7 +104,7 @@
                 <a href="{% url 'products:index' %}?type=masci">
                     <div class="category1-wrapper">
                         <div class="category-image-wrapper" id="margin-cat-icon1">
-                            <img src="{% static 'products/images/154.jpg' %}" alt="oil" class="vegan">
+                            <img src="{% static 'products/images/balm.jpeg' %}" alt="oil" class="vegan">
                         </div>
                         <p class="text-category">Masci</p>
                     </div>
@@ -110,7 +114,7 @@
                 <a href="{% url 'products:index' %}?type=ziola">
                     <div class="category1-wrapper">
                         <div class="category-image-wrapper">
-                            <img src="{% static 'products/images/spray.jpg' %}" alt="spray" class="vegan">
+                            <img src="{% static 'products/images/herbs.jpeg' %}" alt="spray" class="vegan">
                         </div>
                         <p class="text-category">Ziola</p>
                     </div>
@@ -120,7 +124,7 @@
                 <a href="{% url 'products:index' %}?type=inne">
                     <div class="category1-wrapper">
                         <div class="category-image-wrapper">
-                            <img src="{% static 'products/images/pasta-do-zebow.jpg' %}" alt="natural" class="vegan">
+                            <img src="{% static 'products/images/cleaning.jpeg' %}" alt="natural" class="vegan">
                         </div>
                         <p class="text-category">Inne</p>
                     </div>
@@ -347,6 +351,8 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script src="{% static 'products/index.js' %}"></script>
+<script src="{% static 'products/searching.js' %}"></script>
+<script src="{% static 'products/navbar.js' %}"></script>
 </body>
 </html>
 

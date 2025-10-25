@@ -1,7 +1,7 @@
 # products/urls.py
 from django.urls import path, include
 from . import views
-from .views import ProductListView, ProductSearchView, ProductSearchAPI
+from .views import ProductListView, ProductSearchView, ProductSearchAPI, search_results
 
 app_name = "products"
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
     path("polityka-prywatnosci/", views.private, name="private"),  # Ścieżka do polityki prywatności
     path("search/", ProductSearchView.as_view(), name="search_products"),
     path("api/szukaj", ProductSearchAPI.as_view(), name="product_search_api"),
+    path("search2/", search_results, name="search2"),
 ]
 
 

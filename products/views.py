@@ -141,7 +141,7 @@ class ProductSearchAPI(View):
             qs = qs.filter(Q(product_name__icontains=q))
         qs = qs.order_by("product_name")[:limit]
 
-        data = [{"product_name": p.name} for p in qs]
+        data = [{"product_name": p.product_name} for p in qs]
 
         return JsonResponse({"results": data})
 
@@ -178,8 +178,41 @@ def search_products(request):
     query = request.GET.get('q', '')  # Pobieramy zapytanie 'q'
     if query:
         # Filtrujemy produkty na podstawie nazwy
-        products = Product.objects.filter(name__icontains=query)
-        results = [{'id': product.id, 'name': product.name} for product in products]
+        products = Product.objects.filter(product_name__icontains=query)
+        results = [{'id': product.id, 'product_name': product.name} for product in products]
     else:
         results = []
     return JsonResponse({'results': results})
+
+
+
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_protect
+
+
+def search_results(request):
+    # jeśli koniecznie chcesz sprawdzić „AJAX”:
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    res = None
+    game = request.POST.get('game', '')
+    qs = Product.objects.filter(product_name__icontains=game)[:10]
+
+    if len(qs) > 0 and len(game) > 0:
+        data = []
+        for pos in qs:
+            item = {
+                'product_name': pos.product_name,
+            }
+            data.append(item)
+        res = data
+    else:
+        res = 'No products found'
+
+    return JsonResponse({'data': res})
+
+
+
+
+
+
+

@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.encoding import force_str
 from django.views.decorators.http import require_http_methods
 from .forms import SignupForm, EmailAuthenticationForm
 from .models import Favorite, Profile
@@ -25,34 +26,37 @@ def home(request):
 
 def send_activation_email(user, request):
     token = default_token_generator.make_token(user)  # Tworzymy token
-    uid = urlsafe_base64_encode(str(user.pk).encode()).decode()  # Kodujemy ID użytkownika
+    uid = urlsafe_base64_encode(str(user.pk).encode())  # Kodujemy ID użytkownika
 
     domain = get_current_site(request).domain
-    link = f"http://{domain}/activate/{uid}/{token}/"  # Tworzymy link do aktywacji
+    link = f"http://{domain}/u/activate/{uid}/{token}/"  # Tworzymy link do aktywacji
 
-    message = render_to_string('users/activation_email.html', {
+    message_html = render_to_string('users/activation_email.html', {
         'user': user,
         'activation_link': link,
     })
 
+    # Podaj też wersję tekstową (krótki fallback)
     send_mail(
-        'Aktywacja konta',
-        message,
-        'noreply@example.com',  # Adres nadawcy
-        [user.email],
+        subject='Aktywacja konta',
+        message=f'Aktywuj konto: {link}',
+        from_email='noreply@example.com',
+        recipient_list=[user.email],
+        html_message=message_html,  # jeśli szablon jest HTML
     )
 
 
 def activate(request, uidb64, token):
     try:
-        uid = urlsafe_base64_decode(uidb64).decode()
+        uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
     except (TypeError, ValueError, User.DoesNotExist):
         user = None
 
     if user and default_token_generator.check_token(user, token):
         # Aktywuj konto użytkownika
-        user.profile.is_active = True
+        user.is_active = True
+        user.save(update_fields=["is_active"])
         user.profile.save()
         messages.success(request, "Twoje konto zostało aktywowane!")
         return redirect("users:login")  # Przekierowanie na stronę logowania
@@ -67,8 +71,10 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.is_active = False  # ← BLOKUJE logowanie do czasu aktywacji
+            user.save(update_fields=["is_active"])
             # Tworzymy profil użytkownika, ustawiamy, że konto nie jest aktywowane
-            profile = Profile.objects.create(user=user)
+
 
             # Tworzymy użytkownika i wysyłamy link aktywacyjny
             send_activation_email(user, request)
