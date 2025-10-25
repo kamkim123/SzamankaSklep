@@ -28,8 +28,10 @@ def send_activation_email(user, request):
     token = default_token_generator.make_token(user)  # Tworzymy token
     uid = urlsafe_base64_encode(str(user.pk).encode())  # Kodujemy ID użytkownika
 
+
+    szamanka = "www.szamankasklep.pl/"
     domain = get_current_site(request).domain
-    link = f"http://{domain}/u/activate/{uid}/{token}/"  # Tworzymy link do aktywacji
+    link = f"https://{szamanka}/u/activate/{uid}/{token}/"  # Tworzymy link do aktywacji
 
     message_html = render_to_string('users/activation_email.html', {
         'user': user,
