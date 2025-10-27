@@ -6,6 +6,7 @@
     {% load static %}
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'users/favorites.css' %}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -28,10 +29,9 @@
             </a>
             <div class="favorite-info">
                 <h3>{{ favorite.product.product_name }}</h3>
-                <p>{{ favorite.product.description }}</p>
+
                 <!-- Używamy data-product-id zamiast href -->
-                <a href="javascript:void(0);" class="btn btn-remove" data-product-id="{{ favorite.product.pk }}">Usuń z
-                    ulubionych</a>
+                <a href="javascript:void(0);" class="btn btn-remove" data-product-id="{{ favorite.product.pk }}">Usuń&nbsp;z&nbsp;ulubionych</a>
             </div>
         </div>
         {% endfor %}

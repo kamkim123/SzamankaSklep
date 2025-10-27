@@ -465,7 +465,6 @@ nav {
     border:1px solid #ddd;
     margin-top: 4px;
     width:100%;
-
     max-width:520px;
     border-radius: 10px;
     z-index:1000;
@@ -485,6 +484,11 @@ nav {
 
 .item {
     text-decoration: none;
+}
+
+.col-10{
+    border-bottom: 1px green groove;
+    padding: 7px 0;
 }
 
 
@@ -856,6 +860,10 @@ button.logout-button:hover {
         width: 30px;
         height: 30px;
     }
+
+    .search.active-search .bx-search {
+    cursor: pointer;  /* Zmiana kursora, by pokazać, że kliknięcie jest możliwe */
+}
 
     .search__input {
         padding-left: 42px;    /* dopasuj odstęp do mniejszego przycisku */

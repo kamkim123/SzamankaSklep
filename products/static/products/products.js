@@ -184,32 +184,32 @@ document.addEventListener('DOMContentLoaded', function () {
     })();
   });
 
-  // ===== WYSZUKIWARKA =====
-  var box = document.getElementById('search');
-  if (box) {
-    var btn = box.querySelector('.search__toggle');
-    var inp = box.querySelector('.search__input');
-    var clearBtn = box.querySelector('.search__clear');
 
-    function openSearch() {
-      box.classList.add('active-search');
-      if (inp) { inp.disabled = false; inp.focus(); }
-    }
-    function closeSearch() {
-      box.classList.remove('active-search');
-      if (inp) { inp.value = ''; inp.blur(); inp.disabled = true; }
-    }
-
-    if (btn) {
-      btn.addEventListener('click', function () {
-        if (!box.classList.contains('active-search')) openSearch();
-        else if (inp) inp.focus();
-      });
-    }
-    if (clearBtn) clearBtn.addEventListener('click', closeSearch);
-    box.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSearch(); });
-  }
 });
+
+// ===== WYSZUKIWARKA =====
+    const box = document.getElementById('search');
+    const btn = box.querySelector('.search__toggle');
+    const inp = box.querySelector('.search__input');
+    const clearBtn = box.querySelector('.search__clear');
+
+
+    function openSearch(){
+        box.classList.add('active-search');
+        inp.disabled = false; inp.focus();
+    }
+    function closeSearch(){
+        box.classList.remove('active-search');
+        inp.value=''; inp.blur(); inp.disabled = true;
+    }
+
+    btn.addEventListener('click', () => {
+        if (!box.classList.contains('active-search')) openSearch();
+        else inp.focus(); // gdy otwarte, tylko focus na input
+    });
+    clearBtn.addEventListener('click', closeSearch);
+    box.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+
 
 
 

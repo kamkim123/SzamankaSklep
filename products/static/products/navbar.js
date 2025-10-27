@@ -1,3 +1,6 @@
+console.log("navbar.js załadowany!");
+
+
 document.addEventListener('DOMContentLoaded', function () {
   // ===== BURGER =====
   var burger = document.querySelector('.burger');
@@ -86,9 +89,7 @@ dropdowns.forEach((dropdown) => {
 
 
 
-
-
-const resultsBox = document.getElementById('search-results'); // Kontener dla wyników wyszukiwania
+const resultsBox = document.getElementById('live-results'); // Kontener dla wyników wyszukiwania
 const btn = document.querySelector('.search__toggle'); // Przycisk do otwierania wyszukiwarki
 const clearBtn = document.querySelector('.search__clear'); // Przycisk do czyszczenia wyszukiwania
 
@@ -97,20 +98,19 @@ const clearBtn = document.querySelector('.search__clear'); // Przycisk do czyszc
 
 // Aktywacja wyszukiwania po kliknięciu w przycisk otwierający wyszukiwarkę
 btn.addEventListener('click', () => {
-    if (!inp.disabled) {
-        inp.disabled = false;  // Odblokowanie input po kliknięciu
-        inp.focus();  // Ustawienie kursora w input
-        document.getElementById('search').classList.add('active-search');  // Dodanie klasy do rozwinięcia wyszukiwarki
+        console.log('search clicked')
+        if (!searchInput.disabled) {
+        searchInput.disabled = false;
+        searchInput.focus();
+        document.getElementById('search').classList.add('active-search');
     }
 });
 
 
 
-
-
 // Wyczyść wyniki po kliknięciu w przycisk czyszczenia
 clearBtn.addEventListener('click', () => {
-
+        console.log('X search clicked')
      resultsBox.classList.add('not-visible');
      searchInput.value = '';
      resultsBox.innerHTML = '';

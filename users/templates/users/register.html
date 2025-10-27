@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="{% static 'users/style.css' %}">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <link type="module" href="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" rel="module" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
 <body>
@@ -50,6 +51,14 @@
         {% for e in form.errors.password2 %}<div style="color:#c00">{{ e }}</div>{% endfor %}
       </div>
 
+      <!-- Zgoda na Regulamin i Politykę Prywatności -->
+      <div class="input-box1">
+        <label>
+          <input type="checkbox" name="accept_terms" required>
+          Zapoznałem się z <a href="/regulamin" target="_blank">Regulaminem</a> oraz <a href="/polityka-prywatnosci" target="_blank">Polityką Prywatności</a>.
+        </label>
+      </div>
+
       <button type="submit" class="baton1">Utwórz konto</button>
 
       <div class="register-link">
@@ -58,14 +67,12 @@
     </form>
   </div>
 
-
-
-   {% include "products/footer.html" %}
+  {% include "products/footer.html" %}
   <!-- Skrypty Ionicons -->
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
-<script src="{% static 'products/detail.js' %}"></script>
+  <script src="{% static 'products/detail.js' %}"></script>
 
 </body>
 </html>

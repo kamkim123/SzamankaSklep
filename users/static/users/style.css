@@ -197,3 +197,18 @@ input:-webkit-autofill{
         background: var(--bg);
     }
 }
+
+
+.input-box1{
+    padding:1rem;
+}
+
+.input-box1 input{
+    margin-right:.4rem;
+}
+
+.input-box1 a{
+    color:green;
+    font-weight:bold;
+}
+

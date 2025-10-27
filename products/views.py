@@ -202,6 +202,7 @@ def search_results(request):
         for pos in qs:
             item = {
                 'product_name': pos.product_name,
+                'product_id': pos.id
             }
             data.append(item)
         res = data

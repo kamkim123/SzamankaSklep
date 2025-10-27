@@ -30,7 +30,7 @@ const sendSearchData = (game) => {
             if (Array.isArray(data)){
                 data.forEach(game=> {
                     resultsBox.innerHTML += `
-                        <a href="" class="item">
+                        <a href="/products/${game.product_id}" class="item">
                             <div class="row mt-2 mb-2">
                                <div class="col-10">
                                     <h5>${game.product_name}</h5>
@@ -43,7 +43,7 @@ const sendSearchData = (game) => {
             }
             else {
                 if (searchInput.value.length > 0){
-                    resultsBox.innerHtml = `<b>${data}</b>`
+                    resultsBox.innerHTML = `<b>${data}</b>`
                 }
                 else{
                     resultsBox.classList.add('not-visible')
@@ -69,3 +69,47 @@ searchInput.addEventListener('keyup', e=>{
 
     sendSearchData(e.target.value)
 })
+
+
+
+
+
+
+// Aktywacja wyszukiwania po kliknięciu w przycisk otwierający wyszukiwarkę
+btn.addEventListener('click', () => {
+
+    searchInput.disabled = false;
+    searchInput.focus();
+    document.getElementById('search').classList.add('active-search');
+
+
+    if (searchInput.value.length > 0) {
+        resultsBox.classList.remove('not-visible');
+    }
+});
+
+// Wyczyść wyniki po kliknięciu w przycisk czyszczenia
+clearBtn.addEventListener('click', () => {
+    // Ukrycie wyników wyszukiwania
+    resultsBox.classList.add('not-visible');
+    searchInput.value = '';  // Wyczyść pole wyszukiwania
+
+});
+
+// Reagowanie na każde wpisanie tekstu w pole wyszukiwania
+searchInput.addEventListener('input', (e) => {
+
+    // Jeśli pole nie jest puste, pokazujemy wyniki
+    if (e.target.value.length > 0) {
+        resultsBox.classList.remove('not-visible');
+        sendSearchData(e.target.value);  // Wywołanie funkcji wysyłającej dane
+    } else {
+        // Jeśli pole jest puste, ukrywamy wyniki
+        resultsBox.classList.add('not-visible');
+    }
+});
+
+
+
+
+

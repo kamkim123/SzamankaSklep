@@ -6,6 +6,7 @@
     <title>Regulamin Sklepu</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'products/regulamin.css' %}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 {% include "products/navbar.html" %}
@@ -30,14 +31,16 @@
     <section id="postanowienia-ogolne" class="section">
         <h2>1. Postanowienia ogólne</h2>
         <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer in sapien a odio hendrerit
-            accumsan. Curabitur tristique, nibh in lacinia pharetra, urna magna volutpat nunc, eget
-            posuere mi quam id arcu. Mauris dapibus, nulla id dictum dictum, sem lorem bibendum nisi,
-            non fermentum velit lorem vel nisl.
+            Niniejszy regulamin określa zasady korzystania ze sklepu internetowego "Szamanka", który działa pod adresem <a href="https://www.twojsklep.pl">www.twojsklep.pl</a>.
         </p>
         <p>
-            Proin auctor, ipsum at fermentum rhoncus, nibh mauris commodo mauris, at aliquet turpis odio
-            ut tortor. Suspendisse potenti. Sed non mi vitae risus dapibus semper.
+            <strong>Dane sprzedawcy:</strong><br>
+            Nazwa firmy: <strong>Szamanka Sp. z o.o.</strong><br>
+            Adres siedziby: <strong>Ul. Piusa XI 29c, 05-123 Chotomów</strong><br>
+            Adres sklepu: <strong>Ul. Kilińskiego 22, 05-190 Nasielsk</strong><br>
+            NIP: <strong>5361978706</strong><br>
+            Numer REGON: 528130308<br>
+            Email: <a href="mailto:szamankasklep@wp.pl">szamankasklep@wp.pl</a><br>
         </p>
     </section>
 
@@ -45,51 +48,68 @@
         <h2>2. Definicje</h2>
         <dl class="definicje">
             <dt>Serwis</dt>
-            <dd>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</dd>
+            <dd>Sklep internetowy "Szamanka" dostępny pod adresem <a href="https://www.twojsklep.pl">www.twojsklep.pl</a>, który umożliwia zakup produktów online.</dd>
             <dt>Użytkownik</dt>
-            <dd>Praesent vehicula, risus non cursus ullamcorper, magna augue cursus nibh.</dd>
+            <dd>Osoba, która korzysta z usług sklepu internetowego "Szamanka", dokonując zakupów lub korzystając z innych funkcji strony.</dd>
             <dt>Konto</dt>
-            <dd>Etiam at velit ac nibh ultrices consequat. Integer finibus arcu at mauris.</dd>
+            <dd>Indywidualne konto użytkownika w sklepie, które pozwala na zarządzanie danymi, historią zamówień oraz preferencjami.</dd>
         </dl>
     </section>
 
     <section id="warunki-korzystania" class="section">
         <h2>3. Warunki korzystania</h2>
         <ol>
-            <li>Ut porttitor lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
-            <li>Phasellus euismod, velit sed faucibus pellentesque, massa arcu porta purus.</li>
-            <li>Aliquam erat volutpat. Cras hendrerit, arcu nec feugiat porta, massa nisl volutpat nibh.</li>
-            <li>Nullam et turpis nec lectus aliquet iaculis. Duis vitae arcu sed justo luctus pharetra.</li>
+            <li>Sklep internetowy "Szamanka" umożliwia zakup produktów zgodnie z ofertą przedstawioną na stronie.</li>
+            <li>Aby złożyć zamówienie, użytkownik musi posiadać konto lub dokonać zakupu bez rejestracji.</li>
+            <li>Użytkownik zobowiązuje się do podania prawdziwych danych przy rejestracji oraz składaniu zamówienia.</li>
+            <li>Sklep zastrzega sobie prawo do zmiany cen oraz asortymentu dostępnego na stronie.</li>
         </ol>
-        <p class="note">Uwaga: powyższe punkty to tekst zastępczy (lorem ipsum).</p>
+        <p class="note">Uwaga: powyższe punkty to przykładowe zapisy dotyczące warunków korzystania z serwisu.</p>
     </section>
 
     <section id="platnosci" class="section">
         <h2>4. Płatności</h2>
         <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere, leo sed vulputate
-            vulputate, urna erat commodo justo, at fermentum arcu nibh in augue. Vivamus vitae metus
-            porttitor, porta augue ut, posuere arcu.
+            Sklep internetowy oferuje kilka metod płatności:
+        </p>
+        <ul>
+            <li>Przelewy24 – szybkie płatności online</li>
+            <li>Przelew tradycyjny – na konto bankowe: <strong>02 1020 1026 0000 1702 0650 5954</strong></li>
+            <li>Gotówka przy odbiorze – dostępna tylko przy wyborze dostawy osobistej</li>
+        </ul>
+        <p>
+            Szczegóły dotyczące poszczególnych metod płatności oraz opłaty dodatkowe znajdują się w zakładce płatności na naszej stronie.
         </p>
     </section>
 
     <section id="reklamacje" class="section">
         <h2>5. Reklamacje i kontakt</h2>
         <p>
-            Maecenas gravida, eros vel scelerisque placerat, enim nibh placerat nunc, non bibendum
-            nulla justo eget mauris. Sed mollis scelerisque dui, non dictum arcu pellentesque nec.
+            W przypadku reklamacji, prosimy o kontakt z naszym działem obsługi klienta pod adresem:
         </p>
         <ul>
-            <li>E-mail: kontakt@example.com</li>
-            <li>Adres: Ul. Przykładowa 1, 00-000 Miasto</li>
+            <li>E-mail: <a href="mailto:szamankasklep@wp.pl">szamankasklep@wp.pl</a></li>
+            <li>Adres: Ul. Kilińskiego 22, 05-190 Nasielsk</li>
         </ul>
+        <p>
+            Reklamacje rozpatrujemy w ciągu 14 dni roboczych od otrzymania zgłoszenia. Zgodnie z przepisami prawa, masz prawo do reklamacji towaru, jeśli jest on wadliwy lub niezgodny z umową.
+        </p>
+    </section>
+
+    <section id="odstapienie" class="section">
+        <h2>6. Odstąpienie od umowy</h2>
+        <p>
+            Zgodnie z ustawą o prawach konsumenta, masz prawo do odstąpienia od umowy w terminie 14 dni roboczych bez podania przyczyny. Termin ten liczy się od dnia, w którym otrzymałeś towar.
+        </p>
+        <p>
+            Aby skorzystać z prawa do odstąpienia, prosimy o kontakt z naszym działem obsługi klienta pod adresem: <a href="mailto:szamankasklep@wp.pl">szamankasklep@wp.pl</a>.
+        </p>
     </section>
 
     <section id="postanowienia-koncowe" class="section">
-        <h2>6. Postanowienia końcowe</h2>
+        <h2>7. Postanowienia końcowe</h2>
         <p>
-            Nunc eu lorem ac metus venenatis rhoncus. Donec non tortor eget arcu consequat tincidunt.
-            Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.
+            Wszelkie zmiany w regulaminie będą publikowane na stronie sklepu. Zmiany wchodzą w życie z dniem ich opublikowania, chyba że regulamin stanowi inaczej.
         </p>
     </section>
 </main>
