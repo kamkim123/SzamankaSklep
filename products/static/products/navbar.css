@@ -474,7 +474,6 @@ nav {
 .live-result{
     padding:10px 12px;
     cursor:pointer;
-
 }
 
 .live-result:hover, .live-result[aria-selected="true"]{
@@ -488,7 +487,7 @@ nav {
 
 .col-10{
     border-bottom: 1px green groove;
-    padding: 7px 0;
+    padding: 4px 0;
 }
 
 
@@ -976,7 +975,7 @@ button.logout-button:hover {
 
         margin-left:auto;
         margin-right: -1.5rem;
-        font-size: 2px;
+        font-size: 13px;
     }
 
     .search__toggle .bx-search{
@@ -997,6 +996,11 @@ button.logout-button:hover {
     .search__input {
         font-size: 10px;
     }
+
+    .live-results {
+
+    top:1.8rem;
+}
 
 
 
