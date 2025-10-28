@@ -64,65 +64,93 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ===== LEWE MENU – rozwijane panele =====
-  var menuLeft = document.querySelector('.products-menu');
-  if (menuLeft) {
-    menuLeft.addEventListener('click', function (e) {
-      var btn = e.target.closest('.submenu-toggle');
-      if (!btn) return;
+// ===== LEWE MENU – rozwijane panele =====
+var menuLeft = document.querySelector('.products-menu');
+if (menuLeft) {
+  menuLeft.addEventListener('click', function (e) {
+    var btn = e.target.closest('.submenu-toggle');
+    if (!btn) return;
 
-      var block = btn.closest('.submenu-block');
-      var panel = block && block.nextElementSibling;
-      if (!panel || !panel.classList.contains('submenu-panel')) return;
+    var block = btn.closest('.submenu-block');
+    var panel = block && block.nextElementSibling;
+    if (!panel || !panel.classList.contains('submenu-panel')) return;
 
-      var willOpen = !panel.classList.contains('is-open');
-      panel.classList.toggle('is-open', willOpen);
-      btn.classList.toggle('is-open', willOpen);
-    });
+    var willOpen = !panel.classList.contains('is-open');
+    panel.classList.toggle('is-open', willOpen);
+    btn.classList.toggle('is-open', willOpen);
+  });
+}
+
+// ===== LEWE MENU -> filtr ?type=... =====
+(function () {
+  var leftMenu = document.querySelector('.products-menu');
+  if (!leftMenu) return;
+
+  function goWithType(value, addBestsellers = false) {
+    var url = new URL(window.location.href);
+
+    // Dodajemy lub usuwamy parametr bestsellers
+    if (addBestsellers) {
+      url.searchParams.set('bestsellers', 'true');
+    } else {
+      url.searchParams.delete('bestsellers');
+    }
+
+    if (value) {
+      url.searchParams.set('type', value);
+    } else {
+      url.searchParams.delete('type');
+    }
+
+    url.searchParams.delete('page'); // reset paginacji przy zmianie filtra
+    window.location.assign(url.toString());
   }
 
-  // ===== LEWE MENU -> filtr ?type=... =====
-  (function () {
-    var leftMenu = document.querySelector('.products-menu');
-    if (!leftMenu) return;
+  leftMenu.addEventListener('click', function (e) {
+    if (e.target.closest('.submenu-toggle')) return;
 
-    function goWithType(value) {
-      var url = new URL(window.location.href);
-      if (value) url.searchParams.set('type', value);
-      else url.searchParams.delete('type');
-      url.searchParams.delete('page'); // reset paginacji przy zmianie filtra
-      window.location.assign(url.toString());
-    }
+    var link = e.target.closest('.products-menu-link, .products-cat2, .title-link');
+    if (!link) return;
 
-    leftMenu.addEventListener('click', function (e) {
-      if (e.target.closest('.submenu-toggle')) return;
+    var isSectionTitle = link.classList.contains('title-link') && !link.hasAttribute('data-type');
+    if (isSectionTitle) return;
 
-      var link = e.target.closest('.products-menu-link, .products-cat2, .title-link');
-      if (!link) return;
+    e.preventDefault();
 
-      var isSectionTitle = link.classList.contains('title-link') && !link.hasAttribute('data-type');
-      if (isSectionTitle) return;
+    var raw = link.getAttribute('data-type');
+    var value = (raw !== null ? raw : link.textContent).trim();
 
-      e.preventDefault();
+    // Sprawdzamy, czy kliknięto w "Bestsellery"
+    var addBestsellers = (value === "Bestsellery");
 
-      var raw = link.getAttribute('data-type');
-      var value = (raw !== null ? raw : link.textContent).trim();
-
-      leftMenu.querySelectorAll('.products-menu-link, .products-cat2, .title-link').forEach(function (el) {
-        el.classList.remove('active');
-      });
-      link.classList.add('active');
-
-      goWithType(value);
+    // Usuwamy klasę 'active' ze wszystkich linków
+    leftMenu.querySelectorAll('.products-menu-link, .products-cat2, .title-link').forEach(function (el) {
+      el.classList.remove('active');
     });
 
-    var currentType = new URLSearchParams(location.search).get('type') || '';
-    if (currentType) {
-      leftMenu.querySelectorAll('.products-menu-link, .products-cat2, .title-link').forEach(function (el) {
-        var val = (el.getAttribute('data-type') || el.textContent).trim();
-        el.classList.toggle('active', val === currentType);
-      });
-    }
-  })();
+    // Dodajemy klasę 'active' tylko do klikniętego linku
+    link.classList.add('active');
+
+    // Przekazujemy do funkcji goWithType, czy kliknięto "Bestsellery"
+    goWithType(value, addBestsellers);
+  });
+
+  var currentType = new URLSearchParams(location.search).get('type') || '';
+  var currentBestsellers = new URLSearchParams(location.search).get('bestsellers') === 'true';
+
+  if (currentType || currentBestsellers) {
+    leftMenu.querySelectorAll('.products-menu-link, .products-cat2, .title-link').forEach(function (el) {
+      var val = (el.getAttribute('data-type') || el.textContent).trim();
+
+      // Ustawiamy klasę 'active' jeśli link ma odpowiednią kategorię lub jest to "Bestsellery"
+      if (val === currentType || (currentBestsellers && val === "Bestsellery")) {
+        el.classList.add('active');
+      }
+    });
+  }
+})();
+
+
 
   // ===== SORTOWANIE =====
   document.querySelectorAll('.sort-wrapper').forEach(function (wrapper) {
@@ -184,10 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })();
   });
 
-
-});
-
-// ===== WYSZUKIWARKA =====
+  // ===== WYSZUKIWARKA =====
     const box = document.getElementById('search');
     const btn = box.querySelector('.search__toggle');
     const inp = box.querySelector('.search__input');
@@ -210,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
     clearBtn.addEventListener('click', closeSearch);
     box.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
 
+});
 
 
 
@@ -359,6 +385,12 @@ function getCookie(name) {
   }
   return cookieValue;
 }
+
+
+
+
+
+
 
 
 
