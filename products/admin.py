@@ -95,6 +95,8 @@ class ProductResource(resources.ModelResource):
                                        widget=DefaultingCharWidget(""))
     product_type = fields.Field(column_name="Grupy towarów Detal", attribute="product_type", widget=ProductTypeWidget())
 
+
+
     class Meta:
         model = Product
         # import_id_fields jest wymagane, ale i tak nadpisujemy get_instance()
@@ -165,8 +167,11 @@ class ProductAdmin(ImportExportModelAdmin):
         "product_brand",
         "product_type",
         "is_bestseller",
+        "is_promotion",  # Dodane pole do listy
+        "is_new",  # Dodane pole do listy
+        "is_popular",  # Dodane pole do listy
     )
-    search_fields = ("product_name", "product_brand", "product_category")  # intowe product_code pomijamy w search_fields
+    search_fields = ("product_name", "product_brand", "product_category", "product_code")  # intowe product_code pomijamy w search_fields
     list_filter = ("product_vat", "product_type", "product_category", "product_brand")
-    list_editable = ("is_bestseller",)
+    list_editable = ("is_bestseller", "is_promotion", "is_new", "is_popular",)
 

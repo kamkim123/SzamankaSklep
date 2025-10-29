@@ -39,7 +39,11 @@ class Product(models.Model):
     )
     product_ingredients = models.TextField(max_length=1000, blank=True)
 
+
     is_bestseller = models.BooleanField(default=False)
+    is_promotion = models.BooleanField(default=False)  # Pole dla promocji
+    is_new = models.BooleanField(default=False)  # Pole dla nowości
+    is_popular = models.BooleanField(default=False)  # Pole dla popularności
 
     def __str__(self):
         return self.product_name

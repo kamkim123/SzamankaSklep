@@ -63,7 +63,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // ===== LEWE MENU – rozwijane panele =====
+
+
 // ===== LEWE MENU – rozwijane panele =====
 var menuLeft = document.querySelector('.products-menu');
 if (menuLeft) {
@@ -88,6 +89,11 @@ if (menuLeft) {
 
   function goWithType(value, addBestsellers = false) {
     var url = new URL(window.location.href);
+
+
+    url.searchParams.delete('nowosci');
+    url.searchParams.delete('promocje');
+    url.searchParams.delete('najpopularniejsze');
 
     // Dodajemy lub usuwamy parametr bestsellers
     if (addBestsellers) {
@@ -137,80 +143,110 @@ if (menuLeft) {
 
   var currentType = new URLSearchParams(location.search).get('type') || '';
   var currentBestsellers = new URLSearchParams(location.search).get('bestsellers') === 'true';
+  var currentNowosci = new URLSearchParams(location.search).get('nowosci') === 'true'; // Nowy warunek
+  var currentPromocje = new URLSearchParams(location.search).get('promocje') === 'true'; // Nowy warunek
+
 
   if (currentType || currentBestsellers) {
     leftMenu.querySelectorAll('.products-menu-link, .products-cat2, .title-link').forEach(function (el) {
       var val = (el.getAttribute('data-type') || el.textContent).trim();
 
       // Ustawiamy klasę 'active' jeśli link ma odpowiednią kategorię lub jest to "Bestsellery"
-      if (val === currentType || (currentBestsellers && val === "Bestsellery")) {
-        el.classList.add('active');
-      }
+      if (
+          val === currentType ||
+          (currentBestsellers && val === "Bestsellery") ||
+          (currentNowosci && val === "Nowości") || // Nowa logika dla Nowości
+          (currentPromocje && val === "Promocje") // Nowa logika dla Promocji
+         ) {
+          el.classList.add('active');
+         }
+
     });
   }
 })();
 
 
 
-  // ===== SORTOWANIE =====
-  document.querySelectorAll('.sort-wrapper').forEach(function (wrapper) {
-    var list  = wrapper.querySelector('.sort-list');
-    var items = wrapper.querySelectorAll('.sort-list li');
-    var label = wrapper.querySelector('.sort');
-    var caret = wrapper.querySelector('.caret');
-    if (!list || !label || !caret) return;
+// ===== SORTOWANIE =====
+document.querySelectorAll('.sort-wrapper').forEach(function (wrapper) {
+  var list  = wrapper.querySelector('.sort-list');
+  var items = wrapper.querySelectorAll('.sort-list li');
+  var label = wrapper.querySelector('.sort');
+  var caret = wrapper.querySelector('.caret');
+  if (!list || !label || !caret) return;
 
-    function toggle(open) {
-      var willOpen = (open !== undefined) ? open : !list.classList.contains('sort-list-open');
-      list.classList.toggle('sort-list-open', willOpen);
-      caret.classList.toggle('caret-rotate', willOpen);
-    }
+  function toggle(open) {
+    var willOpen = (open !== undefined) ? open : !list.classList.contains('sort-list-open');
+    list.classList.toggle('sort-list-open', willOpen);
+    caret.classList.toggle('caret-rotate', willOpen);
+  }
 
-    label.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
-    caret.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
-    document.addEventListener('click', function () { toggle(false); });
+  label.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
+  caret.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
+  document.addEventListener('click', function () { toggle(false); });
 
-    items.forEach(function (item) {
-      item.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+  items.forEach(function (item) {
+    item.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
 
-        label.textContent = item.textContent.trim();
-        items.forEach(function (o) { o.classList.remove('active'); });
-        item.classList.add('active');
-        toggle(false);
+      label.textContent = item.textContent.trim();  // Zmieniamy tekst w labelu na wybrany typ sortowania
+      items.forEach(function (o) { o.classList.remove('active'); });
+      item.classList.add('active');
+      toggle(false);
 
-        var v = item.getAttribute('data-type'); // Pobieraj tylko jeśli istnieje
+      var v = item.textContent.trim(); // Pobieramy tekst z linku, np. 'Nowości', 'Promocje'
 
-        try {
-          var u = new URL(window.location.href);
-          if (v) u.searchParams.set('type', v); else u.searchParams.delete('type');
-          u.searchParams.set('bestsellers', 'true'); // Ustaw 'bestsellers=true'
-          u.searchParams.delete('page');
-          window.location.assign(u.toString());
-        } catch (_) {
-          var q = (v ? ('?type=' + encodeURIComponent(v)) : '') + '&bestsellers=true'; // Dodaj 'bestsellers=true'
-          window.location.href = window.location.pathname + q;
-        }
-      });
+      // Tworzymy nowy URL
+      var u = new URL(window.location.href);
+
+      // Dodajemy odpowiedni parametr w URL, w zależności od klikniętego linku
+      if (v === "Bestsellery") {
+        u.searchParams.set('bestsellers', 'true');
+      } else {
+        u.searchParams.delete('bestsellers');
+      }
+
+      if (v === "Nowości") {
+        u.searchParams.set('nowosci', 'true');
+      } else {
+        u.searchParams.delete('nowosci');
+      }
+
+      if (v === "Promocje") {
+        u.searchParams.set('promocje', 'true');
+      } else {
+        u.searchParams.delete('promocje');
+      }
+
+      if (v === "Najpopularniejsze") {
+        u.searchParams.set('najpopularniejsze', 'true');
+      } else {
+        u.searchParams.delete('najpopularniejsze');
+      }
+
+      // Resetujemy paginację przy zmianie sortowania
+      u.searchParams.delete('page');
+      window.location.assign(u.toString());  // Przekierowanie na nowy URL z parametrami
     });
-
-
-
-    (function syncFromQuery() {
-      var current = new URLSearchParams(location.search).get('type') || '';
-      var matched = false;
-      items.forEach(function (li) {
-        var val = (li.getAttribute('data-type') || li.textContent).trim();
-        if (val === current) {
-          li.classList.add('active');
-          label.textContent = li.textContent.trim();
-          matched = true;
-        }
-      });
-      if (!matched) label.textContent = 'Produkty';
-    })();
   });
+
+  // Synchronizacja klasy 'active' w zależności od parametru w URL
+  (function syncFromQuery() {
+    var current = new URLSearchParams(location.search).get('type') || '';
+    var matched = false;
+    items.forEach(function (li) {
+      var val = li.textContent.trim();
+      if (val === current) {
+        li.classList.add('active');
+        label.textContent = li.textContent.trim();
+        matched = true;
+      }
+    });
+    if (!matched) label.textContent = 'Produkty';
+  })();
+});
+
 
   // ===== WYSZUKIWARKA =====
     const box = document.getElementById('search');

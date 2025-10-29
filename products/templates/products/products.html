@@ -50,9 +50,9 @@
         <div class="products-menu">
             <div class="products-menu-item-title">Kategorie</div>
             <div class="products-menu-item">
-                <span class="title-link" data-type="Promocje">Promocje</span>
+                <a href="{% url 'products:produkty' %}?promocje=true" class="title-link">Promocje</a>
                 <a href="{% url 'products:produkty' %}?bestsellers=true" class="title-link" id="bestsellers-link">Bestsellery</a>
-                <span class="title-link" data-type="Nowosci">Nowosci</span>
+                <a href="{% url 'products:produkty' %}?nowosci=true" class="title-link">Nowosci</a>
             </div>
 
             <div class="products-menu-item">
@@ -161,15 +161,22 @@
                 <div class="sort">Produkty</div>
                 <div class="caret"></div>
                 <ul class="sort-list">
-                    <li data-type="Najpopularniejsze">Najpopularniejsze</li>
-                    <li data-type="Nowosci">Nowosci</li>
-                    <li data-type="Promocje">Promocje</li>
+                    <li>
+                        <a href="{% url 'products:produkty' %}?najpopularniejsze=true">Najpopularniejsze</a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'products:produkty' %}?nowosci=true">Nowości</a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'products:produkty' %}?promocje=true">Promocje</a>
+                    </li>
                     <li>
                         <a href="{% url 'products:produkty' %}?bestsellers=true">Bestsellery</a>
                     </li>
                 </ul>
             </div>
-
 
 
             {% if products %}
@@ -197,8 +204,9 @@
 
                     <div class="products-cart{% if p.product_stock|default:0 <= 0 %} disabled{% endif %}">
                         <!-- Formularz wysyłający dane produktu do koszyka -->
-                        <button type="submit" class="cart-icon" data-product-id="{{ p.pk }}" >
-                            <img src="{% static 'products/images/shopping-cart-white.png' %}" alt="cart" class="cart-icon" />
+                        <button type="submit" class="cart-icon" data-product-id="{{ p.pk }}">
+                            <img src="{% static 'products/images/shopping-cart-white.png' %}" alt="cart"
+                                 class="cart-icon"/>
                         </button>
                     </div>
                 </form>
@@ -235,7 +243,6 @@
 
     </div>
 </section>
-
 
 
 {% include "products/footer.html" %}

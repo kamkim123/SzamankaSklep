@@ -94,6 +94,15 @@ class ProductListView(ListView):
         if 'bestsellers' in self.request.GET:
             qs = qs.filter(is_bestseller=True)
 
+        if 'promocje' in self.request.GET:
+            qs = qs.filter(is_promotion=True)
+
+        if 'nowosci' in self.request.GET:
+            qs = qs.filter(is_new=True)
+
+        if 'najpopularniejsze' in self.request.GET:
+            qs = qs.filter(is_popular=True)
+
         selected = (self.request.GET.get("type") or "").strip()
         if selected:
             qs = qs.filter(product_type=selected)
