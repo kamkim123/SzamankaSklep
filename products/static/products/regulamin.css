@@ -103,21 +103,7 @@ ol, ul{ padding-left: 24px; } /* Zwiększenie paddingu list */
   }
 }
 
-/* --- Ciemny motyw automatycznie --- */
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#0d1117;
-    --panel:#0f141b;
-    --text:#e6edf3;
-    --muted:#9aa6b2;
-    --accent:#77a6ff;
-    --border:#1f2630;
-    --shadow: 0 8px 18px rgba(0,0,0,.35);
-  }
-  body{ background: #0b0f14; }
-  .toc{ background: #0c1219; }
-  a:focus{ outline-color: var(--accent); }
-}
+/* --- Ciemny motyw automatycznie ---
 
 /* --- Druk --- */
 @media print{

@@ -179,24 +179,7 @@ input:-webkit-autofill{
     .input-box input{ height: 52px; }
 }
 
-/* ====== Dark fallback dla użytkowników z dark mode ====== */
-@media (prefers-color-scheme: dark){
-    :root{
-        --bg: #0b0f0d;
-        --card: rgba(255,255,255,.08);
-        --card-border: rgba(255,255,255,.14);
-        --text: #e6f4ea;
-        --muted: #bcd7c6;
-        --brand: #2ecc71;
-        --brand-strong: #24b763;
-        --shadow: 0 20px 40px rgba(0,0,0,.35);
-    }
-    .input-box label{ background: transparent; }
-    .input-box input:focus ~ label,
-    .input-box input:not(:placeholder-shown) ~ label{
-        background: var(--bg);
-    }
-}
+
 
 
 .input-box1{
