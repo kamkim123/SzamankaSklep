@@ -33,6 +33,10 @@ footer{
     margin: 0.5rem 0;
 }
 
+#socials-foot{
+    margin-left:5px;
+}
+
 .footer-container .footer-box h3 {
     padding: 0.5rem 0;
     font-size: 1.7rem;
@@ -217,10 +221,14 @@ footer{
 
     #socials-foot {
         padding: 1.5rem 0 0 0;
+        margin-left:1rem;
+        margin-right:auto;
     }
 
     #call-to-mail {
-        margin-left: 10px;
+        margin-left: 1rem;
+        margin-right:auto;
+        line-height: 25px;
 
     }
 

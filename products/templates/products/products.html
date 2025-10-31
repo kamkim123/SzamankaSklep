@@ -185,7 +185,7 @@
             <div class="product" data-stock="{{ p.product_stock|default:9999 }}">
                 <a href="{% url 'products:detail' p.pk %}">
                     <img
-                            src="{% if p.image %}{{ p.image.url }}{% else %}{% static 'images/product2.png' %}{% endif %}"
+                            src="{% if p.product_image %}{{ p.product_image }}{% else %}{% static 'images/product2.png' %}{% endif %}"
                             alt="{{ p.product_name }}"
                             class="product-image">
                 </a>
@@ -248,8 +248,9 @@
 {% include "products/footer.html" %}
 
 
-<script src="{% static 'products/navbar.js' %}"></script>
+
 <script src="{% static 'products/products.js' %}"></script>
+<script src="{% static 'products/navbar.js' %}"></script>
 <script src="{% static 'products/searching.js' %}"></script>
 
 

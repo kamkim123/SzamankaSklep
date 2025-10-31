@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Address form</title>
+</head>
+<body>
+
+<form id="address-form" method="post"
+      action="{% if mode == 'edit' %}{% url 'users:edit_address' address.id %}{% else %}{% url 'users:add_address' %}{% endif %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="action-button">Zapisz adres</button>
+</form>
+
+</body>
+</html>

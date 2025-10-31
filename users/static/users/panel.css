@@ -191,3 +191,31 @@ body {
   box-shadow: none;
 }
 .action-button--ghost:hover{ background: #f7f7f7; }
+
+.action-button{
+    margin-top:1rem;
+}
+
+@media (max-width:700px){
+
+  .user-orders-section thead th{
+      font-size: .75rem;
+    }
+
+}
+
+@media (max-width:550px){
+
+  .user-orders-section thead th{
+      font-size: .7rem;
+    }
+
+}
+
+@media (max-width:400px){
+
+  .user-orders-section thead th{
+      font-size: .62rem;
+    }
+
+}

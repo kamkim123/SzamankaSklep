@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== Podstawy produkcyjne =====
-DEBUG = False
+DEBUG = True
 SECRET_KEY = os.getenv("SECRET_KEY", "dber74gf7%&DFcwcwdq!")
 ALLOWED_HOSTS = [
     "szamankasklep.pl",
@@ -119,7 +119,7 @@ SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 
-LOGIN_URL = "account_login"
+LOGIN_URL = '/u/login/'
 LOGIN_REDIRECT_URL = "home"   # albo inny istniejący widok
 LOGOUT_REDIRECT_URL = "home"
 
@@ -169,6 +169,8 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
 CART_SESSION_ID = "cart"
+
+#DATA_UPLOAD_MAX_NUMBER_FIELDS = 20000
 
 
 LOGGING = {

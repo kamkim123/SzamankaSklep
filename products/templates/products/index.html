@@ -182,7 +182,7 @@
             {% for product in bestsellers %}
             <div class="product">
                 <a href="{% url 'products:detail' product.pk %}">
-                    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-image.jpg' %}{% endif %}"
+                    <img src="{% if product.product_image %}{{ product.product_image }}{% else %}{% static 'images/default-image.jpg' %}{% endif %}"
                          alt="{{ product.product_name }}" class="product-image">
                 </a>
                 <h3><a href="{% url 'products:detail' product.pk %}">{{ product.product_name }}</a></h3>
@@ -224,12 +224,18 @@
         <div class="transmisje-wrapper">
 
             <div class="transmisje-image-wrapper">
-                <img src="{% static 'products/images/a-photo.jpg' %}" alt="transmisje">
+                <img src="{% static 'products/images/sativa zdjecia.jpg' %}" alt="transmisje">
             </div>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit.Lorem ipsum dolor sit consectetur adipiscing elit.Lorem ipsum dolor sit amet,
-                consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                🌿 SativaLife – Poznaj marke stworzoną z miłości do natury i troski o Twoje zdrowie oraz urodę. Nasze produkty powstają z najwyższej jakości, starannie wyselekcjonowanych składników.
+
+                <br>💧 Żywa wodorowa woda – innowacja, która przywraca Twojemu ciału naturalną równowagę, wspiera regenerację i działa odmładzająco od wewnątrz.
+
+                <br>🌸 Naturalne kosmetyki SativaLife – Nasze formuły są bogate w składniki aktywne pochodzenia roślinnego, które odżywiają, nawilżają i chronią skórę każdego dnia.
+
+                <br>🌿 Olejki konopne klasy premium – pełne cennych kannabinoidów, witamin i minerałów.
+
+                <br>SativaLife – to styl życia w harmonii z naturą. Czystość, jakość i pasja – to nasze DNA.
             </p>
 
         </div>
@@ -252,7 +258,7 @@
                 Wierzę, że siła natury potrafi naprawdę wiele — wystarczy jej zaufać.
             </div>
             <div class="o-nas-photo-wrapper">
-                <img src="{% static 'products/images/o-nas.jpg' %}" alt="o nas photo" class="o-nas-photo">
+                <img src="{% static 'products/images/IMG_1963.jpeg' %}" alt="o nas photo" class="o-nas-photo">
             </div>
         </div>
     </section>
@@ -280,13 +286,18 @@
                         referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
             </div>
-            <div class="location-info">Nasz sklep znajdziesz w samym sercu Nasielska – w łatwo dostępnym miejscu, z
-                możliwością wygodnego dojazdu.
-                Adres: [tu wstaw dokładny adres]
-                Zapraszamy do odwiedzin – na miejscu chętnie doradzimy i pomożemy w wyborze odpowiednich ziół czy
-                produktów.
-                W naszej przestrzeni staramy się stworzyć przyjazną atmosferę, aby zakupy były nie tylko obowiązkiem,
-                ale i przyjemnością.
+            <div class="location-info">
+                <p><strong>Adres sklepu:</strong> Ul. Kilińskiego 22, 05-190 Nasielsk</p>
+                <p>Nasze biuro znajduje się w samym sercu Nasielska, w łatwo dostępnym miejscu, z możliwością wygodnego dojazdu.</p>
+                <p>Zapraszamy do odwiedzin – na miejscu chętnie doradzimy i pomożemy w wyborze odpowiednich ziół czy produktów. W naszej przestrzeni staramy się stworzyć przyjazną atmosferę, aby zakupy były nie tylko obowiązkiem, ale i przyjemnością.</p>
+
+                <!-- Dodanie wymaganych informacji -->
+                <p><strong>Pełna nazwa sprzedawcy:</strong> Szamanka Sp. z o.o.</p>
+                <p><strong>NIP:</strong> 5361978706 </p>
+                <p><strong>KRS:</strong> 0001095523 </p>
+                <p><strong>REGON:</strong> 528130308 </p>
+                <p><strong>Adres e-mail:</strong> szamankasklep@wp.pl </p>
+                <p><strong>Numer telefonu:</strong> +48 881 420 011</p>
             </div>
         </div>
     </section>
@@ -309,7 +320,7 @@
 
         <div class="footer-box" id="info-foot">
             <h3>Pomoc</h3>
-            <a href="#">Menu</a>
+            <a href="{% url 'home' %}">Menu</a>
             <a href="#location-section">Kontakt</a>
             <a href="{% url 'products:private' %}">Polityka prywatności</a>
             <a href="{% url 'products:regulamin' %}">Regulamin</a>

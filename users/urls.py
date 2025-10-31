@@ -16,5 +16,11 @@ urlpatterns = [
     path("favorite/<int:product_id>/toggle/", views.favorite_toggle, name="favorite_toggle"),
     path("activate/<str:uidb64>/<str:token>/", views.activate, name="activate"),
     # Dodanie/Usunięcie z ulubionych
+
+    path("panel/profile/edit/", views.edit_profile, name="edit_profile"),
+    path("panel/address/add/", views.add_address, name="add_address"),
+    path("panel/address/<int:pk>/edit/", views.edit_address, name="edit_address"),
+    path("panel/address/<int:pk>/delete/", views.delete_address, name="delete_address"),
+
 ]
 

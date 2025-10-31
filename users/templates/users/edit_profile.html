@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit profile</title>
+</head>
+<body>
+
+<form id="profile-form" method="post" action="{% url 'users:edit_profile' %}">
+  {% csrf_token %}
+  <fieldset><legend>Dane konta</legend>{{ uform.as_p }}</fieldset>
+  <fieldset><legend>Profil</legend>{{ pform.as_p }}</fieldset>
+  <button type="submit" class="action-button">Zapisz</button>
+</form>
+
+</body>
+</html>

@@ -47,3 +47,7 @@ ul li {
     color: #555555;
     margin-bottom: 8px;
 }
+
+#non-visible-form{
+    display:none;
+}

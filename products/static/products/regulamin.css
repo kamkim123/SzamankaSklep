@@ -128,3 +128,8 @@ ol, ul{ padding-left: 24px; } /* Zwiększenie paddingu list */
     border: 1px solid #d8d8d8;
     page-break-inside: avoid;
   }
+
+}
+#non-visible-form{
+    display:none;
+}

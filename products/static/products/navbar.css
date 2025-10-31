@@ -682,6 +682,7 @@ a {
 
    .kategorie-nav .only-burger button {
         width: 100%;
+
      /* spójnie z resztą pozycji */
    }
 
@@ -953,6 +954,12 @@ button.logout-button:hover {
     .newsletter-info {
         font-size: 0.9rem;
     }
+
+       .kategorie-nav .only-burger button {
+
+        font-size:2.3vw;
+     /* spójnie z resztą pozycji */
+   }
 }
 
 
@@ -963,6 +970,12 @@ button.logout-button:hover {
         width: min(200px, 72vw);
         background: #fff;
     }
+
+     .kategorie-nav .only-burger button {
+
+        font-size:2.6vw;
+     /* spójnie z resztą pozycji */
+   }
 
 }
 
@@ -1027,6 +1040,12 @@ button.logout-button:hover {
 
     }
 
+     .kategorie-nav .only-burger button {
+
+        font-size:3vw;
+     /* spójnie z resztą pozycji */
+   }
+
 
 }
 
@@ -1059,6 +1078,15 @@ button.logout-button:hover {
     }
 
 
+}
+
+#o-nas-section {
+  scroll-margin-top: 110px; /* przewiń o 30px wyżej */
+}
+
+
+#location-section{
+    scroll-margin-top: 110px;
 }
 
 

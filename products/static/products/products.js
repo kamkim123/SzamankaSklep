@@ -247,8 +247,8 @@ document.querySelectorAll('.sort-wrapper').forEach(function (wrapper) {
   })();
 });
 
-
-  // ===== WYSZUKIWARKA =====
+});
+// ===== WYSZUKIWARKA =====
     const box = document.getElementById('search');
     const btn = box.querySelector('.search__toggle');
     const inp = box.querySelector('.search__input');
@@ -270,8 +270,6 @@ document.querySelectorAll('.sort-wrapper').forEach(function (wrapper) {
     });
     clearBtn.addEventListener('click', closeSearch);
     box.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
-
-});
 
 
 

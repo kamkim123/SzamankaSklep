@@ -9,15 +9,20 @@ from products.models import Product
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode
-from django.contrib.auth.tokens import default_token_generator
 from django.template.loader import render_to_string
-from django.contrib.auth.models import User
-from django.contrib import messages
+
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.shortcuts import redirect
+
+
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
+from .forms import UserUpdateForm, ProfileUpdateForm, AddressForm
+from .models import Address, Profile
 
 
 def home(request):
@@ -124,9 +129,10 @@ def favorite_toggle(request, product_id):
 
 @login_required
 def user_panel(request):
+    profile = getattr(request.user, "profile", None)
+    addresses = profile.addresses.all() if profile else []
     orders = getattr(getattr(request.user, "orders", None), "all", lambda: [])()
     favorites = Favorite.objects.select_related("product").filter(user=request.user)
-    addresses = getattr(getattr(getattr(request.user, "profile", None), "addresses", None), "all", lambda: [])()
     return render(request, "users/user-panel.html", {
         "orders": orders,
         "favorites": favorites,
@@ -148,3 +154,120 @@ class EmailLoginView(LoginView):
         else:
             self.request.session.set_expiry(0)  # do zamknięcia przeglądarki
         return super().form_valid(form)
+
+
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import UserUpdateForm, ProfileUpdateForm
+from .models import Profile
+
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    profile, _ = Profile.objects.get_or_create(user=user)
+
+    if request.method == "POST":
+        uform = UserUpdateForm(request.POST, instance=user)
+        pform = ProfileUpdateForm(request.POST, instance=profile)
+
+        if uform.is_valid() and pform.is_valid():
+            uform.save()  # Zapisanie danych użytkownika
+            pform.save()  # Zapisanie danych profilu
+
+            if request.is_ajax():  # Sprawdzamy, czy to jest żądanie AJAX
+                return JsonResponse({
+                    "ok": True,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "email": user.email,
+                    "phone": profile.phone,
+                })
+
+            messages.success(request, "Twoje dane zostały zaktualizowane!")
+            return redirect("users:user-panel")
+
+        else:
+            if request.is_ajax():
+                return JsonResponse({"ok": False, "errors": {
+                    "user": uform.errors,
+                    "profile": pform.errors
+                }}, status=400)
+
+    else:
+        uform = UserUpdateForm(instance=user)
+        pform = ProfileUpdateForm(instance=profile)
+
+    return render(request, "users/edit_profile.html", {"uform": uform, "pform": pform})
+
+
+
+
+
+@login_required
+def add_address(request):
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    if request.method == "POST":
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.profile = profile
+            address.save()
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({
+                    "ok": True,
+                    "id": address.id,
+                    "address_line_1": address.address_line_1,
+                    "city": address.city,
+                    "postal_code": address.postal_code,
+                })
+            messages.success(request, "Dodano adres.")
+            return redirect("users:user-panel")
+        else:
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"ok": False, "errors": form.errors}, status=400)
+    else:
+        form = AddressForm()
+    return render(request, "users/address_form.html", {"form": form, "mode": "add"})
+
+@login_required
+def edit_address(request, pk):
+    address = get_object_or_404(Address, pk=pk)
+    if address.profile.user_id != request.user.id:
+        return HttpResponseForbidden("Brak uprawnień.")
+
+    if request.method == "POST":
+        form = AddressForm(request.POST, instance=address)
+        if form.is_valid():
+            address = form.save()
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({
+                    "ok": True,
+                    "id": address.id,
+                    "address_line_1": address.address_line_1,
+                    "city": address.city,
+                    "postal_code": address.postal_code,
+                })
+            messages.success(request, "Zapisano adres.")
+            return redirect("users:user-panel")
+        else:
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"ok": False, "errors": form.errors}, status=400)
+    else:
+        form = AddressForm(instance=address)
+    return render(request, "users/address_form.html", {"form": form, "mode": "edit", "address": address})
+
+@login_required
+def delete_address(request, pk):
+    address = get_object_or_404(Address, pk=pk)
+    if address.profile.user_id != request.user.id:
+        return HttpResponseForbidden("Brak uprawnień.")
+    if request.method == "POST":
+        address.delete()
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"ok": True})
+        messages.success(request, "Usunięto adres.")
+        return redirect("users:user-panel")
+    return HttpResponseBadRequest("Nieprawidłowe żądanie.")

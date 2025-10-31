@@ -22,7 +22,6 @@
 <body>
 
 
-
 <nav>
     <div class="top-navbar">
         <div class="logo-search-bar">
@@ -50,10 +49,10 @@
                 <a href="{% url 'products:produkty' %}?bestsellers=true" class="pasek1">Bestsellery</a>
             </div>
             <div>
-                <a href="#" class="pasek1">Promocje</a>
+                <a href="{% url 'products:produkty' %}?promocje=true" class="pasek1">Promocje</a>
             </div>
             <div>
-                <a href="#o-nas-section" class="pasek1">O&nbsp;nas</a>
+                <a href="{% url 'home' %}#o-nas-section" class="pasek1">O&nbsp;nas</a>
             </div>
             <div>
                 <a href="{% url 'home' %}#location-section" class="pasek1">Kontakt</a>

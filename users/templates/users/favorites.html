@@ -13,6 +13,13 @@
 {% include "products/navbar.html" %}
 
 <main class="favorites-page">
+
+    <form id="non-visible-form" method="post">
+        {% csrf_token %}
+        <input type="text" id="search-input" placeholder="Szukaj...">
+        <div id="live-results" class="not-visible"></div>
+    </form>
+
     <section class="favorites-header">
         <h1>Twoje ulubione produkty</h1>
         <p>Wszystkie Twoje ulubione produkty w jednym miejscu!</p>
@@ -24,7 +31,7 @@
         {% for favorite in favorites %}
         <div class="favorite-item">
             <a href="{% url 'products:detail' favorite.product.pk %}">
-                <img src="{% if favorite.product.image %}{{ favorite.product.image.url }}{% else %}{% static 'images/product2.png' %}{% endif %}"
+                <img src="{% if favorite.product.product_image %}{{ favorite.product.product_image }}{% else %}{% static 'images/product2.png' %}{% endif %}"
                      alt="{{ favorite.product.product_name }}" class="favorite-image">
             </a>
             <div class="favorite-info">

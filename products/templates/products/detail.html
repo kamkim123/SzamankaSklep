@@ -34,12 +34,12 @@
                 <!-- GALERIA -->
                 <div class="image-card card">
                     <div class="image-wrapper2">
-                        <img src="{{ product.image.url }}" alt="{{ product.product_name }}" class="main-image"/>
+                        <img src="{{ product.product_image }}" alt="{{ product.product_name }}" class="main-image"/>
                         <div class="mini-photos" role="list" aria-label="Dodatkowe zdjęcia">
                             {% for img in product.gallery.all %}
                             <button class="mini-photo" type="button" role="listitem"
                                     aria-label="Pokaż zdjęcie {{ forloop.counter }}">
-                                <img src="{{ img.image.url }}" data-full="{{ img.image.url }}"
+                                <img src="{{ product.product_image }}" data-full="{{ product.product_image }}"
                                      alt="{{ product.product_name }} – miniatura {{ forloop.counter }}"/>
                             </button>
                             {% endfor %}
@@ -142,7 +142,7 @@
             {% for p in similar_products %}
             <div class="diff-product">
                 <a href="{% url 'products:detail' p.pk %}">
-                    <img src="{{ p.image.url }}" alt="{{ p.product_name }}"/>
+                    <img src="{{ p.product_image }}" alt="{{ p.product_name }}"/>
                     <h3>{{ p.product_name }}</h3>
                     <span class="price">{{ p.price|floatformat:2 }} zł</span>
                 </a>

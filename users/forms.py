@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model, authenticate
+from .models import Profile, Address
 
 
 User = get_user_model()
@@ -78,3 +79,27 @@ class MySignupForm(SignupForm):
         user.save()
         # jeśli musisz coś zapisać poza userem — zrób to tutaj
         return user
+
+
+
+
+
+from django import forms
+from django.contrib.auth import get_user_model
+
+
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+            model = User
+            fields = ["first_name", "last_name", "email"]
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+            model = Profile
+            fields = ["phone"]
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+            model = Address
+            fields = ["address_line_1", "city", "postal_code"]

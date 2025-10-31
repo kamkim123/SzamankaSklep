@@ -16,6 +16,12 @@
 <div class="privacy-policy-container">
     <h1>Polityka Prywatności</h1>
 
+    <form id="non-visible-form" method="post">
+        {% csrf_token %}
+        <input type="text" id="search-input" placeholder="Szukaj...">
+        <div id="live-results" class="not-visible"></div>
+    </form>
+
     <section class="privacy-section">
         <h2>1. Wstęp</h2>
         <p>W niniejszej Polityce Prywatności wyjaśniamy, jak zbieramy, przetwarzamy i chronimy Twoje dane osobowe, korzystając z naszej strony internetowej oraz usług. Dbamy o Twoją prywatność i zobowiązujemy się do przestrzegania odpowiednich przepisów prawnych.</p>

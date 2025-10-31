@@ -94,7 +94,8 @@ class ProductResource(resources.ModelResource):
     product_ingredients = fields.Field(column_name="Skład", attribute="product_ingredients",
                                        widget=DefaultingCharWidget(""))
     product_type = fields.Field(column_name="Grupy towarów Detal", attribute="product_type", widget=ProductTypeWidget())
-
+    product_weight = fields.Field(column_name="waga", attribute="product_weight", widget=DefaultingCharWidget(""))
+    product_image = fields.Field(column_name="url_zdjecia", attribute="product_image", widget=DefaultingCharWidget(""))
 
 
     class Meta:
@@ -112,6 +113,8 @@ class ProductResource(resources.ModelResource):
             "product_info",
             "product_ingredients",
             "product_type",
+            "product_image",
+            "product_weight",
         )
         skip_unchanged = True
         report_skipped = True
@@ -170,6 +173,8 @@ class ProductAdmin(ImportExportModelAdmin):
         "is_promotion",  # Dodane pole do listy
         "is_new",  # Dodane pole do listy
         "is_popular",  # Dodane pole do listy
+        "product_image",
+        "product_weight",
     )
     search_fields = ("product_name", "product_brand", "product_category", "product_code")  # intowe product_code pomijamy w search_fields
     list_filter = ("product_vat", "product_type", "product_category", "product_brand")

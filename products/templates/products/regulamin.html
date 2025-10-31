@@ -12,6 +12,12 @@
 {% include "products/navbar.html" %}
 
 <main class="regulamin">
+
+    <form id="non-visible-form" method="post">
+        {% csrf_token %}
+        <input type="text" id="search-input" placeholder="Szukaj...">
+        <div id="live-results" class="not-visible"></div>
+    </form>
     <header class="regulamin__hero">
         <h1>Regulamin sklepu</h1>
         <p class="regulamin__meta">Wersja: 1.0 • Ostatnia aktualizacja: 08.10.2025</p>
@@ -41,7 +47,7 @@
             Adres sklepu: <strong>Ul. Kilińskiego 22, 05-190 Nasielsk</strong><br>
             NIP: <strong>5361978706</strong><br>
             Numer REGON: 528130308<br>
-            Email: <a href="mailto:szamankasklep@wp.pl">szamankasklep@wp.pl</a><br>
+            Email: <a href="#">szamankasklep@wp.pl</a><br>
         </p>
     </section>
 
@@ -97,7 +103,7 @@
             <li>Adres: Ul. Kilińskiego 22, 05-190 Nasielsk</li>
         </ul>
         <p>
-            Reklamacje rozpatrujemy w ciągu 14 dni roboczych od otrzymania zgłoszenia. Zgodnie z przepisami prawa, masz
+            Reklamacje rozpatrujemy w ciągu 14 dni kalendarzowych od otrzymania zgłoszenia. Zgodnie z przepisami prawa, masz
             prawo do reklamacji towaru, jeśli jest on wadliwy lub niezgodny z umową.
         </p>
         <p>
@@ -135,5 +141,7 @@
 {% include "products/footer.html" %}
 
 <script src="{% static 'products/detail.js' %}"></script>
+<script src="{% static 'products/navbar.js' %}"></script>
+<script src="{% static 'products/searching.js' %}"></script>
 </body>
 </html>

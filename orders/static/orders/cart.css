@@ -91,9 +91,13 @@ body {
     padding: 0;
 }
 
+.empty-cart{
+    margin-left:8px;
+}
 
 
-.item {
+
+.item3 {
     display: grid;
     grid-template-columns: 72px 1fr auto 110px 40px;
     gap: 14px;
@@ -103,11 +107,11 @@ body {
     transition: background .2s var(--ease);
 }
 
-.item:last-child {
+.item3:last-child {
     border-bottom: none;
 }
 
-.item:hover {
+.item3:hover {
     background: #fafdfb;
 }
 
@@ -132,7 +136,7 @@ body {
 }
 
 .info h3 {
-    margin: 0 0 4px 0;
+    margin: 0 0 4px 20px;
     font-size: 1rem;
     font-weight: 600;
     color: var(--ink);
@@ -278,7 +282,7 @@ body {
 
 /* =============== Responsywność: 2 wiersze na mobile =============== */
 @media (max-width: 640px) {
-    .item {
+    .item3 {
         grid-template-columns: 64px 1fr 40px;
         grid-template-areas:
       "thumb info remove"
@@ -325,10 +329,11 @@ body {
     .container {
         max-width: 1100px;
         margin: 32px auto;
-        padding: 0 16px;
+        padding: 0 8px;
         display: grid;
         grid-template-columns: 1fr 340px;
         gap: 24px;
+
     }
 
     @media (max-width: 960px) {
@@ -381,7 +386,7 @@ body {
         padding: 0;
     }
 
-    .item {
+    .item3 {
         display: grid;
         grid-template-columns: 72px 1fr auto 110px 40px;
         gap: 14px;
@@ -391,11 +396,11 @@ body {
         transition: background .2s var(--ease);
     }
 
-    .item:last-child {
+    .item3:last-child {
         border-bottom: none;
     }
 
-    .item:hover {
+    .item3:hover {
         background: #fafdfb;
     }
 
@@ -566,22 +571,46 @@ body {
 
     /* =============== Responsywność: 2 wiersze na mobile =============== */
     @media (max-width: 640px) {
-        .item {
-            grid-template-columns: 64px 1fr 40px;
-            grid-template-areas:
-      "thumb info remove"
-      "thumb meta  meta";
-            row-gap: 8px;
-            align-items: start;
-        }
+        .cart-list .item3 {
+    display: grid;
+    grid-template-columns: 100px 1fr 50px;
+    grid-template-areas:
+      "thumb info  remove"
+      "thumb price remove"
+      "thumb qty   remove";
+    column-gap: 12px;
+    row-gap: 8px;
+    align-items: start;
+  }
 
-        .thumb {
-            width: 64px;
-            height: 64px;
-        }
+  .cart-list .item3 .thumb  { grid-area: thumb; }
+  .cart-list .item3 .info   { grid-area: info; }
+  .cart-list .item3 .price  { grid-area: price; }
+  .cart-list .item3 .qty    { grid-area: qty; }
+
+  /* KLUCZ: identyczne wyrównanie obu elementów w tej samej kolumnie */
+  .cart-list .item3 .price,
+  .cart-list .item3 .qty {
+    justify-self: start;   /* jeśli cena ma być przy prawej krawędzi kolumny */
+  }
+  /* Jeśli chcesz przy lewej — użyj: justify-self: start; */
+
+  /* kosmetyka qty */
+  .cart-list .item3 .qty {
+    display: inline-flex;
+    align-items: center;
+
+    justify-self: start;
+  }
+
+
+
+
+
 
         .info {
             grid-area: info;
+
         }
 
         .price {
@@ -615,6 +644,8 @@ body {
     .info {
         grid-area: info;
     }
+
+
 
     .price {
         grid-area: meta;
@@ -704,9 +735,28 @@ body {
 }
 
 
-@media (max-width: 640px){
+@media (max-width: 370px){
 
-    .qty{
-        margin-left:5rem;
-    }
+    .remove{
+        margin-left: -12px;
+      }
+
+      .info h3{
+        font-size: .9rem;
+      }
+
 }
+
+
+.cart-product-image{
+    width:100px;
+    height:100px;
+    object-fit:contain;
+}
+
+
+#non-visible-form{
+    display:none;
+}
+
+
