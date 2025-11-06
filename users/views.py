@@ -29,28 +29,54 @@ def home(request):
     return render(request, "home.html")
 
 
+def _mask_email(email: str) -> str:
+    try:
+        local, domain = email.split("@")
+        dom, *tld = domain.split(".")
+        def m(s: str) -> str:
+            if len(s) <= 2: return s[0] + "*"
+            return s[0] + "*" * (len(s) - 2) + s[-1]
+        suffix = ".".join(tld)
+        return f"{m(local)}@{m(dom)}{('.' + suffix) if suffix else ''}"
+    except Exception:
+        return email
+
+
+
+from django.conf import settings
+import logging
+logger = logging.getLogger(__name__)
+
 def send_activation_email(user, request):
-    token = default_token_generator.make_token(user)  # Tworzymy token
-    uid = urlsafe_base64_encode(str(user.pk).encode())  # Kodujemy ID użytkownika
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(str(user.pk).encode())
 
-
-    szamanka = "www.szamankasklep.pl"
-    domain = get_current_site(request).domain
-    link = f"https://{szamanka}/u/activate/{uid}/{token}/"  # Tworzymy link do aktywacji
+    # Dla testów lepiej generować link z aktualnej domeny:
+    domain = get_current_site(request).domain  # np. 127.0.0.1:8000 lokalnie
+    scheme = "https" if request.is_secure() else "http"
+    link = f"{scheme}://{domain}/u/activate/{uid}/{token}/"
 
     message_html = render_to_string('users/activation_email.html', {
         'user': user,
         'activation_link': link,
     })
 
-    # Podaj też wersję tekstową (krótki fallback)
-    send_mail(
-        subject='Aktywacja konta',
-        message=f'Aktywuj konto: {link}',
-        from_email='noreply@example.com',
-        recipient_list=[user.email],
-        html_message=message_html,  # jeśli szablon jest HTML
-    )
+    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", None) or settings.EMAIL_HOST_USER
+
+    try:
+        sent = send_mail(
+            subject='Aktywacja konta',
+            message=f'Aktywuj konto: {link}',
+            from_email=from_email,
+            recipient_list=[user.email],
+            html_message=message_html,
+            fail_silently=False,
+        )
+        logger.info("Activation email sent=%s to=%s from=%s", sent, user.email, from_email)
+    except Exception as e:
+        logger.exception("Activation email FAILED for %s: %s", user.email, e)
+        raise
+
 
 
 def activate(request, uidb64, token):
@@ -72,26 +98,31 @@ def activate(request, uidb64, token):
         return redirect("home")  # Przekierowanie na stronę główną
 
 
+
 @require_http_methods(["GET", "POST"])
 def signup(request):
     if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-            user.is_active = False  # ← BLOKUJE logowanie do czasu aktywacji
+            user.is_active = False
             user.save(update_fields=["is_active"])
-            # Tworzymy profil użytkownika, ustawiamy, że konto nie jest aktywowane
 
-
-            # Tworzymy użytkownika i wysyłamy link aktywacyjny
+            # (masz już poprawioną funkcję, która wysyła maila z dobrym from_email)
             send_activation_email(user, request)
 
-            # Możesz przekierować użytkownika na stronę logowania lub informacyjną
-            return render(request, "users/register.html",
-                          {"form": form, "info": "Zarejestrowano! Sprawdź swoją pocztę e-mail w celu aktywacji konta."})
+            # ⬇️ zapisz zamaskowany email i PRG
+            request.session["signup_email_hint"] = _mask_email(user.email)
+            return redirect("users:signup_email_sent")
 
         return render(request, "users/register.html", {"form": form})
+
     return render(request, "users/register.html", {"form": SignupForm()})
+
+
+def signup_email_sent(request):
+    email_hint = request.session.pop("signup_email_hint", None)  # jednorazowo
+    return render(request, "users/email_sent.html", {"email_hint": email_hint})
 
 @login_required
 def favorites_list(request):

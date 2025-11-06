@@ -64,6 +64,9 @@ body {
 .calc-container button { width: 2.4rem; height: 2.4rem; font-size: 1.25rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; cursor: pointer; line-height: 1; }
 .calc-input { width: 3rem; text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; }
 
+.product-info{
+    margin-top:-18px;
+}
 
 
 
@@ -171,4 +174,28 @@ body {
   .main-image { height: 64vw; }
   .meta-grid { grid-template-columns: 1fr; }
   .cart, .favorite { flex: 1 1 auto; justify-content: center; }
+}
+
+
+
+
+.card { position: relative; }
+
+.badge--promo {
+  position: absolute;
+  top: 16px; left: -7px;
+  background: #e63946;
+  color: #fff!important;
+  padding: 10px 16px;
+  font: 600 16px/1.1 "Poppins", system-ui;
+  text-transform: uppercase; letter-spacing: .5px;
+  border-radius: 1px 8px 8px 1px;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  z-index: 100;
+
+
+  z-index: 3;             /* ponad obrazkiem (który zwykle ma z-index:auto/0) */
+  pointer-events: none;   /* żeby hover na obrazku działał normalnie */
+  transform: translateZ(0);
 }

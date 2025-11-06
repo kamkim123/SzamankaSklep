@@ -181,6 +181,9 @@
             {% if bestsellers %}
             {% for product in bestsellers %}
             <div class="product">
+                {% if product.is_promotion %}
+                    <span class="badge badge--promo">Promocja</span>
+                {% endif %}
                 <a href="{% url 'products:detail' product.pk %}">
                     <img src="{% if product.product_image %}{{ product.product_image }}{% else %}{% static 'images/default-image.jpg' %}{% endif %}"
                          alt="{{ product.product_name }}" class="product-image">

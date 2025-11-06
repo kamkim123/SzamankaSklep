@@ -22,14 +22,7 @@ def cart_add(request):
     quantity = request.POST.get("quantity", 1)
     override = request.POST.get("override", "false") == "true"
 
-
-    # Sprawdzenie, czy produkt istnieje
-    try:
-        product = get_object_or_404(Product, id=product_id)
-    except Exception as e:
-        print(f"Błąd podczas szukania produktu: {e}")
-        return JsonResponse({"ok": False, "error": "Produkt nie znaleziony"}, status=404)
-
+    product = get_object_or_404(Product, id=product_id)
 
     cart = Cart(request)
     cart.add(product, quantity=quantity, override_quantity=override)

@@ -253,7 +253,7 @@ body {
   display: grid;
   align-content: start;
   grid-template-columns: repeat(4, 1fr);
-  padding: 8rem 1.5rem 9rem 1rem;
+  padding: 8rem 1rem 9rem 1rem;
   gap: 1rem;
 
 }
@@ -866,7 +866,7 @@ body {
 
   .product {
     max-width: 100%;
-    height: auto; /* Automatyczna wysokość dla produktów */
+    /* Automatyczna wysokość dla produktów */
   }
 
   .product h3 {
@@ -1060,7 +1060,7 @@ body {
           .sort {
             width: 6rem;
             margin: .5rem 1rem 0 1rem;
-            padding: .2rem 1.2rem .2rem 0.7rem;
+            padding: .2rem 0 .2rem 0.7rem;
             font-size: .5rem;
           }
 
@@ -1070,7 +1070,7 @@ body {
 
           .sort-list {
             position: absolute;
-            right: -2rem;
+            right: -1rem;
             top: 1.8rem;
 
             width: calc(100% + 2rem);
@@ -1114,6 +1114,31 @@ body {
                 }
 
 }
+
+
+.product { position: relative; }
+
+.badge--promo {
+  position: absolute;
+  top: 16px; left: -7px;
+  background: #e63946;
+  color: #fff!important;
+  padding: 6px 12px;
+  font: 600 12px/1.1 "Poppins", system-ui;
+  text-transform: uppercase; letter-spacing: .5px;
+  border-radius: 1px 8px 8px 1px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  z-index: 100;
+
+
+  z-index: 3;             /* ponad obrazkiem (który zwykle ma z-index:auto/0) */
+  pointer-events: none;   /* żeby hover na obrazku działał normalnie */
+  transform: translateZ(0);
+}
+
+
+
+
 
 
 

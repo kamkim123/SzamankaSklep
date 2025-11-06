@@ -33,6 +33,13 @@ class ProductTypeWidget(CharWidget):
         "ziola": Product.ProductType.ZIOLA,
         "zioła": Product.ProductType.ZIOLA,
         "Inne": Product.ProductType.INNE,
+        "spozywcze": Product.ProductType.SPOZYWCZE,
+        "suplementy": Product.ProductType.SUPLEMENTY,
+        "kosmetyki do włosów": Product.ProductType.KOSMETYKI_WLOSY,
+        "kosmetyki do ciała": Product.ProductType.KOSMETYKI_CIALO,
+        "kosmetyki do twarzy": Product.ProductType.KOSMETYKI_TWARZ,
+        "masci": Product.ProductType.MASCI,
+        "inne": Product.ProductType.INNE,
     }
     def clean(self, value, row=None, *args, **kwargs):
         if value in (None, ""):

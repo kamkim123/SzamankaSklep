@@ -214,7 +214,7 @@ body {
     padding: 16px;
 }
 
-.row {
+.row1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -223,7 +223,7 @@ body {
     border-bottom: 1px dashed var(--line);
 }
 
-.row:last-child {
+.row1:last-child {
     border-bottom: none;
 }
 
@@ -503,7 +503,7 @@ body {
         padding: 16px;
     }
 
-    .row {
+    .row1 {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -512,7 +512,7 @@ body {
         border-bottom: 1px dashed var(--line);
     }
 
-    .row:last-child {
+    .row1:last-child {
         border-bottom: none;
     }
 

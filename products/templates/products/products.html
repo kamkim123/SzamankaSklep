@@ -182,18 +182,21 @@
             {% if products %}
 
             {% for p in products %}
-            <div class="product" data-stock="{{ p.product_stock|default:9999 }}">
+            <div class="product{% if p.is_promotion %} product--promo{% endif %}" data-stock="{{ p.product_stock|default:9999 }}">
+              {% if p.is_promotion %}
+                <span class="badge badge--promo">Promocja</span>
+              {% endif %}
+
                 <a href="{% url 'products:detail' p.pk %}">
                     <img
-                            src="{% if p.product_image %}{{ p.product_image }}{% else %}{% static 'images/product2.png' %}{% endif %}"
-                            alt="{{ p.product_name }}"
-                            class="product-image">
+                        src="{% if p.product_image %}{{ p.product_image }}{% else %}{% static 'products/images/default-image.png' %}{% endif %}"
+                        alt="{{ p.product_name }}"
+                        class="product-image">
                 </a>
 
                 <h3>
                     <a href="{% url 'products:detail' p.pk %}">{{ p.product_name }}</a>
                 </h3>
-
 
                 <h4 class="price">{{ p.price|floatformat:2 }}&nbsp;zł</h4>
 
@@ -202,27 +205,26 @@
                     <input type="hidden" name="product_id" value="{{ p.pk }}">
                     <input type="hidden" name="quantity" value="1">
 
-                    <div class="products-cart{% if p.product_stock|default:0 <= 0 %} disabled{% endif %}">
-                        <!-- Formularz wysyłający dane produktu do koszyka -->
+                    <div class="products-cart">
                         <button type="submit" class="cart-icon" data-product-id="{{ p.pk }}">
-                            <img src="{% static 'products/images/shopping-cart-white.png' %}" alt="cart"
-                                 class="cart-icon"/>
+                            <img src="{% static 'products/images/shopping-cart-white.png' %}" alt="cart" class="cart-icon"/>
                         </button>
                     </div>
                 </form>
+
                 <a href="javascript:void(0);" class="favorite-toggle" data-product-id="{{ p.pk }}">
                     <i class="bx bx-heart {% if p.pk in favorite_product_ids %}bxs-heart{% endif %}"
                        style="{% if p.pk in favorite_product_ids %}color: red;{% endif %}"></i>
-                    <!-- Serce pełne i czerwone, jeśli produkt jest w ulubionych -->
                 </a>
 
-                <div class="calc-product{% if p.product_stock|default:0 <= 0 %} disabled{% endif %}">
+                <div class="calc-product">
                     <button type="button" class="minus" aria-label="zmniejsz ilość">-</button>
-                    <div class="calc-input" data-min="1" data-max="{{ p.product_stock|default:9999 }}">01</div>
+                    <div class="calc-input" data-min="1">01</div>
                     <button type="button" class="plus" aria-label="zwiększ ilość">+</button>
                 </div>
             </div>
             {% endfor %}
+
 
             <!-- „Więcej produktów” = następna strona paginacji -->
             <div class="pagination">

@@ -9,7 +9,9 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 
 </head>
-<body>{% include "products/navbar.html" %}
+<body>
+{% include "products/navbar.html" %}
+
 <div class="container">
 
     <form id="non-visible-form" method="post">
@@ -40,10 +42,10 @@
     </section>
     <aside class="card"><h2>Podsumowanie</h2>
         <div class="summary">
-            <div class="row"><span>Wartość produktów</span><span id="subtotal">{{ cart.subtotal }} zł</span></div>
-            <div class="row"><span>Dostawa <span class="badge">0 zł od 200 zł</span></span> <span id="shipping">{{ cart.shipping }} zł</span>
+            <div class="row1"><span>Wartość produktów</span><span id="subtotal">{{ cart.subtotal }} zł</span></div>
+            <div class="row1"><span>Dostawa <span class="badge">0 zł od 200 zł</span></span> <span id="shipping">{{ cart.shipping }} zł</span>
             </div>
-            <div class="row total"><span>Do zapłaty</span><span id="grand">{{ cart.grand_total }} zł</span></div>
+            <div class="row1 total"><span>Do zapłaty</span><span id="grand">{{ cart.grand_total }} zł</span></div>
             <a href="{% url 'orders:checkout' %}">
                 <button class="btn" id="checkoutBtn">Przejdź do płatności</button>
             </a></div>

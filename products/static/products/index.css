@@ -498,7 +498,6 @@ nav {
     content: "";
     position: absolute;
     inset: 0; /* pokrywa całe zdjęcie */
-    background-color: rgba(0, 0, 0, 0.2);
     pointer-events: none;
     z-index: 2;
 }
@@ -2031,6 +2030,26 @@ iframe {
     }
 }
 
+
+.product { position: relative; }
+
+.badge--promo {
+  position: absolute;
+  top: 16px; left: -7px;
+  background: #e63946;
+  color: #fff!important;
+  padding: 6px 12px;
+  font: 600 12px/1.1 "Poppins", system-ui;
+  text-transform: uppercase; letter-spacing: .5px;
+  border-radius: 1px 8px 8px 1px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  z-index: 100;
+
+
+  z-index: 3;             /* ponad obrazkiem (który zwykle ma z-index:auto/0) */
+  pointer-events: none;   /* żeby hover na obrazku działał normalnie */
+  transform: translateZ(0);
+}
 
 
 

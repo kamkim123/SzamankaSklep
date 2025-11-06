@@ -13,34 +13,61 @@ document.querySelectorAll(".kategorie-nav").forEach(n => n.addEventListener("cli
 }));
 
 
-const dropdowns = document.querySelectorAll('.dropdown');
+// ===== DROPDOWN – przejście na listę z ?type=... =====
+(function () {
+  const dropdowns = document.querySelectorAll('.dropdown');
+  if (!dropdowns.length) return;
 
-dropdowns.forEach((dropdown) => {
+  // Ustal bazowy URL strony listy produktów:
+  // 1) <body data-products-url="/produkty/">
+  // 2) albo domyślnie /produkty/
+  const BASE_LIST_URL = document.body?.dataset?.productsUrl || '/products/products/';
 
+  dropdowns.forEach((dropdown) => {
     const menu = dropdown.querySelector('.menu');
     const options = dropdown.querySelectorAll('.menu li');
+    if (!menu || !options.length) return;
 
-    dropdown.addEventListener('mouseenter', () => {
-        menu.classList.add('menu-open');
-    });
+    dropdown.addEventListener('mouseenter', () => menu.classList.add('menu-open'));
+    dropdown.addEventListener('mouseleave', () => menu.classList.remove('menu-open'));
 
-    dropdown.addEventListener('mouseleave', () => {
+    options.forEach((option) => {
+      option.addEventListener('click', (e) => {
+        e.preventDefault();
 
+        // UI
+        options.forEach((o) => o.classList.remove('active'));
+        option.classList.add('active');
         menu.classList.remove('menu-open');
+
+        // Wartość filtra/kategorii
+        const raw = option.getAttribute('data-value');
+        const value = (raw !== null ? raw : option.textContent)
+          .trim()
+          .replace(/\s*\(\d+\)\s*$/, ''); // usuń np. " (12)"
+
+        // Zbuduj URL do listy produktów z parametrem ?type=...
+        try {
+          const url = new URL(BASE_LIST_URL, window.location.origin);
+          if (value) url.searchParams.set('type', value);
+          // opcjonalnie: kasuj inne znaczniki sortowania, jeśli chcesz czyste przejście
+          url.searchParams.delete('page');
+          window.location.assign(url.toString());
+        } catch (err) {
+          // Fallback gdyby URL() nie zadziałał
+          const q = value ? ('?type=' + encodeURIComponent(value)) : '';
+          window.location.href = BASE_LIST_URL + q;
+        }
+      });
     });
-
-    options.forEach(option => {
-        option.addEventListener('click', () => {
-
-
-            options.forEach(o => o.classList.remove('active'));
-            option.classList.add('active');
+  });
+})();
 
 
-            menu.classList.remove('menu-open');
-        });
-    });
-});
+
+
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const menu = document.querySelector('.products-menu');

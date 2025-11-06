@@ -33,6 +33,10 @@
             <div class="left-col">
                 <!-- GALERIA -->
                 <div class="image-card card">
+                    {% if product.is_promotion %}
+                      <span class="badge badge--promo">Promocja</span>
+                    {% endif %}
+
                     <div class="image-wrapper2">
                         <img src="{{ product.product_image }}" alt="{{ product.product_name }}" class="main-image"/>
                         <div class="mini-photos" role="list" aria-label="Dodatkowe zdjęcia">
@@ -52,10 +56,7 @@
                     <h2>Opis produktu</h2>
                     <div class="prose">
                         <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet
-                            sollicitudin sodales, purus felis dapibus felis, sit amet interdum metus magna vel urna.
-                            Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;
-                            Aenean sit amet felis ac turpis tincidunt fringilla non nec eros.
+                            {{ product.product_info }}
                         </p>
                     </div>
 
@@ -74,6 +75,7 @@
 
             <!-- PRAWA KOLUMNA: INFORMACJE I CTA -->
             <div class="product-info card">
+
                 <h1 id="product-title" class="product-name">{{ product.product_name }}</h1>
                 <p class="product-short-desc">{{ product.short_description }}</p>
 

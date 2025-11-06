@@ -41,7 +41,7 @@ class Product(models.Model):
     product_weight = models.CharField(max_length=64, null=True, blank=True, db_index=True)
     # models.py
     product_image = models.URLField(null=True, blank=True,
-                                    default="https://szamankasklep.pl/static/img/placeholder.jpg")
+                                    default='static/products/images/default-image.png')
 
     is_bestseller = models.BooleanField(default=False)
     is_promotion = models.BooleanField(default=False)  # Pole dla promocji

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Sprawdź maila</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'users/style.css' %}">
+  <style>
+    .card{border:1px solid #e5e7eb;border-radius:14px;background:#fafafa;
+          padding:24px;max-width:520px;margin:32px auto}
+    .email-chip{display:inline-block;border:1px solid #ddd;background:#fff;
+                border-radius:999px;padding:6px 12px;font-family:monospace}
+    .muted{color:#666}
+  </style>
+</head>
+<body>
+  {% include "products/navbar.html" %}
+
+  <div class="card" role="status" aria-live="polite">
+    <h1>Sprawdź skrzynkę pocztową ✉️</h1>
+    {% if email_hint %}
+      <p>Wysłaliśmy wiadomość z linkiem aktywacyjnym na: <span class="email-chip">{{ email_hint }}</span></p>
+    {% else %}
+      <p>Wysłaliśmy wiadomość aktywacyjną. Sprawdź swoją skrzynkę pocztową.</p>
+    {% endif %}
+    <ul class="muted" style="margin:12px 0 0 18px">
+      <li>Sprawdź foldery <strong>Spam</strong>, <strong>Oferty</strong> lub <strong>Inne</strong>.</li>
+    </ul>
+    <p style="margin-top:16px">
+      <a href="{% url 'users:login' %}">Przejdź do logowania</a> ·
+      <a href="{% url 'users:register' %}">Zarejestruj się ponownie</a>
+    </p>
+  </div>
+
+  {% include "products/footer.html" %}
+</body>
+</html>

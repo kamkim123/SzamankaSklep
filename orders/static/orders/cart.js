@@ -17,25 +17,33 @@
   const csrftoken = getCookie('csrftoken');
 
   // fetch POST z opcjonalnym AbortController.signal
-  function post(url, data, signal) {
-    return fetch(url, {
-      method: 'POST',
-      signal,
-      headers: {
-        'X-CSRFToken': csrftoken,
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-      },
-      body: new URLSearchParams(data)
-    }).then(async r => {
-      const json = await r.json().catch(() => ({}));
-      if (!r.ok || json.ok === false) {
-        const msg = (json && json.error) ? json.error : 'Błąd żądania.';
-        throw new Error(msg);
-      }
-      return json;
-    });
-  }
+function post(url, data, signal) {
+  return fetch(url, {
+    method: 'POST',
+    signal,
+    headers: {
+      'X-CSRFToken': csrftoken,
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    },
+    body: new URLSearchParams(data),
+    credentials: 'same-origin', // sesja/cookie
+    keepalive: true,            // nie ubijaj przy nawigacji
+    cache: 'no-store'           // (opcjonalnie) bez cache
+  }).then(async r => {
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok || json.ok === false) {
+      const msg = (json && json.error) ? json.error : 'Błąd żądania.';
+      throw new Error(msg);
+    }
+    return json;
+  });
+}
+
+
+
+
+
 
   function updateTotalsUI(data) {
     const subtotal = parseFloat(data.subtotal);
@@ -51,7 +59,7 @@
   list.addEventListener('click', (e) => {
     if (!e.target.classList.contains('remove')) return;
 
-    const li = e.target.closest('.item');
+    const li = e.target.closest('.item3');
     if (!li || li.dataset.locked === '1') return;
     li.dataset.locked = '1';
 
@@ -145,7 +153,7 @@
 list.addEventListener('click', (e) => {
     if (!e.target.classList.contains('qty-btn')) return;
 
-    const li = e.target.closest('.item');
+    const li = e.target.closest('.item3');
     if (!li) return;
 
     const display = li.querySelector('.qty-display');
@@ -178,7 +186,7 @@ list.addEventListener('click', (e) => {
     });
 
     // Pętla po produktach w koszyku
-    const items = document.querySelectorAll('.item');
+    const items = document.querySelectorAll('.item3');
     items.forEach(item => {
       const quantity = parseInt(item.querySelector('.qty-display').textContent, 10) || 1;
       const unitPrice = parseFloat(item.dataset.price);  // Cena jednostkowa
@@ -190,3 +198,75 @@ list.addEventListener('click', (e) => {
     });
   })();
 })();
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  let lastAddPromise = null;  // Zmienna globalna przechowująca obiecane żądanie
+
+  document.querySelectorAll('.cart-icon').forEach(button => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();  // Zapobiegamy domyślnemu wysłaniu formularza
+
+      const productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
+      const productDiv = this.closest('.product');  // Pobieramy najbliższy kontener produktu
+      const quantity = parseInt(productDiv.querySelector('.calc-input').textContent);  // Pobieramy ilość z licznika
+
+      console.log("Dodaję do koszyka produkt o ID:", productId);  // Debugowanie
+      console.log("Ilość:", quantity);  // Debugowanie
+
+      // Blokujemy przycisk, by zapobiec wielokrotnemu kliknięciu
+      this.disabled = true;
+
+      // Wyślij żądanie do serwera, aby dodać produkt do koszyka
+      lastAddPromise = fetch(cartAddUrl, {
+        method: 'POST',
+        headers: {
+          "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+          'product_id': productId,
+          'quantity': quantity  // Wysyłamy ilość pobraną z licznika
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);  // Debugowanie odpowiedzi z serwera
+        if (data.ok) {
+          // Zaktualizuj liczbę produktów w koszyku
+          document.querySelector('.cart-count').textContent = data.items;
+          bumpCart();  // Animacja koszyka po dodaniu
+        }
+      })
+      .catch(error => {
+        console.error("Wystąpił błąd:", error);
+      })
+      .finally(() => {
+        this.disabled = false;  // Odblokuj przycisk po zakończeniu operacji
+      });
+    });
+  });
+
+  // Synchronizacja z nawigacją do koszyka
+  const cartLink = document.querySelector('a[href$="/cart/"], a[href$="/koszyk/"]');
+  if (cartLink) {
+    cartLink.addEventListener('click', (e) => {
+      if (!lastAddPromise) return;  // Jeśli nie ma aktualnego żądania, pozwól nawigować
+      e.preventDefault();  // Zatrzymujemy nawigację do koszyka
+
+      // Po zakończeniu dodawania do koszyka, przejdź do koszyka
+      lastAddPromise.finally(() => {
+        window.location.assign(cartLink.href);  // Przejdź do koszyka
+      });
+    });
+  }
+});
+
+// Funkcja animacji koszyka
+function bumpCart() {
+  const cart = document.querySelector('#cart-icon');
+  if (!cart) return;
+  cart.classList.add('bump');
+  cart.addEventListener('animationend', () => cart.classList.remove('bump'), { once: true });
+}

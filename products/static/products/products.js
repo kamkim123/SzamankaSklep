@@ -147,7 +147,7 @@ if (menuLeft) {
   var currentPromocje = new URLSearchParams(location.search).get('promocje') === 'true'; // Nowy warunek
 
 
-  if (currentType || currentBestsellers) {
+  if (currentType || currentBestsellers || currentNowosci || currentPromocje) {
     leftMenu.querySelectorAll('.products-menu-link, .products-cat2, .title-link').forEach(function (el) {
       var val = (el.getAttribute('data-type') || el.textContent).trim();
 
@@ -155,7 +155,7 @@ if (menuLeft) {
       if (
           val === currentType ||
           (currentBestsellers && val === "Bestsellery") ||
-          (currentNowosci && val === "Nowości") || // Nowa logika dla Nowości
+          (currentNowosci && val === "Nowosci") || // Nowa logika dla Nowości
           (currentPromocje && val === "Promocje") // Nowa logika dla Promocji
          ) {
           el.classList.add('active');
@@ -185,51 +185,45 @@ document.querySelectorAll('.sort-wrapper').forEach(function (wrapper) {
   caret.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
   document.addEventListener('click', function () { toggle(false); });
 
-  items.forEach(function (item) {
-    item.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
+items.forEach(function (item) {
+  item.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-      label.textContent = item.textContent.trim();  // Zmieniamy tekst w labelu na wybrany typ sortowania
-      items.forEach(function (o) { o.classList.remove('active'); });
-      item.classList.add('active');
-      toggle(false);
+    label.textContent = item.textContent.trim();
+    items.forEach(function (o) { o.classList.remove('active'); });
+    item.classList.add('active');
+    toggle(false);
 
-      var v = item.textContent.trim(); // Pobieramy tekst z linku, np. 'Nowości', 'Promocje'
+    var v = item.textContent.trim();
+    var u = new URL(window.location.href);
 
-      // Tworzymy nowy URL
-      var u = new URL(window.location.href);
+    // 1) Zawsze czyścimy starą kategorię i wszystkie flagi
+    u.searchParams.delete('type');
+    u.searchParams.delete('bestsellers');
+    u.searchParams.delete('nowosci');
+    u.searchParams.delete('promocje');
+    u.searchParams.delete('najpopularniejsze');
 
-      // Dodajemy odpowiedni parametr w URL, w zależności od klikniętego linku
-      if (v === "Bestsellery") {
-        u.searchParams.set('bestsellers', 'true');
-      } else {
-        u.searchParams.delete('bestsellers');
-      }
+    // 2) Ustawiamy dokładnie JEDEN filtr
+    if (v === "Bestsellery") {
+      u.searchParams.set('bestsellers', 'true');
+    } else if (v === "Nowości" || v === "Nowosci") {
+      u.searchParams.set('nowosci', 'true');
+    } else if (v === "Promocje") {
+      u.searchParams.set('promocje', 'true');
+    } else if (v === "Najpopularniejsze") {
+      u.searchParams.set('najpopularniejsze', 'true');
+    } else {
+      // zwykła kategoria → type
+      u.searchParams.set('type', v);
+    }
 
-      if (v === "Nowości") {
-        u.searchParams.set('nowosci', 'true');
-      } else {
-        u.searchParams.delete('nowosci');
-      }
-
-      if (v === "Promocje") {
-        u.searchParams.set('promocje', 'true');
-      } else {
-        u.searchParams.delete('promocje');
-      }
-
-      if (v === "Najpopularniejsze") {
-        u.searchParams.set('najpopularniejsze', 'true');
-      } else {
-        u.searchParams.delete('najpopularniejsze');
-      }
-
-      // Resetujemy paginację przy zmianie sortowania
-      u.searchParams.delete('page');
-      window.location.assign(u.toString());  // Przekierowanie na nowy URL z parametrami
-    });
+    u.searchParams.delete('page');
+    window.location.assign(u.toString());
   });
+});
+
 
   // Synchronizacja klasy 'active' w zależności od parametru w URL
   (function syncFromQuery() {
@@ -279,6 +273,12 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault(); // Zapobiegamy domyślnemu wysłaniu formularza i przekierowaniu
 
             const productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
+
+            console.log("ID produktu przed wysłaniem:", productId);  // Debugowanie
+            if (!productId) {
+                console.error("Brak ID produktu!");
+                return;  // Zatrzymaj dalsze wykonywanie skryptu
+            }
             const productDiv = this.closest('.product'); // Pobieramy najbliższy kontener produktu
             const quantity = parseInt(productDiv.querySelector('.calc-input').textContent);  // Pobieramy ilość z licznika
 
@@ -301,11 +301,12 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 console.log(data);  // Debugowanie odpowiedzi z serwera
                 if (data.ok) {
-                    document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
+                    // Możesz przekierować użytkownika do strony koszyka lub odświeżyć stronę
+                    window.location.reload(); // Odświeżenie strony, aby backend wygenerował nową wartość cart-items
                 }
             })
             .catch(error => {
-                console.error("Wystąpił błąd:", error);
+                console.log("Wystąpił błąd:", error);
             });
         });
     });
@@ -314,26 +315,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+
+
+
 // ====== ILOŚĆ: plus/minus na kafelkach produktów ======
 (function () {
   const pad2 = n => String(Math.max(1, n|0)).padStart(2, '0');
 
-  function setQty(productEl, q) {
-    const cell = productEl.querySelector('.calc-input');
-    const min  = parseInt(cell?.dataset.min || '1', 10);
-    const max  = parseInt(cell?.dataset.max || productEl.dataset.stock || '9999', 10);
-    const qty  = Math.min(Math.max(q, min), max);
+      function setQty(productEl, q) {
+      const cell = productEl.querySelector('.calc-input');
+      const min  = parseInt(cell?.dataset.min || '1', 10);
 
-    if (cell) cell.textContent = pad2(qty);
-    const hidden = productEl.querySelector('input[name="quantity"]');
-    if (hidden) hidden.value = String(qty);
+      // NOWE: brak data-max lub data-max="0" => nielimitowane
+      const maxRaw = cell?.dataset.max;              // nie bierzemy pod uwagę data-stock!
+      const unlimited = !maxRaw || maxRaw === '0';
+      const max = unlimited ? Infinity : parseInt(maxRaw, 10) || Infinity;
 
-    // (opcjonalnie) wizualna blokada przy brzegach
-    const minus = productEl.querySelector('.minus');
-    const plus  = productEl.querySelector('.plus');
-    minus?.setAttribute('aria-disabled', String(qty <= min));
-    plus?.setAttribute('aria-disabled',  String(qty >= max));
-  }
+      // klamry tylko po min; górny limit tylko gdy nie jest nieskończony
+      let qty = Math.max(q, min);
+      if (max !== Infinity) qty = Math.min(qty, max);
+
+      if (cell) cell.textContent = String(qty).padStart(2, '0');
+
+      const hidden = productEl.querySelector('input[name="quantity"]');
+      if (hidden) hidden.value = String(qty);
+
+      // ARIA – plus nigdy nie będzie disabled, jeśli unlimited
+      const minus = productEl.querySelector('.minus');
+      const plus  = productEl.querySelector('.plus');
+      minus?.setAttribute('aria-disabled', String(qty <= min));
+      plus?.setAttribute('aria-disabled', unlimited ? 'false' : String(qty >= max));
+    }
+
 
   // Inicjalizacja: ustaw hidden quantity z tego, co w liczniku
   document.querySelectorAll('.product').forEach(card => {
