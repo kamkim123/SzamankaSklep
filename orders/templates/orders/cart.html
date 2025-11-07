@@ -23,7 +23,7 @@
         <ul class="cart-list" id="cartList"> {% for item in cart %}
             <li class="item3" data-product-id="{{ item.product.id }}" data-price="{{ item.price|floatformat:2 }}"
                 data-update-url="{% url 'orders:cart_update' %}">
-                <img src="{% if item.product.product_image %}{{ item.product.product_image }}{% else %}{% static 'images/product2.png' %}{% endif %}"
+                <img src="{% if item.product.product_image %}{{ item.product.product_image }}{% else %}{% static 'products/images/default-image.png' %}{% endif %}"
                      alt="{{ item.product.product_name }}" class="cart-product-image"/>
                 <div class="info"><h3>{{ item.product.product_name }}</h3>
                     <!-- Jeśli masz warianty/kolor, wyświetl tu --> </div>

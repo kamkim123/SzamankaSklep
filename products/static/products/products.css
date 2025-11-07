@@ -255,7 +255,6 @@ body {
   grid-template-columns: repeat(4, 1fr);
   padding: 8rem 1rem 9rem 1rem;
   gap: 1rem;
-
 }
 
 .product-page-title {
@@ -284,6 +283,7 @@ body {
 .sort-wrapper {
   position: absolute;
   right: 0;
+  z-index:100;
 }
 
 .sort-by {
@@ -545,6 +545,7 @@ body {
   border-radius: 5px;
   cursor: pointer;
   user-select: none;
+
 }
 
 .calc-product .calc-input {
@@ -646,6 +647,25 @@ body {
 .pagination .prev:hover,
 .pagination .next:hover {
     background-color: #0056b3;
+}
+
+
+.badge--promo {
+  position: absolute;
+  top: 16px; left: -7px;
+  background: #e63946;
+  color: #fff!important;
+  padding: 6px 12px;
+  font: 600 12px/1.1 "Poppins", system-ui;
+  text-transform: uppercase; letter-spacing: .5px;
+  border-radius: 1px 8px 8px 1px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+
+
+
+  z-index: 3;             /* ponad obrazkiem (który zwykle ma z-index:auto/0) */
+  pointer-events: none;   /* żeby hover na obrazku działał normalnie */
+  transform: translateZ(0);
 }
 
 
@@ -799,7 +819,6 @@ body {
 
   .sort-wrapper {
 
-
     width:150px;
     right:2.5rem;
     top:3rem
@@ -836,6 +855,19 @@ body {
   .pagination {
 
     right:8rem;
+}
+
+
+.badge--promo {
+
+  top: 16px; left: -7px;
+
+  padding: 4px 10px;
+
+  font-size: 13px!important;
+
+
+
 }
 
 
@@ -965,15 +997,123 @@ body {
   line-height: 1;
 }
 
+.badge--promo {
+
+  top: 16px; left: -7px;
+
+  padding: 4px 10px;
+
+  font-size: 11px!important;
+
+
+
+}
+
 }
 
 @media (max-width: 533px) {
     .all-products {
-    grid-template-columns: 1fr;
+
+
+
+
+
+
+
+      grid-template-columns: repeat(2, 1fr);
+      padding: 8rem .5rem 9rem .5rem;
+
   }
 
+  .product {
+  position: relative;
+  height: 210px;
+  width: 100%;
+  max-width: 260px;
+  min-width: 10px;
+  margin: 0;
 
-        .pagination {
+}
+
+.product-image {
+  width: 100%;
+  height: 60%;
+
+}
+
+
+.product h3 {
+  font-weight: normal;
+  font-size: .7rem;
+  margin: .6rem 0;
+}
+
+
+.price {
+
+  margin-left:3px;
+
+  bottom: .4rem;
+  font-size: 15px;
+  width: 4rem;
+}
+
+.products-cart {
+  width: 2.5rem;
+  height: 1.8rem;
+  padding: 4px;
+}
+
+
+.cart-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.products-cart:hover {
+  background-color: rgba(110, 198, 39, .85);
+  transition: background-color .4s;
+}
+
+
+
+
+.product .bx, .product .bxs-heart {
+
+  font-size: 25px;
+
+  right: .6rem;
+
+}
+
+
+.calc-product {
+
+
+  height: 1.8rem;
+  background: #fff;
+  font-size: .8rem;
+  padding: 5px;
+}
+
+.calc-product .calc-input {
+  width: 1.7rem;
+  height: 100%;
+  font-size: .8rem;
+
+}
+
+.calc-product button {
+  width: 1rem; /* Zwiększono szerokość przycisków */
+  height: 1rem;
+
+  font-size: 1.1rem;
+
+}
+
+
+
+    .pagination {
 
     right:4rem;
 
@@ -1006,6 +1146,16 @@ body {
     font-size: 14px;
     color: #555;
     font-weight: 600;
+}
+
+.badge--promo {
+
+  top: 16px; left: -7px;
+
+  padding: 3px 9px;
+
+  font-size: 10px!important;
+
 }
 
 }
@@ -1081,12 +1231,88 @@ body {
           font-size: .5rem;
 
         }
-           .pagination {
+        .pagination {
 
-                right:3.5rem;
-                }
+            right:3.5rem;
+        }
+
+
+
+        .product h3 {
+
+          font-size: .6rem;
+
+        }
+
+
+        .price {
+
+          font-size: 11px;
+
+        }
+
+        .products-cart {
+          width: 2.2rem;
+          height: 1.5rem;
+          padding: 4px;
+        }
+
+
+        .cart-icon {
+          width: 1.2rem;
+          height: 1.2rem;
+        }
+
+        .product .bx, .product .bxs-heart {
+
+
+
+              right: .4rem;
+
+            }
+
+        .calc-product {
+
+          width: 2.5rem; /* Początkowa szerokość */
+          height: 1.5rem;
+
+          font-size: .7rem;
+          padding: 5px;
+
+        }
+
+        .calc-product .calc-input {
+          width: 1rem;
+          height: 100%;
+          font-size: .6rem;
+
+        }
+
+        .calc-product button {
+          width: .7rem; /* Zwiększono szerokość przycisków */
+          height: .7rem;
+
+          font-size: .75rem;
+
+
+        }
+
+        .badge--promo {
+
+          top: 16px; left: -7px;
+
+          padding: 3px 7px;
+
+          font-size: 8px!important;
+
+    }
+
 
 }
+
+
+
+
 
 @media (max-width: 380px){
 
@@ -1113,28 +1339,37 @@ body {
                 right:2rem;
                 }
 
+        .badge--promo {
+
+
+
+          padding: 3px 6px;
+
+          font-size: 7px!important;
+
+    }
+
+      .product {
+          position: relative;
+          height: 180px;
+          width: 100%;
+          max-width: 260px;
+          min-width: 10px;
+          margin: 0;
+
+        }
+
+      .product-image {
+          width: 100%;
+          height: 60%;
+
+        }
+
 }
 
 
 .product { position: relative; }
 
-.badge--promo {
-  position: absolute;
-  top: 16px; left: -7px;
-  background: #e63946;
-  color: #fff!important;
-  padding: 6px 12px;
-  font: 600 12px/1.1 "Poppins", system-ui;
-  text-transform: uppercase; letter-spacing: .5px;
-  border-radius: 1px 8px 8px 1px;
-  box-shadow: 0 4px 10px rgba(0,0,0,.15);
-  z-index: 100;
-
-
-  z-index: 3;             /* ponad obrazkiem (który zwykle ma z-index:auto/0) */
-  pointer-events: none;   /* żeby hover na obrazku działał normalnie */
-  transform: translateZ(0);
-}
 
 
 

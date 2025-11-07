@@ -675,7 +675,9 @@ a {
   .burger .bar{ display:block; width:24px; height:2px; background-color:black; transition:.3s ease-in-out; }
   .kategorie-nav .only-burger {
         display: flex;            /* tak jak inne wiersze menu */
+
    }
+
   .kategorie-nav .only-burger .pasek1 {
         width: 100%;
         padding: 0.5rem 2rem;     /* spójnie z resztą pozycji */
@@ -1077,6 +1079,21 @@ button.logout-button:hover {
      .pasek1{
         font-size: 3.2vw;
     }
+
+       .kategorie-nav{
+    width:200px;
+   }
+
+
+}
+
+@media (max-width: 380px){
+
+
+
+       .kategorie-nav{
+    width:180px;
+   }
 
 
 }

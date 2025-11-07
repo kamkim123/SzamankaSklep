@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log(data);  // Debugowanie odpowiedzi z serwera
                 if (data.ok) {
                     // Możesz przekierować użytkownika do strony koszyka lub odświeżyć stronę
-                    window.location.reload(); // Odświeżenie strony, aby backend wygenerował nową wartość cart-items
+                    document.querySelector('.cart-count').textContent = data.items; // Odświeżenie strony, aby backend wygenerował nową wartość cart-items
                 }
             })
             .catch(error => {
