@@ -98,8 +98,24 @@ WSGI_APPLICATION = "Szamanka.wsgi.application"
 
 DJANGO_DB_PATH = os.getenv("DJANGO_DB_PATH", str(BASE_DIR / "db.sqlite3"))
 
-DATABASES = {"default": dj_database_url.parse(
-    "postgresql://kamyk3226:iTwmja0Urf3bGjj1ZQIJvzSrAlnK2gMj@dpg-d3jnr43ipnbc73clhnng-a.frankfurt-postgres.render.com/szamanka")}
+DATABASES = {
+    "default": dj_database_url.parse(
+        "postgresql://kamyk3226:iTwmja0Urf3bGjj1ZQIJvzSrAlnK2gMj@"
+        "dpg-d3jnr43ipnbc73clhnng-a.frankfurt-postgres.render.com/szamanka",
+        conn_max_age=300,         # 5 min – połączenia są re-używane
+        ssl_require=True,
+    )
+}
+
+DATABASES["default"]["OPTIONS"] = {
+    "keepalives": 1,
+    "keepalives_idle": 30,
+    "keepalives_interval": 10,
+    "keepalives_count": 5,
+    "connect_timeout": 15,
+    # na czas importu — dłuższe zapytania:
+    "options": "-c statement_timeout=0",  # albo np. 600000 (10 min)
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

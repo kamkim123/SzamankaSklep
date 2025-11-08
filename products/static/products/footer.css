@@ -72,7 +72,7 @@ footer{
     cursor: pointer;
 }
 
-.bx{
+.bx-mail-send{
     font-size: 30px;
     margin-top: 10px;
     margin-right: 0.5rem;
@@ -242,6 +242,7 @@ footer{
         padding: 0.5rem 0;
         font-size: 1.3rem !important;
         color: white;
+
     }
 
 
@@ -257,3 +258,74 @@ font-size: 1.3rem !important;
 }
 
 }
+
+
+
+
+
+@media (max-width: 400px) {
+
+
+
+    .footer .footer-container {
+
+        gap:0;
+    }
+
+
+    .footer-container .footer-box a {
+        font-size: .7rem;
+    }
+
+    .footer-container .footer-box p {
+        font-size: .7rem!important;
+    }
+
+    .footer-container .footer-box h3, .footer-title, .footer-newsletter{
+
+        font-size: .9rem !important;
+
+
+    }
+
+
+
+    .pay-icons {
+        height: 19px;
+        width: auto;
+        cursor: pointer;
+    }
+
+    #ikonka-blik {
+        width: 30px;
+        height: 15px;
+    }
+
+    #przelewy24{
+
+        width: 35px;
+        height: 23px;
+
+    }
+
+    .bx-mail-send{
+        font-size: 25px;
+
+    }
+
+    .bx-right-arrow-alt {
+        font-size: 22px;
+
+    }
+
+    .footer-social img {
+        width: 28px;
+        height: 28px;
+
+    }
+
+
+
+
+}
+

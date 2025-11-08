@@ -48,7 +48,8 @@
             <div class="row1 total"><span>Do zapłaty</span><span id="grand">{{ cart.grand_total }} zł</span></div>
             <a href="{% url 'orders:checkout' %}">
                 <button class="btn" id="checkoutBtn">Przejdź do płatności</button>
-            </a></div>
+            </a>
+        </div>
     </aside>
 </div>
 {% include "products/footer.html" %}

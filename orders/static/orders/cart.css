@@ -27,6 +27,7 @@ body {
     color: var(--ink);
     min-height: 100svh;            /* nie środek, tylko trochę wyżej */
 
+
 }
 
 /* =============== Layout =============== */
@@ -500,7 +501,7 @@ body {
 
     /* =============== Podsumowanie =============== */
     .summary {
-        padding: 16px;
+        padding: 12px;
     }
 
     .row1 {
@@ -759,4 +760,22 @@ body {
     display:none;
 }
 
+
+
+ @media (max-width: 400px) {
+    .row1 {
+        font-weight: 700;
+        font-size: .8rem!important;
+    }
+
+    .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        min-width: 280px;
+    }
+
+ }
 
