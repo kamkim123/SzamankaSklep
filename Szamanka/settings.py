@@ -201,4 +201,11 @@ LOGGING = {
 ACCOUNT_EMAIL_REQUIRED = True
 
 
+DATABASES["default"]["CONN_MAX_AGE"] = 60  # lub nawet 0 na czas diagnozy
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = True  # Django 4.1+
+DATABASES["default"]["OPTIONS"].update({
+    "keepalives": 1, "keepalives_idle": 30, "keepalives_interval": 10, "keepalives_count": 5,
+})
+
+
 
