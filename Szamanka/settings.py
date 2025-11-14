@@ -107,15 +107,7 @@ DATABASES = {
     )
 }
 
-DATABASES["default"]["OPTIONS"] = {
-    "keepalives": 1,
-    "keepalives_idle": 30,
-    "keepalives_interval": 10,
-    "keepalives_count": 5,
-    "connect_timeout": 15,
-    # na czas importu — dłuższe zapytania:
-    "options": "-c statement_timeout=0",  # albo np. 600000 (10 min)
-}
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -207,15 +199,15 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 # settings.py
 
-EPAKA_CLIENT_ID = "8f6838db44fbd3149716f3c3a214c183"
-EPAKA_CLIENT_SECRET = "b117c80f5dbaa46ad6a95315ca191dcc321f07b090cf852821ce6c4add501b6c"
+##EPAKA_CLIENT_ID = "8f6838db44fbd3149716f3c3a214c183"
+#EPAKA_CLIENT_SECRET = "b117c80f5dbaa46ad6a95315ca191dcc321f07b090cf852821ce6c4add501b6c"
 
-EPAKA_AUTHORIZE_URL = "https://epaka.pl/oauth/authorize"
-EPAKA_TOKEN_URL = "https://epaka.pl/oauth/token"
-EPAKA_API_BASE_URL = "https://api.epaka.pl"
+#EPAKA_AUTHORIZE_URL = "https://epaka.pl/oauth/authorize"
+#EPAKA_TOKEN_URL = "https://epaka.pl/oauth/token"
+#EPAKA_API_BASE_URL = "https://api.epaka.pl"
 
 # URL pod który Epaka cię odeśle po zalogowaniu
-EPAKA_REDIRECT_URI = "https://www.szamankasklep.pl/epaka/callback/"
+#EPAKA_REDIRECT_URI = "https://www.szamankasklep.pl/epaka/callback/"
 
 
 
