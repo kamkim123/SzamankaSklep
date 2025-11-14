@@ -12,8 +12,7 @@ ALLOWED_HOSTS = [
     "www.szamankasklep.pl",
     "api.szamanka.pl",             # Twoja subdomena API
     "szamankasklep.onrender.com",      # chwilowo adres z Render, podmienisz po deployu
-    "localhost", "127.0.0.1",
-    "*"
+    "localhost", "127.0.0.1"
 ]
 
 import os
@@ -108,7 +107,15 @@ DATABASES = {
     )
 }
 
-
+DATABASES["default"]["OPTIONS"] = {
+    "keepalives": 1,
+    "keepalives_idle": 30,
+    "keepalives_interval": 10,
+    "keepalives_count": 5,
+    "connect_timeout": 15,
+    # na czas importu — dłuższe zapytania:
+    "options": "-c statement_timeout=0",  # albo np. 600000 (10 min)
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -194,8 +201,11 @@ LOGGING = {
 ACCOUNT_EMAIL_REQUIRED = True
 
 
-
-
+DATABASES["default"]["CONN_MAX_AGE"] = 60  # lub nawet 0 na czas diagnozy
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = True  # Django 4.1+
+DATABASES["default"]["OPTIONS"].update({
+    "keepalives": 1, "keepalives_idle": 30, "keepalives_interval": 10, "keepalives_count": 5,
+})
 
 
 # settings.py
@@ -209,8 +219,6 @@ EPAKA_API_BASE_URL = "https://api.epaka.pl"
 
 # URL pod który Epaka cię odeśle po zalogowaniu
 EPAKA_REDIRECT_URI = "https://www.szamankasklep.pl/epaka/callback/"
-
-
 
 
 
