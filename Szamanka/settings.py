@@ -201,11 +201,24 @@ LOGGING = {
 ACCOUNT_EMAIL_REQUIRED = True
 
 
-DATABASES["default"]["CONN_MAX_AGE"] = 60  # lub nawet 0 na czas diagnozy
-DATABASES["default"]["CONN_HEALTH_CHECKS"] = True  # Django 4.1+
-DATABASES["default"]["OPTIONS"].update({
-    "keepalives": 1, "keepalives_idle": 30, "keepalives_interval": 10, "keepalives_count": 5,
-})
+
+
+
+
+# settings.py
+
+EPAKA_CLIENT_ID = "8f6838db44fbd3149716f3c3a214c183"
+EPAKA_CLIENT_SECRET = "b117c80f5dbaa46ad6a95315ca191dcc321f07b090cf852821ce6c4add501b6c"
+
+EPAKA_AUTHORIZE_URL = "https://epaka.pl/oauth/authorize"
+EPAKA_TOKEN_URL = "https://epaka.pl/oauth/token"
+EPAKA_API_BASE_URL = "https://api.epaka.pl"
+
+# URL pod który Epaka cię odeśle po zalogowaniu
+EPAKA_REDIRECT_URI = "https://www.szamankasklep.pl/epaka/callback/"
+
+
+
 
 
 
