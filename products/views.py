@@ -15,6 +15,9 @@ from django.views.generic import ListView
 
 from django.db.models import Q
 
+import base64
+
+
 # views.py
 
 # views.py
@@ -230,47 +233,63 @@ def search_results(request):
 
 # views.py
 
+# views.py
+
 
 def epaka_login(request):
     params = {
         "response_type": "code",
         "client_id": settings.EPAKA_CLIENT_ID,
         "redirect_uri": settings.EPAKA_REDIRECT_URI,
-        # opcjonalnie: "scope": "...", "state": "..."
+        "scope": "api",  # zgodnie z dokumentacją – domyślnie 'api'
+        # opcjonalnie:
+        # "state": "losowy_token_do_csrf",
+        # "code_challenge_method": "S256",
+        # "code_challenge": "...",
     }
     url = f"{settings.EPAKA_AUTHORIZE_URL}?{urllib.parse.urlencode(params)}"
     return redirect(url)
 
+# views.py
 
-# views.py (ciąg dalszy)
 
 def epaka_callback(request):
     code = request.GET.get("code")
     if not code:
         return HttpResponseBadRequest("Brak parametru 'code'")
 
+    # body x-www-form-urlencoded
     data = {
         "grant_type": "authorization_code",
-        "client_id": settings.EPAKA_CLIENT_ID,
-        "client_secret": settings.EPAKA_CLIENT_SECRET,
-        "redirect_uri": settings.EPAKA_REDIRECT_URI,
         "code": code,
+        "redirect_uri": settings.EPAKA_REDIRECT_URI,
     }
 
-    # wymiana code -> access_token
-    resp = requests.post(settings.EPAKA_TOKEN_URL, data=data)
-    if resp.status_code != 200:
-        return HttpResponseBadRequest(f"Błąd tokenu: {resp.text}")
+    # Authorization: Basic base64(client_id:client_secret)
+    auth_raw = f"{settings.EPAKA_CLIENT_ID}:{settings.EPAKA_CLIENT_SECRET}"
+    auth_b64 = base64.b64encode(auth_raw.encode()).decode()
+
+    headers = {
+        "Authorization": f"Basic {auth_b64}",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+
+    resp = requests.post(settings.EPAKA_TOKEN_URL, data=data, headers=headers)
+    if resp.status_code != 200 and resp.status_code != 201:
+        return HttpResponseBadRequest(f"Błąd tokenu: {resp.status_code} {resp.text}")
 
     token_data = resp.json()
     access_token = token_data.get("access_token")
     refresh_token = token_data.get("refresh_token")
 
-    # na szybko: zapisz do sesji (produkcyjnie: do bazy, per user)
+    if not access_token:
+        return HttpResponseBadRequest(f"Brak access_token w odpowiedzi: {token_data}")
+
+    # na razie do sesji (później możesz przenieść do bazy powiązanej z userem)
     request.session["epaka_access_token"] = access_token
     request.session["epaka_refresh_token"] = refresh_token
 
-    return redirect("epaka_profile")  # np. widok, który użyje API
+    return redirect("epaka_profile")
 
 
 
@@ -282,29 +301,26 @@ def epaka_api_get(endpoint, access_token, params=None):
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json",
     }
-    resp = requests.get(url, headers=headers, params=params or {})
-    return resp
+    return requests.get(url, headers=headers, params=params or {})
 
 
 def epaka_profile_view(request):
     access_token = request.session.get("epaka_access_token")
     if not access_token:
-        # nieautoryzowany → zaloguj przez Epaka
         return redirect("epaka_login")
 
     resp = epaka_api_get("/v1/user", access_token)
 
     if resp.status_code == 403:
-        return HttpResponseBadRequest("Brak autoryzacji w Epaka API")
+        return HttpResponseBadRequest("Brak autoryzacji w Epaka API (403)")
 
     if resp.status_code != 200:
-        return HttpResponseBadRequest(f"Błąd: {resp.status_code} {resp.text}")
+        return HttpResponseBadRequest(
+            f"Błąd: {resp.status_code} {resp.text}"
+        )
 
     data = resp.json()
-    # na szybko: wyświetl raw json:
     return render(request, "epaka_profile.html", {"profile": data})
-
-
 
 
 
