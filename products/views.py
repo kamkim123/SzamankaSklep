@@ -320,7 +320,7 @@ def epaka_profile_view(request):
         return HttpResponseBadRequest(f"Błąd: {resp.status_code} {resp.text}")
 
     data = resp.json()
-    return render(request, "epaka_profile.html", {"profile": data})
+    return render(request, "products/epaka_profile.html", {"profile": data})
 
 
 
