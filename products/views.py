@@ -323,5 +323,15 @@ def epaka_profile_view(request):
     return render(request, "products/epaka_profile.html", {"profile": data})
 
 
+def epaka_api_post(endpoint, access_token, payload):
+    url = settings.EPAKA_API_BASE_URL + endpoint
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    }
+    resp = requests.post(url, headers=headers, json=payload)
+    return resp
+
 
 

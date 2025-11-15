@@ -10,5 +10,35 @@
     <pre>
 {{ profile|safe }}
     </pre>
+
+<h1>Profil z Epaka</h1>
+
+<h2>Dane nadawcy</h2>
+<p>{{ profile.senderData.name }} {{ profile.senderData.lastName }}</p>
+<p>
+  {{ profile.senderData.company }}<br>
+  {{ profile.senderData.street }} {{ profile.senderData.houseNumber }}{% if profile.senderData.flatNumber %}/{{ profile.senderData.flatNumber }}{% endif %}<br>
+  {{ profile.senderData.postCode }} {{ profile.senderData.city }}<br>
+  tel: {{ profile.senderData.phone }}
+</p>
+
+<h2>Dane do faktury</h2>
+<p>{{ profile.invoiceData.company }}</p>
+<p>
+  {{ profile.invoiceData.street }} {{ profile.invoiceData.houseNumber }}<br>
+  {{ profile.invoiceData.postCode }} {{ profile.invoiceData.city }}<br>
+  NIP: {{ profile.nip }}
+</p>
+
+<h2>Domyślne punkty nadania</h2>
+<ul>
+  {% for point in profile.defaultPoints %}
+    <li>
+      Kurier ID: {{ point.courierId }}<br>
+      Punkt: {{ point.name }}
+    </li>
+  {% endfor %}
+</ul>
+
 </body>
 </html>

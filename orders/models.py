@@ -74,6 +74,9 @@ class Order(models.Model):
     shipped_at = models.DateTimeField(null=True, blank=True)
     tracking_number = models.CharField(max_length=60, blank=True)
 
+    epaka_order_id = models.CharField(max_length=60, blank=True)
+    epaka_label_number = models.CharField(max_length=60, blank=True)
+
     # flaga: czy zdjęto już stan magazynowy (żeby nie zdjąć 2x)
     stock_debited = models.BooleanField(default=False)
 

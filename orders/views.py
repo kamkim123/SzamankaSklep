@@ -9,6 +9,8 @@ from .cart import Cart
 from products.models import Product
 from .models import Order, OrderItem
 
+from .epaka import create_epaka_order
+
 
 @ensure_csrf_cookie
 def cart_view(request):
@@ -82,21 +84,30 @@ def checkout(request):
             address=request.POST.get('address'),
             postal_code=request.POST.get('postal_code'),
             city=request.POST.get('city'),
-            shipping_cost=cart.shipping,  # Koszt wysyłki
-            status=Order.STATUS_NEW,  # Początkowy status
+            shipping_cost=cart.shipping,
+            status=Order.STATUS_NEW,
             payment_method=request.POST.get('payment_method', Order.PAYMENT_TRANSFER),
-            # Można dodać płatność przez POST
         )
 
         for item in cart:
             OrderItem.objects.create(
                 order=order,
                 product=item["product"],
-                unit_price=item["price"],  # Zapisujemy cenę z koszyka
+                unit_price=item["price"],
                 quantity=item["quantity"],
             )
 
-        cart.clear()  # Czyszczenie koszyka po utworzeniu zamówienia
+        # 🔽 TU: próba utworzenia przesyłki w Epace
+        access_token = request.session.get("epaka_access_token")
+        if access_token:
+            epaka_data = create_epaka_order(order, access_token)
+            if epaka_data is None:
+                # tu możesz np. dodać message.warning, że przesyłka nie powstała
+                print(f"[EPAKA] Nie udało się utworzyć przesyłki dla zamówienia {order.pk}")
+        else:
+            print(f"[EPAKA] Brak access_token w sesji – zamówienie {order.pk} nie wysłane do Epaki")
+
+        cart.clear()
         return redirect("orders:thank_you", pk=order.pk)
 
     return render(request, "orders/checkout.html", {"cart": cart})
