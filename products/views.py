@@ -300,8 +300,10 @@ def epaka_api_get(endpoint, access_token, params=None):
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json",
+        "Content-Type": "application/json",  # 👈 to jest klucz
     }
-    return requests.get(url, headers=headers, params=params or {})
+    resp = requests.get(url, headers=headers, params=params or {})
+    return resp
 
 
 def epaka_profile_view(request):
@@ -312,12 +314,10 @@ def epaka_profile_view(request):
     resp = epaka_api_get("/v1/user", access_token)
 
     if resp.status_code == 403:
-        return HttpResponseBadRequest("Brak autoryzacji w Epaka API (403)")
+        return HttpResponseBadRequest("Brak autoryzacji w Epaka API")
 
     if resp.status_code != 200:
-        return HttpResponseBadRequest(
-            f"Błąd: {resp.status_code} {resp.text}"
-        )
+        return HttpResponseBadRequest(f"Błąd: {resp.status_code} {resp.text}")
 
     data = resp.json()
     return render(request, "epaka_profile.html", {"profile": data})
