@@ -11,8 +11,10 @@ def epaka_api_get(endpoint, access_token, params=None):
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json",
+        "Content-Type": "application/json",   # 👈 to dodajemy
     }
     return requests.get(url, headers=headers, params=params or {})
+
 
 
 def epaka_api_post(endpoint, access_token, payload):
