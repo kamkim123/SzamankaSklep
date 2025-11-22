@@ -141,14 +141,6 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
 
 
 def create_epaka_order(order: Order, access_token: str) -> dict | None:
-    """
-    Tworzy zamówienie w Epace dla danego Order:
-    - pobiera profil /v1/user,
-    - buduje payload,
-    - robi POST /v1/order,
-    - zapisuje epaka_order_id i debug do order.notes.
-    """
-
     def add_note(msg: str):
         order.notes = (order.notes or "") + f"\n[EPAKA] {msg}"
         order.save(update_fields=["notes"])
@@ -172,19 +164,16 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
     add_note(f"order status={resp.status_code}")
     add_note(f"order raw body={resp.text[:1000]}")
 
-    if resp.status_code != 200:
+    # 🔴 TU ZMIANA: akceptujemy 200 i 201 jako "OK"
+    if resp.status_code not in (200, 201):
         return None
 
     data = resp.json()
     add_note(f"order json keys={list(data.keys())}")
 
-    # tu REALNIE ustawiamy epaka_order_id w modelu:
-    order.epaka_order_id = str(
-        data.get("orderId")
-        or data.get("id")
-        or data.get("order_id")
-        or ""
-    )
+    # zapisujemy ID z Epaki do naszego zamówienia
+    order.epaka_order_id = str(data.get("orderId", ""))
     order.save(update_fields=["epaka_order_id", "notes"])
 
     return data
+
