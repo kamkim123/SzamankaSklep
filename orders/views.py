@@ -99,10 +99,11 @@ def checkout(request):
 
         # 🔽 TU: próba utworzenia przesyłki w Epace
         access_token = request.session.get("epaka_access_token")
+        print("[EPAKA] access_token in session:", bool(access_token))  # DEBUG
+
         if access_token:
             epaka_data = create_epaka_order(order, access_token)
             if epaka_data is None:
-                # tu możesz np. dodać message.warning, że przesyłka nie powstała
                 print(f"[EPAKA] Nie udało się utworzyć przesyłki dla zamówienia {order.pk}")
         else:
             print(f"[EPAKA] Brak access_token w sesji – zamówienie {order.pk} nie wysłane do Epaki")
