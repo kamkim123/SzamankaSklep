@@ -11,7 +11,6 @@ def epaka_api_get(endpoint, access_token, params=None):
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json",
-        "Content-Type": "application/json",
     }
     return requests.get(url, headers=headers, params=params or {})
 
@@ -28,59 +27,98 @@ def epaka_api_post(endpoint, access_token, payload):
 
 def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
     """
-    Buduje body dla /v1/order na podstawie Order + profilu z Epaki.
-    Tu jest wersja MINIMALNA – później dopasujemy kuriera, wymiary itd.
+    Buduje body dla /v1/order na podstawie Order + profilu z Epaki
+    zgodnie ze schematem z dokumentacji Epaki.
     """
+    sender_profile = profile_data["senderData"]
 
-    sender = profile_data["senderData"]
+    sender = {
+        "name": sender_profile.get("name") or "",
+        "lastName": sender_profile.get("lastName") or "",
+        "company": sender_profile.get("company") or "",
+        "nip": profile_data.get("nip") or "",
+        "country": sender_profile.get("country", "PL"),
+        "city": sender_profile.get("city") or "",
+        "street": sender_profile.get("street") or "",
+        "houseNumber": sender_profile.get("houseNumber") or "",
+        "flatNumber": sender_profile.get("flatNumber") or "",
+        "postCode": sender_profile.get("postCode") or "",
+        "phone": sender_profile.get("phone") or "",
+        "email": profile_data.get("email") or "",
+        "pointId": "",
+        "pointDescription": "",
+    }
 
     receiver = {
         "name": order.first_name,
         "lastName": order.last_name,
         "company": "",
+        "nip": "",
         "country": "PL",
-        # uproszczenie: całość w address, numer domu "1"
+        "city": order.city,
         "street": order.address,
-        "houseNumber": "1",
+        "houseNumber": "1",      # uproszczenie na start
         "flatNumber": "",
         "postCode": order.postal_code,
-        "city": order.city,
         "phone": order.phone,
         "email": order.email,
+        "pointId": "",
+        "pointDescription": "",
     }
 
-    # Płatność po stronie Epaki – na początek saldo w panelu Epaki
     payment_data = {
-        "paymentType": "balance",   # możesz zmienić np. na 'online_payment'
+        "paymentType": "balance",   # na start saldo w Epaka, bez operatora p24
+        "blikCode": "",
+        "paymentOperator": "",
     }
 
-    # Na razie załóżmy 1 paczkę o domyślnych wymiarach:
     packages = [
         {
-            "weight": 1.0,   # kg – później można policzyć z produktów
+            "weight": 1.0,
             "height": 10,
             "width": 10,
             "length": 10,
+            "type": 0,   # ważne: pole nazywa się "type"
         }
     ]
-
-    # Wybór kuriera – docelowo weźmiesz z /v1/couriers albo defaultPoints
-    courier_id = 6  # przykładowy ID (np. InPost/GLS) – zmienisz jak poznasz z dokumentacji
 
     body = {
         "sender": sender,
         "receiver": receiver,
         "paymentData": payment_data,
-        "courierId": courier_id,
-        "shippingType": "package",  # envelope / package / pallet / tires
+        "courierId": 6,               # na sztywno, do dopracowania później
+        "shippingType": "package",    # envelope / package / pallet / tires
         "pickupDate": date.today().isoformat(),
-        "pickupTime": {"from": "10:00", "to": "16:00"},
-        "content": f"Zamówienie #{order.pk} ze sklepu szamankasklep.pl",
+        "pickupTime": {"from": "10:30", "to": "14:30"},
+        "comments": "",
+        "customsService": {
+            "purpose": "gift",
+            "informationAccept": False,
+            "eori": "",
+            "pesel": "",
+            "hmrc": "",
+        },
+        "services": {
+            "cod": False,
+            "codReturnType": "account",
+            "codReturnPointId": "",
+            "codType": "",
+            "codAmount": 0,
+            "bankAccount": "",
+            "insurance": False,
+            "declaredValue": 0,
+            "additionalServices": [],
+        },
         "packages": packages,
-        # na start bez usług dodatkowych:
-        # "services": {...},
-        # "customsService": {...},
-        # "contents": [...]
+        "content": f"Zamówienie #{order.pk} ze sklepu szamankasklep.pl",
+        "contents": [],
+        "promoCode": "",
+        "tires": {
+            "quantity": 0,
+            "width": 0,
+            "profile": 0,
+            "diameter": 0,
+        },
     }
 
     return body
@@ -89,24 +127,22 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
 def create_epaka_order(order: Order, access_token: str) -> dict | None:
     """
     Tworzy zamówienie w Epace dla danego Order:
-    - pobiera profil /v1/user (dla senderData),
+    - pobiera profil /v1/user,
     - buduje payload,
-    - wywołuje POST /v1/order,
-    - zapisuje epaka_order_id, ew. debug w order.notes.
+    - robi POST /v1/order,
+    - zapisuje epaka_order_id i debug do order.notes.
     """
 
-    # mały helper do dopisywania notatek
     def add_note(msg: str):
         order.notes = (order.notes or "") + f"\n[EPAKA] {msg}"
         order.save(update_fields=["notes"])
 
-    # 1. profil (senderData)
+    # 1. profil
     profile_resp = epaka_api_get("/v1/user", access_token)
     add_note(f"profile status={profile_resp.status_code}")
 
     if profile_resp.status_code != 200:
         add_note(f"profile error body={profile_resp.text[:500]}")
-        print("Epaka profile error:", profile_resp.status_code, profile_resp.text)
         return None
 
     profile_data = profile_resp.json()
@@ -121,12 +157,12 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
     add_note(f"order raw body={resp.text[:1000]}")
 
     if resp.status_code != 200:
-        print("Epaka order error:", resp.status_code, resp.text)
         return None
 
     data = resp.json()
     add_note(f"order json keys={list(data.keys())}")
 
+    # tu REALNIE ustawiamy epaka_order_id w modelu:
     order.epaka_order_id = str(
         data.get("orderId")
         or data.get("id")
@@ -136,5 +172,3 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
     order.save(update_fields=["epaka_order_id", "notes"])
 
     return data
-
-
