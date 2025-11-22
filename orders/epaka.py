@@ -87,14 +87,7 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
 
 
 def create_epaka_order(order: Order, access_token: str) -> dict | None:
-    """
-    Tworzy zamówienie w Epace dla danego Order:
-    - pobiera profil /v1/user (dla senderData),
-    - buduje payload,
-    - wywołuje POST /v1/order,
-    - zapisuje epaka_order_id, epaka_label_number w Order.
-    """
-    # 1. profil (senderData)
+    # 1. profil
     profile_resp = epaka_api_get("/v1/user", access_token)
     if profile_resp.status_code != 200:
         print("Epaka profile error:", profile_resp.status_code, profile_resp.text)
@@ -105,8 +98,6 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
     # 2. body
     body = _order_to_epaka_body(order, profile_data)
 
-    # (opcjonalnie) można najpierw zrobić /v1/order/check-data tutaj
-
     # 3. POST /v1/order
     resp = epaka_api_post("/v1/order", access_token, body)
     if resp.status_code != 200:
@@ -115,12 +106,11 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
 
     data = resp.json()
 
-    # Tu zakładam nazwy pól – dopasujesz do tego, co realnie zwraca Epaka
-    order.epaka_order_id = str(data.get("id", ""))  # np. 12345
-    label_number = data.get("labelNumber") or data.get("trackingNumber")
-    if label_number:
-        order.epaka_label_number = label_number
-        order.tracking_number = label_number  # używamy też ogólnego pola
-    order.save(update_fields=["epaka_order_id", "epaka_label_number", "tracking_number"])
+    # 🔴 TU BYŁ PROBLEM – poprawiamy klucze:
+    order.epaka_order_id = str(data.get("orderId", ""))  # poprawny klucz z dokumentacji
+
+    # na razie bez labelNumber – tego nie ma w tej odpowiedzi
+    order.save(update_fields=["epaka_order_id"])
 
     return data
+
