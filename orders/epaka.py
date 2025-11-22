@@ -27,12 +27,21 @@ def epaka_api_post(endpoint, access_token, payload):
     return requests.post(url, headers=headers, json=payload)
 
 
+
 def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
     """
-    Buduje body dla /v1/order na podstawie Order + profilu z Epaki
-    zgodnie ze schematem z dokumentacji Epaki.
+    Buduje body dla /v1/order na podstawie Order + profilu z Epaki,
+    poprawione wg błędów z API (pointId, paymentOperator, declaredValue).
     """
+
     sender_profile = profile_data["senderData"]
+    default_points = profile_data.get("defaultPoints") or []
+    default_point = default_points[0] if default_points else None
+
+    # domyślny punkt nadania z profilu Epaki (NAS02M)
+    sender_point_id = default_point["id"] if default_point else ""
+    sender_point_desc = default_point["name"] if default_point else ""
+    courier_id = default_point["courierId"] if default_point else 6
 
     sender = {
         "name": sender_profile.get("name") or "",
@@ -47,10 +56,12 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "postCode": sender_profile.get("postCode") or "",
         "phone": sender_profile.get("phone") or "",
         "email": profile_data.get("email") or "",
-        "pointId": "",
-        "pointDescription": "",
+        "pointId": sender_point_id,        # ← już NIE puste
+        "pointDescription": sender_point_desc,
     }
 
+    # UWAGA: na razie dla testów ustawiamy TEN SAM punkt także dla odbiorcy.
+    # Docelowo na front-endzie powinna być możliwość wyboru punktu przez klienta.
     receiver = {
         "name": order.first_name,
         "lastName": order.last_name,
@@ -59,20 +70,22 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "country": "PL",
         "city": order.city,
         "street": order.address,
-        "houseNumber": "1",      # uproszczenie na start
+        "houseNumber": "1",
         "flatNumber": "",
         "postCode": order.postal_code,
         "phone": order.phone,
         "email": order.email,
-        "pointId": "",
-        "pointDescription": "",
+        "pointId": sender_point_id,        # ← NIE puste, dla spokoju API
+        "pointDescription": sender_point_desc,
     }
 
+    # paymentType = balance → NIE wysyłamy paymentOperator ani blikCode
     payment_data = {
-        "paymentType": "balance",   # na start saldo w Epaka, bez operatora p24
-        "blikCode": "",
-        "paymentOperator": "",
+        "paymentType": "balance",
     }
+
+    # wartość deklarowana > 0 – użyjemy kwoty zamówienia
+    declared_value = float(order.total_to_pay) if hasattr(order, "total_to_pay") else 1.0
 
     packages = [
         {
@@ -80,7 +93,7 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
             "height": 10,
             "width": 10,
             "length": 10,
-            "type": 0,   # ważne: pole nazywa się "type"
+            "type": 0,
         }
     ]
 
@@ -88,8 +101,8 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "sender": sender,
         "receiver": receiver,
         "paymentData": payment_data,
-        "courierId": 6,               # na sztywno, do dopracowania później
-        "shippingType": "package",    # envelope / package / pallet / tires
+        "courierId": courier_id,
+        "shippingType": "package",
         "pickupDate": date.today().isoformat(),
         "pickupTime": {"from": "10:30", "to": "14:30"},
         "comments": "",
@@ -108,7 +121,7 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
             "codAmount": 0,
             "bankAccount": "",
             "insurance": False,
-            "declaredValue": 0,
+            "declaredValue": declared_value,  # ← > 0
             "additionalServices": [],
         },
         "packages": packages,
@@ -124,6 +137,7 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
     }
 
     return body
+
 
 
 def create_epaka_order(order: Order, access_token: str) -> dict | None:
