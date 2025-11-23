@@ -134,8 +134,18 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
         return None
 
     profile_data = profile_resp.json()
+
     body = _order_to_epaka_body(order, profile_data)
 
+    # 2.5. check-data – sprawdzenie po stronie Epaki
+    check_resp = epaka_check_data(access_token, body)
+    order.notes = (order.notes or "") + f"\n[EPAKA-check] {check_resp.status_code} {check_resp.text[:1000]}"
+    order.save(update_fields=["notes"])
+    if check_resp.status_code != 200:
+        print("[EPAKA] check-data ERROR", check_resp.status_code, check_resp.text)
+        return None
+
+    # 3. POST /v1/order
     resp = epaka_api_post("/v1/order", access_token, body)
 
     # <--- logujemy ZAWSZE
@@ -184,3 +194,26 @@ def epaka_get_document(order_epaka_id: int, access_token: str, doc_type: str = "
     """
     endpoint = f"/v1/user/orders/{order_epaka_id}/{doc_type}"
     return epaka_api_get(endpoint, access_token)
+
+
+def epaka_check_data(access_token: str, body: dict):
+    return epaka_api_post("/v1/order/check-data", access_token, body)
+
+
+def epaka_get_prices(access_token: str, *, sender_postcode: str, receiver_postcode: str,
+                     weight: float, height: int, width: int, length: int):
+    payload = {
+        "shippingType": "package",
+        "senderCountry": "PL",
+        "receiverCountry": "PL",
+        "senderPostCode": sender_postcode,
+        "receiverPostCode": receiver_postcode,
+        "packages": [{
+            "weight": weight,
+            "height": height,
+            "width": width,
+            "length": length,
+            "type": 0,
+        }],
+    }
+    return epaka_api_post("/v1/order/prices", access_token, payload)
