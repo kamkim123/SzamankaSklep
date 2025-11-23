@@ -177,3 +177,20 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
 
     return data
 
+# orders/epaka.py
+
+def epaka_get_document(order_epaka_id: int, access_token: str, doc_type: str = "label"):
+    """
+    Pobiera dokument (etykietę, protokół, itd.) z Epaki dla danego zamówienia.
+    doc_type:
+      - label
+      - label-zebra
+      - proforma
+      - protocol
+      - authorization-document
+      - exporter-statement
+      - lv-document
+      - hvEcx-document
+    """
+    endpoint = f"/v1/user/orders/{order_epaka_id}/{doc_type}"
+    return epaka_api_get(endpoint, access_token)

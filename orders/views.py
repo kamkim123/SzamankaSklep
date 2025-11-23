@@ -9,7 +9,10 @@ from .cart import Cart
 from products.models import Product
 from .models import Order, OrderItem
 
-from .epaka import create_epaka_order
+import base64
+from django.http import HttpResponse, HttpResponseBadRequest
+from .epaka import create_epaka_order, epaka_get_document
+
 
 
 @ensure_csrf_cookie
@@ -118,3 +121,43 @@ def thank_you(request, pk):
     order = get_object_or_404(Order, pk=pk)
     return render(request, "orders/thank_you.html", {"order": order})
 
+
+def epaka_label_view(request, pk):
+    """
+    Zwraca etykietę przewozową z Epaki jako PDF dla danego Order (pk).
+    """
+    order = get_object_or_404(Order, pk=pk)
+
+    if not order.epaka_order_id:
+        return HttpResponseBadRequest(
+            "To zamówienie nie ma epaka_order_id – nie zostało wysłane do Epaki."
+        )
+
+    access_token = request.session.get("epaka_access_token")
+    if not access_token:
+        # jeśli admin/ty nie masz aktualnie tokena w sesji – przekieruj do logowania z Epaką
+        return redirect("epaka_login")
+
+    # pobieramy dokument typu 'label' (klasyczny PDF)
+    resp = epaka_get_document(int(order.epaka_order_id), access_token, doc_type="label")
+
+    if resp.status_code != 200:
+        return HttpResponseBadRequest(
+            f"Błąd pobierania etykiety z Epaka: {resp.status_code} {resp.text}"
+        )
+
+    data = resp.json()
+    # wg schematu Document: { "document": "base64-pdf" }
+    label_b64 = data.get("document")
+    if not label_b64:
+        return HttpResponseBadRequest("Brak pola 'document' w odpowiedzi Epaki.")
+
+    try:
+        pdf_bytes = base64.b64decode(label_b64)
+    except Exception:
+        return HttpResponseBadRequest("Nie udało się zdekodować PDF (base64).")
+
+    filename = f"epaka-label-{order.epaka_order_id}.pdf"
+    response = HttpResponse(pdf_bytes, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{filename}"'
+    return response

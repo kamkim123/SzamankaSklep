@@ -2,6 +2,8 @@
 from django.contrib import admin, messages
 from django.utils import timezone
 from .models import Order, OrderItem
+from django.utils.html import format_html
+from django.urls import reverse
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
@@ -20,6 +22,7 @@ class OrderAdmin(admin.ModelAdmin):
         "status_label", "shipped_at",
         "paid", "items_total_display", "total_to_pay_display",
         "short_notes",
+        "epaka_label_link",
     )
     list_filter = ("status", "paid", "created_at", "payment_method", "shipped_at")
     search_fields = ("id", "last_name", "email", "address", "city", "tracking_number", "notes")
@@ -47,6 +50,14 @@ class OrderAdmin(admin.ModelAdmin):
     def total_to_pay_display(self, obj):
         return f"{obj.total_to_pay:.2f} zł"
     total_to_pay_display.short_description = "Do zapłaty"
+
+    def epaka_label_link(self, obj):
+        if not obj.epaka_order_id:
+            return "—"
+        url = reverse("orders:epaka_label", args=[obj.pk])
+        return format_html('<a href="{}" target="_blank">Pobierz etykietę</a>', url)
+
+    epaka_label_link.short_description = "Etykieta Epaka"
 
     # === Akcje ===
     @admin.action(description="Oznacz jako opłacone (zdejmij stan)")
