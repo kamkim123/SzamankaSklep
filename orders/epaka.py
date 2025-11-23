@@ -29,39 +29,10 @@ def epaka_api_post(endpoint, access_token, payload):
 
 
 def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
-    """
-    Buduje body dla /v1/order na podstawie Order + profilu z Epaki,
-    poprawione wg błędów z API (pointId, paymentOperator, declaredValue).
-    """
-
-    sender_profile = profile_data["senderData"]
+    sender = profile_data["senderData"]
     default_points = profile_data.get("defaultPoints") or []
-    default_point = default_points[0] if default_points else None
+    default_point = default_points[0] if default_points else {}
 
-    # domyślny punkt nadania z profilu Epaki (NAS02M)
-    sender_point_id = default_point["id"] if default_point else ""
-    sender_point_desc = default_point["name"] if default_point else ""
-    courier_id = default_point["courierId"] if default_point else 6
-
-    sender = {
-        "name": sender_profile.get("name") or "",
-        "lastName": sender_profile.get("lastName") or "",
-        "company": sender_profile.get("company") or "",
-        "nip": profile_data.get("nip") or "",
-        "country": sender_profile.get("country", "PL"),
-        "city": sender_profile.get("city") or "",
-        "street": sender_profile.get("street") or "",
-        "houseNumber": sender_profile.get("houseNumber") or "",
-        "flatNumber": sender_profile.get("flatNumber") or "",
-        "postCode": sender_profile.get("postCode") or "",
-        "phone": sender_profile.get("phone") or "",
-        "email": profile_data.get("email") or "",
-        "pointId": sender_point_id,        # ← już NIE puste
-        "pointDescription": sender_point_desc,
-    }
-
-    # UWAGA: na razie dla testów ustawiamy TEN SAM punkt także dla odbiorcy.
-    # Docelowo na front-endzie powinna być możliwość wyboru punktu przez klienta.
     receiver = {
         "name": order.first_name,
         "lastName": order.last_name,
@@ -75,33 +46,59 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "postCode": order.postal_code,
         "phone": order.phone,
         "email": order.email,
-        "pointId": sender_point_id,        # ← NIE puste, dla spokoju API
-        "pointDescription": sender_point_desc,
+        "pointId": default_point.get("id", ""),
+        "pointDescription": default_point.get("name", ""),
     }
 
-    # paymentType = balance → NIE wysyłamy paymentOperator ani blikCode
+    sender_payload = {
+        "name": sender["name"],
+        "lastName": sender["lastName"],
+        "company": sender["company"],
+        "nip": profile_data.get("nip", ""),
+        "country": sender["country"],
+        "city": sender["city"],
+        "street": sender["street"],
+        "houseNumber": sender["houseNumber"],
+        "flatNumber": sender.get("flatNumber", ""),
+        "postCode": sender["postCode"],
+        "phone": sender["phone"],
+        "email": profile_data.get("email", sender["phone"]),
+        "pointId": default_point.get("id", ""),
+        "pointDescription": default_point.get("name", ""),
+    }
+
     payment_data = {
-        "paymentType": "balance",
+        "paymentType": "balance",   # jak w panelu, z salda
     }
 
-    # wartość deklarowana > 0 – użyjemy kwoty zamówienia
-    declared_value = float(order.total_to_pay) if hasattr(order, "total_to_pay") else 1.0
-
+    # na sztywno podobnie jak na screenie
     packages = [
         {
-            "weight": 1.0,
-            "height": 10,
-            "width": 10,
-            "length": 10,
-            "type": 0,
+            "weight": 6.0,
+            "height": 35,
+            "width": 30,
+            "length": 25,
+            "type": 0,   # tu później dopasujemy do „sortowalne”, jeśli podadzą enum
         }
     ]
 
+    services = {
+        "cod": False,
+        "codReturnType": "account",
+        "codReturnPointId": "",
+        "codType": "",
+        "codAmount": 0,
+        "bankAccount": "",
+        "insurance": True,
+        "declaredValue": float(order.total_to_pay),  # np. wartość zamówienia
+        "additionalServices": [],  # tu kiedyś dorzucimy SMS wg kodu z /v1/order/services
+    }
+
     body = {
-        "sender": sender,
+        "sender": sender_payload,
         "receiver": receiver,
         "paymentData": payment_data,
-        "courierId": courier_id,
+        "courierId": default_point.get("courierId", 6),
         "shippingType": "package",
         "pickupDate": date.today().isoformat(),
         "pickupTime": {"from": "10:30", "to": "14:30"},
@@ -113,69 +110,62 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
             "pesel": "",
             "hmrc": "",
         },
-        "services": {
-            "cod": False,
-            "codReturnType": "account",
-            "codReturnPointId": "",
-            "codType": "",
-            "codAmount": 0,
-            "bankAccount": "",
-            "insurance": False,
-            "declaredValue": declared_value,  # ← > 0
-            "additionalServices": [],
-        },
+        "services": services,
         "packages": packages,
         "content": f"Zamówienie #{order.pk} ze sklepu szamankasklep.pl",
         "contents": [],
         "promoCode": "",
-        "tires": {
-            "quantity": 0,
-            "width": 0,
-            "profile": 0,
-            "diameter": 0,
-        },
+        "tires": {"quantity": 0, "width": 0, "profile": 0, "diameter": 0},
     }
 
     return body
 
 
 
+
 def create_epaka_order(order: Order, access_token: str) -> dict | None:
-    def add_note(msg: str):
-        order.notes = (order.notes or "") + f"\n[EPAKA] {msg}"
-        order.save(update_fields=["notes"])
-
-    # 1. profil
     profile_resp = epaka_api_get("/v1/user", access_token)
-    add_note(f"profile status={profile_resp.status_code}")
-
     if profile_resp.status_code != 200:
-        add_note(f"profile error body={profile_resp.text[:500]}")
+        order.notes = (order.notes or "") + (
+            f"\n[EPAKA] profile status={profile_resp.status_code}\n"
+            f"[EPAKA] profile body={profile_resp.text}\n"
+        )
+        order.save(update_fields=["notes"])
         return None
 
     profile_data = profile_resp.json()
-
-    # 2. body
     body = _order_to_epaka_body(order, profile_data)
-    add_note(f"request body={body}")
 
-    # 3. POST /v1/order
     resp = epaka_api_post("/v1/order", access_token, body)
-    add_note(f"order status={resp.status_code}")
-    add_note(f"order raw body={resp.text[:1000]}")
 
-    # 🔴 TU ZMIANA: akceptujemy 200 i 201 jako "OK"
+    # <--- logujemy ZAWSZE
+    try:
+        raw = resp.text
+    except Exception:
+        raw = "<no text>"
+
+    order.notes = (order.notes or "") + (
+        f"\n[EPAKA] order status={resp.status_code}\n"
+        f"[EPAKA] order raw={raw}\n"
+    )
+    order.save(update_fields=["notes"])
+
     if resp.status_code not in (200, 201):
         return None
 
     data = resp.json()
-    add_note(f"order json keys={list(data.keys())}")
 
-    # zapisujemy ID z Epaki do naszego zamówienia
-    order.epaka_order_id = str(data.get("orderId", ""))
+    # zapisujemy ID i wynik procesu
+    order.epaka_order_id = str(data.get("orderId") or "")
+    msg = data.get("message", "")
+    result = data.get("orderProcessResult", "")
+    order.notes += f"\n[EPAKA] orderId={order.epaka_order_id} " \
+                   f"result={result} message={msg}\n"
     order.save(update_fields=["epaka_order_id", "notes"])
 
+    # tylko jeśli result == 1, mamy „pełne” zamówienie z etykietą
     return data
+
 
 # orders/epaka.py
 
