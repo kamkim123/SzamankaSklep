@@ -35,9 +35,9 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
     default_point = default_points[0] if default_points else {}
 
     if order.shipping_method == Order.SHIPPING_INPOST_COURIER:
-        courier_id = getattr(settings, "EPAKA_COURIER_INPOST", default_point["courierId"] if default_point else 6)
+        courier_id = getattr(settings, "EPAKA_COURIER_INPOST", default_point["courierId"] if default_point else 12)
     elif order.shipping_method == Order.SHIPPING_DPD_COURIER:
-        courier_id = getattr(settings, "SHIPPING_DPD_COURIER", default_point["courierId"] if default_point else 6)
+        courier_id = getattr(settings, "SHIPPING_DPD_COURIER", default_point["courierId"] if default_point else 1)
     elif order.shipping_method == Order.SHIPPING_INPOST_LOCKER:
         courier_id = getattr(settings, "SHIPPING_INPOST_LOCKER", default_point["courierId"] if default_point else 6)
     else:
@@ -153,6 +153,13 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
     check_resp = epaka_check_data(access_token, body)
     order.notes = (order.notes or "") + f"\n[EPAKA-check] {check_resp.status_code} {check_resp.text[:1000]}"
     order.save(update_fields=["notes"])
+
+    # 👇 debug: zapisz, jaki kurier idzie do Epaki
+    order.notes = (order.notes or "") + (
+        f"\n[EPAKA-debug] shipping_method={order.shipping_method} courierId={body.get('courierId')}\n"
+    )
+    order.save(update_fields=["notes"])
+
     if check_resp.status_code != 200:
         print("[EPAKA] check-data ERROR", check_resp.status_code, check_resp.text)
         return None
