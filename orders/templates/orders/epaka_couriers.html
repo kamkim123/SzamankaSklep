@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <title>Kurierzy Epaka</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f5f7;
+            margin: 0;
+            padding: 2rem;
+        }
+        h1 {
+            margin-bottom: 1.5rem;
+        }
+        .couriers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+        .courier-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,.05);
+        }
+        .courier-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .courier-logo {
+            width: 52px;
+            height: 32px;
+            object-fit: contain;
+            background: #fff;
+        }
+        .courier-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .courier-id {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .tag {
+            display: inline-block;
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            margin-right: 0.3rem;
+        }
+        .tag-door { background: #e8f5ff; color: #0353a4; }
+        .tag-point { background: #e7fff2; color: #0b6b3a; }
+        .tag-intl { background: #fff3e0; color: #b06a00; }
+        .meta {
+            font-size: 0.8rem;
+            color: #555;
+            margin: 0.1rem 0;
+        }
+        .meta strong {
+            font-weight: 600;
+        }
+        .pill {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.1rem 0.5rem;
+            border-radius: 999px;
+            border: 1px solid #ddd;
+            margin-right: 0.25rem;
+            margin-top: 0.2rem;
+        }
+        .pill-yes { border-color: #16a34a; color: #166534; }
+        .pill-no  { border-color: #9ca3af; color: #4b5563; }
+        .empty {
+            color: #999;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kurierzy dostępni w Epaka API</h1>
+
+    {% if couriers %}
+        <div class="couriers-grid">
+            {% for c in couriers %}
+                <div class="courier-card">
+                    <div class="courier-header">
+                        {% if c.logo %}
+                            <img src="{{ c.logo }}" alt="{{ c.name }}" class="courier-logo">
+                        {% endif %}
+                        <div>
+                            <div class="courier-name">{{ c.name }}</div>
+                            <div class="courier-id">ID: {{ c.id }}</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% if c.courierDeliveryType == "door" %}
+                            <span class="tag tag-door">Dostawa na adres</span>
+                        {% elif c.courierDeliveryType == "point" %}
+                            <span class="tag tag-point">Do punktu / paczkomatu</span>
+                        {% else %}
+                            <span class="tag">{{ c.courierDeliveryType }}</span>
+                        {% endif %}
+
+                        {% if c.international %}
+                            <span class="tag tag-intl">Międzynarodowy</span>
+                        {% endif %}
+                    </div>
+
+                    <p class="meta">
+                        <strong>Nadanie:</strong>
+                        {% if c.shipmentFromDoor %}<span class="pill pill-yes">od drzwi</span>{% else %}
+                            <span class="pill pill-no">od drzwi – nie</span>{% endif %}
+                        {% if c.shipmentFromPoint %}<span class="pill pill-yes">z punktu</span>{% else %}
+                            <span class="pill pill-no">z punktu – nie</span>{% endif %}
+                    </p>
+
+                    <p class="meta">
+                        <strong>Punkty odbioru:</strong>
+                        {% if c.courierWithPoint %}
+                            dostępne
+                        {% else %}
+                            brak
+                        {% endif %}
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty">
+            Brak danych kurierów (być może nie jesteś zalogowany w Epaka lub nie ma tokenu w sesji).
+        </p>
+    {% endif %}
+</body>
+</html>
