@@ -55,19 +55,23 @@ class Order(models.Model):
         (PAYMENT_ONLINE, "Płatność online"),
     ]
 
-    SHIPPING_INPOST = "inpost"
-    SHIPPING_OTHER = "other"
+    SHIPPING_INPOST_COURIER = "inpost_courier"
+    SHIPPING_DPD_COURIER = "dpd_courier"
+    SHIPPING_INPOST_LOCKER = "inpost_locker"
+    SHIPPING_PICKUP = "pickup"
 
     SHIPPING_CHOICES = [
-        (SHIPPING_INPOST, "InPost"),
-        (SHIPPING_OTHER, "Kurier (Epaka – inny)"),
+        (SHIPPING_INPOST_COURIER, "InPost Courier"),
+        (SHIPPING_DPD_COURIER, "DPD Courier"),
+        (SHIPPING_INPOST_LOCKER, "InPost Locker"),
+        (SHIPPING_PICKUP, "Pickup"),
     ]
 
     # NOWE POLE
     shipping_method = models.CharField(
         max_length=20,
         choices=SHIPPING_CHOICES,
-        default=SHIPPING_INPOST,
+        default=SHIPPING_INPOST_COURIER,
     )
 
     # kto składa (opcjonalnie user lub gość)
