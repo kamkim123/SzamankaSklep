@@ -34,10 +34,14 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
     default_points = profile_data.get("defaultPoints") or []
     default_point = default_points[0] if default_points else {}
 
-    if order.shipping_method == Order.SHIPPING_INPOST:
+    if order.shipping_method == Order.SHIPPING_INPOST_COURIER:
         courier_id = getattr(settings, "EPAKA_COURIER_INPOST", default_point["courierId"] if default_point else 6)
+    elif order.shipping_method == Order.SHIPPING_DPD_COURIER:
+        courier_id = getattr(settings, "SHIPPING_DPD_COURIER", default_point["courierId"] if default_point else 6)
+    elif order.shipping_method == Order.SHIPPING_INPOST_LOCKER:
+        courier_id = getattr(settings, "SHIPPING_INPOST_LOCKER", default_point["courierId"] if default_point else 6)
     else:
-        courier_id = getattr(settings, "EPAKA_COURIER_OTHER", default_point["courierId"] if default_point else 6)
+        courier_id = getattr(settings, "SHIPPING_PICKUP", default_point["courierId"] if default_point else 6)
 
 
     receiver = {
