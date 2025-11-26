@@ -12,7 +12,8 @@ from .models import Order, OrderItem
 import base64
 from django.http import HttpResponse, HttpResponseBadRequest
 from .epaka import create_epaka_order, epaka_get_document
-
+from django.http import JsonResponse
+from .epaka import epaka_api_get
 
 
 @ensure_csrf_cookie
@@ -163,3 +164,13 @@ def epaka_label_view(request, pk):
     response = HttpResponse(pdf_bytes, content_type="application/pdf")
     response["Content-Disposition"] = f'inline; filename="{filename}"'
     return response
+
+def epaka_couriers_view(request):
+    access_token = request.session.get("epaka_access_token")
+    if not access_token:
+        return JsonResponse({"error": "Brak tokenu Epaka"}, status=401)
+    resp = epaka_api_get("/v1/couriers", access_token)
+    return JsonResponse(resp.json(), safe=False, status=resp.status_code)
+
+
+

@@ -16,6 +16,7 @@ from django.views.generic import ListView
 from django.db.models import Q
 
 import base64
+from django.http import JsonResponse
 
 
 # views.py
@@ -332,6 +333,5 @@ def epaka_api_post(endpoint, access_token, payload):
     }
     resp = requests.post(url, headers=headers, json=payload)
     return resp
-
 
 

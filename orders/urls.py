@@ -13,4 +13,6 @@ urlpatterns = [
     path("cart/update/", views.cart_update_qty, name="cart_update"),
 
     path("epaka/label/<int:pk>/", views.epaka_label_view, name="epaka_label"),
+    path("epaka/couriers/", views.epaka_couriers_view, name="epaka_couriers"),
+
 ]
