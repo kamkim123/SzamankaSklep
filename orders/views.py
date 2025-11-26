@@ -116,6 +116,7 @@ def checkout(request):
 
         cart.clear()
         return redirect("orders:thank_you", pk=order.pk)
+    print("CHECKOUT DEBUG: subtotal =", cart.subtotal, "items =", len(cart))
 
     return render(request, "orders/checkout.html", {"cart": cart})
 
