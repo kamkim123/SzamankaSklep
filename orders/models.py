@@ -55,6 +55,21 @@ class Order(models.Model):
         (PAYMENT_ONLINE, "Płatność online"),
     ]
 
+    SHIPPING_INPOST = "inpost"
+    SHIPPING_OTHER = "other"
+
+    SHIPPING_CHOICES = [
+        (SHIPPING_INPOST, "InPost"),
+        (SHIPPING_OTHER, "Kurier (Epaka – inny)"),
+    ]
+
+    # NOWE POLE
+    shipping_method = models.CharField(
+        max_length=20,
+        choices=SHIPPING_CHOICES,
+        default=SHIPPING_INPOST,
+    )
+
     # kto składa (opcjonalnie user lub gość)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True,

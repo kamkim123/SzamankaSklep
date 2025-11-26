@@ -220,3 +220,6 @@ EPAKA_API_BASE_URL = "https://api.epaka.pl"
 # URL dokładnie taki sam, jak skonfigurowany w menadżerze aplikacji na epaka.pl
 EPAKA_REDIRECT_URI = "https://www.szamankasklep.pl/epaka/callback/"
 
+# INPOST – weź id z /v1/couriers (np. kurier / paczkomaty)
+EPAKA_COURIER_INPOST = 6        # PRZYKŁAD – sprawdź u siebie
+EPAKA_COURIER_OTHER  = 10       # PRZYKŁAD – np. DPD/GLS itd.

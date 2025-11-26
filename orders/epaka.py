@@ -30,8 +30,15 @@ def epaka_api_post(endpoint, access_token, payload):
 
 def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
     sender = profile_data["senderData"]
+
     default_points = profile_data.get("defaultPoints") or []
     default_point = default_points[0] if default_points else {}
+
+    if order.shipping_method == Order.SHIPPING_INPOST:
+        courier_id = getattr(settings, "EPAKA_COURIER_INPOST", default_point["courierId"] if default_point else 6)
+    else:
+        courier_id = getattr(settings, "EPAKA_COURIER_OTHER", default_point["courierId"] if default_point else 6)
+
 
     receiver = {
         "name": order.first_name,
@@ -98,7 +105,7 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "sender": sender_payload,
         "receiver": receiver,
         "paymentData": payment_data,
-        "courierId": default_point.get("courierId", 6),
+        "courierId": courier_id,
         "shippingType": "package",
         "pickupDate": date.today().isoformat(),
         "pickupTime": {"from": "10:30", "to": "14:30"},
@@ -116,6 +123,7 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "contents": [],
         "promoCode": "",
         "tires": {"quantity": 0, "width": 0, "profile": 0, "diameter": 0},
+
     }
 
     return body

@@ -77,7 +77,8 @@ def cart_update_qty(request):
 def checkout(request):
     cart = Cart(request)
     if request.method == "POST":
-        # Stworzenie zamówienia
+        shipping_method = request.POST.get('shipping_method', Order.SHIPPING_INPOST)
+
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             first_name=request.POST.get('first_name'),
@@ -90,6 +91,7 @@ def checkout(request):
             shipping_cost=cart.shipping,
             status=Order.STATUS_NEW,
             payment_method=request.POST.get('payment_method', Order.PAYMENT_TRANSFER),
+            shipping_method=shipping_method,  # 👈 NOWE
         )
 
         for item in cart:
