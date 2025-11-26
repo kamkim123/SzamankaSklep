@@ -69,6 +69,12 @@
                 <!-- PRAWA: koszyk + dostawa (dropdown) + płatność + zgody -->
                 <aside class="checkout-right">
 
+                    <div style="background:#fee; padding:10px; margin-bottom:10px;">
+                        DEBUG: subtotal z backendu = "{{ cart.subtotal }}"<br>
+                        DEBUG: shipping z backendu = "{{ cart.shipping }}"<br>
+                        DEBUG: grand_total z backendu = "{{ cart.grand_total }}"
+                    </div>
+
                     <!-- Podsumowanie -->
                     <div class="card">
                         <div class="card__header">
