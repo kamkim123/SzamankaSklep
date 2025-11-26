@@ -168,11 +168,11 @@ def epaka_label_view(request, pk):
 def epaka_couriers_view(request):
     access_token = request.session.get("epaka_access_token")
     if not access_token:
-        return render(request, "epaka_couriers.html", {"couriers": []})
+        return render(request, "orders/epaka_couriers.html", {"couriers": []})
 
     resp = epaka_api_get("/v1/couriers", access_token)
     data = resp.json()
     couriers = data.get("couriers", [])
 
-    return render(request, "epaka_couriers.html", {"couriers": couriers})
+    return render(request, "orders/epaka_couriers.html", {"couriers": couriers})
 
