@@ -30,7 +30,7 @@ def epaka_api_post(endpoint, access_token, payload):
 
 def _nearest_workday(start: date) -> date:
     """
-    Zwraca najbliższy dzień roboczy >= start (pn–pt).
+    Zwraca najbliższy dzień roboczy (pn–pt) >= start.
     """
     d = start
     while d.weekday() >= 5:  # 5 = sobota, 6 = niedziela
@@ -145,7 +145,7 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
     }
 
     # --- 8. pickupDate – jutro, żeby nie kłócić się z godzinami ---
-    pickup_date = date.today() + timedelta(days=1)
+    pickup_date = _nearest_workday(date.today() + timedelta(days=1))
 
     body = {
         "sender": sender_payload,
@@ -154,7 +154,7 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "courierId": courier_id,
         "shippingType": "package",
         "pickupDate": pickup_date.isoformat(),
-        "pickupTime": {"from": "10:30", "to": "14:30"},
+        "pickupTime": {"from": "09:00", "to": "17:00"},
         "comments": "",
         "customsService": {
             "purpose": "gift",
