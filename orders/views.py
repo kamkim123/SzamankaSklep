@@ -74,12 +74,17 @@ def cart_update_qty(request):
     })
 
 
+# orders/views.py
+
 @require_http_methods(["GET", "POST"])
 def checkout(request):
     cart = Cart(request)
     if request.method == "POST":
-        shipping_method = request.POST.get('shipping_method', Order.SHIPPING_INPOST_COURIER)
+        # 👉 odczytujemy metodę dostawy i kod paczkomatu z formularza
+        shipping_method = request.POST.get("shipping_method", Order.SHIPPING_INPOST_COURIER)
+        inpost_locker_code = request.POST.get("inpost_locker_code", "").strip()
 
+        # Stworzenie zamówienia
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             first_name=request.POST.get('first_name'),
@@ -89,10 +94,14 @@ def checkout(request):
             address=request.POST.get('address'),
             postal_code=request.POST.get('postal_code'),
             city=request.POST.get('city'),
+
             shipping_cost=cart.shipping,
             status=Order.STATUS_NEW,
             payment_method=request.POST.get('payment_method', Order.PAYMENT_TRANSFER),
-            shipping_method=shipping_method,  # 👈 NOWE
+
+            # 🔻 NOWE:
+            shipping_method=shipping_method,
+            inpost_locker_code=inpost_locker_code,
         )
 
         for item in cart:
@@ -103,10 +112,7 @@ def checkout(request):
                 quantity=item["quantity"],
             )
 
-        # 🔽 TU: próba utworzenia przesyłki w Epace
         access_token = request.session.get("epaka_access_token")
-        print("[EPAKA] access_token in session:", bool(access_token))  # DEBUG
-
         if access_token:
             epaka_data = create_epaka_order(order, access_token)
             if epaka_data is None:
@@ -116,9 +122,9 @@ def checkout(request):
 
         cart.clear()
         return redirect("orders:thank_you", pk=order.pk)
-    print("CHECKOUT DEBUG: subtotal =", cart.subtotal, "items =", len(cart))
 
     return render(request, "orders/checkout.html", {"cart": cart})
+
 
 
 def thank_you(request, pk):
