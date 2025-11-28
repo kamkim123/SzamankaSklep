@@ -168,6 +168,30 @@
                                     <label><input type="radio" name="shipping_method" value="pickup" data-price="0.00"></label>
                                 </div>
                             </div>
+
+                            <!-- 👇 NOWE: wybór paczkomatu, pokazuje się tylko dla inpost_locker -->
+                            <div class="locker-box" id="lockerBox" style="display:none; margin-top: 1rem;">
+                                <label for="locker_search" class="t-label">Paczkomat InPost – wyszukaj</label>
+                                <div class="locker-search-row">
+                                    <input type="text"
+                                           id="locker_search"
+                                           placeholder="Wpisz miasto, kod pocztowy lub kod paczkomatu (np. LAJ01M)">
+                                    <button type="button" id="locker_search_btn">Szukaj</button>
+                                </div>
+
+                                <div id="locker_results" class="locker-results">
+                                    <!-- tutaj JS wstawi listę -->
+                                </div>
+
+                                <input type="hidden" name="inpost_locker_code" id="inpost_locker_code">
+                                <input type="hidden" name="inpost_locker_description" id="inpost_locker_description">
+
+                                <div class="locker-picked" id="lockerPicked" style="display:none;">
+                                    Wybrany paczkomat:
+                                    <strong id="lockerPickedName"></strong><br>
+                                    <small id="lockerPickedAddress"></small>
+                                </div>
+                            </div>
                             <div id="locker-field" style="margin-top: 1rem; display:none;">
                                 <label for="id_inpost_locker_code">
                                     Kod paczkomatu InPost (np. WAW01N):

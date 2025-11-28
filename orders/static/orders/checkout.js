@@ -381,4 +381,99 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // na start – żeby było dobrze ustawione po załadowaniu
     updateLockerVisibility();
+});
+
+
+
+
+// == PACZKOMATY INPOST (Epaka /v1/points) ==
+
+$(function () {
+  const $lockerBox = $("#lockerBox");
+  const $lockerSearch = $("#locker_search");
+  const $lockerResults = $("#locker_results");
+  const $lockerCode = $("#inpost_locker_code");
+  const $lockerDesc = $("#inpost_locker_description");
+  const $lockerPicked = $("#lockerPicked");
+  const $lockerPickedName = $("#lockerPickedName");
+  const $lockerPickedAddress = $("#lockerPickedAddress");
+
+  function toggleLockerBox() {
+    const method = $('input[name="shipping_method"]:checked').val();
+    if (method === "inpost_locker") {
+      $lockerBox.show();
+    } else {
+      $lockerBox.hide();
+    }
+  }
+
+  // wywołaj przy starcie
+  toggleLockerBox();
+
+  // reaguj na zmianę metody dostawy (Twoje radio inputy)
+  $(document).on("change", 'input[name="shipping_method"]', function () {
+    toggleLockerBox();
   });
+
+  $("#locker_search_btn").on("click", function () {
+    const q = $lockerSearch.val().trim();
+    if (!q) {
+      $lockerResults.html("<p>Wpisz miasto, kod pocztowy lub kod paczkomatu.</p>");
+      return;
+    }
+
+    $lockerResults.html("<p>Szukam paczkomatów…</p>");
+
+    $.getJSON("/epaka/points/", { q: q })
+      .done(function (data) {
+        const points = data.points || [];
+        if (!points.length) {
+          $lockerResults.html("<p>Brak paczkomatów dla podanego zapytania.</p>");
+          return;
+        }
+
+        const $ul = $('<ul class="locker-list"></ul>');
+        points.forEach(function (p) {
+          const desc = p.name || "";
+          const addr = [
+            p.postCode || "",
+            p.city || "",
+            (p.street || "") + " " + (p.number || "")
+          ].join(" ").replace(/\s+/g, " ").trim();
+
+          const $li = $('<li class="locker-item"></li>');
+          $li.text(desc + " – " + addr);
+          $li.data("pointId", p.id);
+          $li.data("description", desc);
+          $li.data("address", addr);
+          $ul.append($li);
+        });
+
+        $lockerResults.empty().append($ul);
+      })
+      .fail(function (xhr) {
+        $lockerResults.html(
+          "<p>Błąd podczas pobierania paczkomatów (" +
+          xhr.status +
+          ").</p>"
+        );
+      });
+  });
+
+  // kliknięcie w konkretny paczkomat
+  $(document).on("click", ".locker-item", function () {
+    const $li = $(this);
+    const pointId = $li.data("pointId");
+    const desc = $li.data("description");
+    const addr = $li.data("address");
+
+    $lockerCode.val(pointId);
+    $lockerDesc.val(desc);
+    $lockerPickedName.text(desc);
+    $lockerPickedAddress.text(addr);
+    $lockerPicked.show();
+
+    $(".locker-item").removeClass("is-active");
+    $li.addClass("is-active");
+  });
+});

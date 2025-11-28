@@ -183,3 +183,58 @@ def epaka_couriers_view(request):
 
     return render(request, "orders/epaka_couriers.html", {"couriers": couriers})
 
+
+
+
+# orders/views.py
+from django.conf import settings
+
+
+
+def epaka_points(request):
+    """
+    AJAX: szukanie paczkomatów InPost (courierId = EPAKA_LOCKER_INPOST)
+    GET /epaka/points/?q=Nasielsk
+    """
+    q = (request.GET.get("q") or "").strip()
+    if request.method != "GET":
+        return JsonResponse({"error": "Only GET allowed"}, status=405)
+
+    if not q:
+        return JsonResponse({"points": []})
+
+    access_token = request.session.get("epaka_access_token")
+    if not access_token:
+        return JsonResponse({"error": "Brak powiązanego konta Epaka"}, status=403)
+
+    params = {
+        "limit": 30,
+        "query": q,                     # miasto / kod paczkomatu / fragment
+        "pointFunction": "receiver",    # odbiór
+        "pointType": "machine",         # paczkomaty
+        "couriers": [settings.EPAKA_LOCKER_INPOST],  # InPost Paczkomaty
+    }
+
+    resp = epaka_api_get("/v1/points", access_token, params=params)
+    if resp.status_code != 200:
+        return JsonResponse(
+            {"error": "Epaka error", "details": resp.text},
+            status=resp.status_code,
+        )
+
+    data = resp.json()  # PointsResponse
+    raw_points = data.get("points", [])
+
+    # uproszczona lista dla frontu
+    points = []
+    for p in raw_points:
+        points.append({
+            "id": p.get("id"),  # to jest kod typu LAJ01M
+            "name": p.get("name"),
+            "city": p.get("city"),
+            "street": p.get("street"),
+            "number": p.get("number"),
+            "postCode": p.get("postCode"),
+        })
+
+    return JsonResponse({"points": points})
