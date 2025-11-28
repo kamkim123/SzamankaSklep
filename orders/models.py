@@ -74,6 +74,12 @@ class Order(models.Model):
         default=SHIPPING_INPOST_COURIER,
     )
 
+    inpost_locker_code = models.CharField(
+        max_length=32,
+        blank=True,
+        help_text="Kod paczkomatu InPost (np. WAW01N)",
+    )
+
     # kto składa (opcjonalnie user lub gość)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True,

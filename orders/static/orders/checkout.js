@@ -362,3 +362,23 @@ updatePaymentUI();
 try { updatePaymentUI(); } catch(_) {}
 
 
+document.addEventListener("DOMContentLoaded", function () {
+    const lockerField = document.getElementById("locker-field");
+    const shippingRadios = document.querySelectorAll('input[name="shipping_method"]');
+
+    function updateLockerVisibility() {
+      const checked = document.querySelector('input[name="shipping_method"]:checked');
+      if (checked && checked.value === "inpost_locker") {
+        lockerField.style.display = "block";
+      } else {
+        lockerField.style.display = "none";
+      }
+    }
+
+    shippingRadios.forEach(radio => {
+      radio.addEventListener("change", updateLockerVisibility);
+    });
+
+    // na start – żeby było dobrze ustawione po załadowaniu
+    updateLockerVisibility();
+  });
