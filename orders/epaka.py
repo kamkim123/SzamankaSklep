@@ -57,8 +57,8 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
     elif order.shipping_method == Order.SHIPPING_INPOST_LOCKER:
         # InPost PACZKOMAT – odbiorca = paczkomat
         courier_id = getattr(settings, "EPAKA_LOCKER_INPOST", 6)
-        use_point_for_sender = False          # Ty nadajesz z adresu sklepu
-        use_point_for_receiver = True         # odbiorca – paczkomat
+        use_point_for_sender = True
+        use_point_for_receiver = True
 
     elif order.shipping_method == Order.SHIPPING_DPD_COURIER:
         courier_id = getattr(settings, "EPAKA_COURIER_DPD", 1)
