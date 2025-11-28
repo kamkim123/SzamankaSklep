@@ -32,7 +32,7 @@ class CartItem(models.Model):
 
 
 # orders/models.py
-
+#poprawione
 
 class Order(models.Model):
     STATUS_NEW = "new"
