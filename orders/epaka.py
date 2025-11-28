@@ -35,13 +35,13 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
     default_point = default_points[0] if default_points else {}
 
     if order.shipping_method == Order.SHIPPING_INPOST_COURIER:
-        courier_id = getattr(settings, "EPAKA_COURIER_INPOST", default_point["courierId"] if default_point else 12)
+        courier_id = getattr(settings, "EPAKA_COURIER_INPOST", 12)
     elif order.shipping_method == Order.SHIPPING_DPD_COURIER:
-        courier_id = getattr(settings, "SHIPPING_DPD_COURIER", default_point["courierId"] if default_point else 1)
+        courier_id = getattr(settings, "EPAKA_COURIER_DPD", 1)
     elif order.shipping_method == Order.SHIPPING_INPOST_LOCKER:
-        courier_id = getattr(settings, "SHIPPING_INPOST_LOCKER", default_point["courierId"] if default_point else 6)
-    else:
-        courier_id = getattr(settings, "SHIPPING_PICKUP", default_point["courierId"] if default_point else 6)
+        courier_id = getattr(settings, "EPAKA_LOCKER_INPOST", 6)
+    else:  # SHIPPING_PICKUP – możesz tu np. dać DHL
+        courier_id = getattr(settings, "EPAKA_COURIER_DHL", 8)
 
 
     receiver = {
@@ -57,9 +57,11 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "postCode": order.postal_code,
         "phone": order.phone,
         "email": order.email,
-        "pointId": default_point.get("id", ""),
-        "pointDescription": default_point.get("name", ""),
     }
+
+    if order.shipping_method == Order.SHIPPING_INPOST_LOCKER:
+        receiver["pointId"] = default_point.get("id", "")
+        receiver["pointDescription"] = default_point.get("name", "")
 
     sender_payload = {
         "name": sender["name"],
