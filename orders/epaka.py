@@ -38,22 +38,48 @@ def _nearest_workday(start: date) -> date:
     return d
 
 
+# orders/epaka.py
+
+
+
 def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
     sender = profile_data["senderData"]
-
     default_points = profile_data.get("defaultPoints") or []
     default_point = default_points[0] if default_points else {}
 
+    # --- 1. wybór kuriera po shipping_method ---
     if order.shipping_method == Order.SHIPPING_INPOST_COURIER:
+        # InPost KURIER – door to door, BEZ punktów na razie
         courier_id = getattr(settings, "EPAKA_COURIER_INPOST", 12)
+        use_point_for_sender = False
+        use_point_for_receiver = False
+
+    elif order.shipping_method == Order.SHIPPING_INPOST_LOCKER:
+        # InPost PACZKOMATY – tu użyjemy default_point (NAS02M itd.)
+        courier_id = getattr(settings, "EPAKA_LOCKER_INPOST", 6)
+        use_point_for_sender = True   # nadajesz w swoim paczkomacie
+        use_point_for_receiver = True # docelowo: paczkomat odbiorcy (na razie ten sam)
+
     elif order.shipping_method == Order.SHIPPING_DPD_COURIER:
         courier_id = getattr(settings, "EPAKA_COURIER_DPD", 1)
-    elif order.shipping_method == Order.SHIPPING_INPOST_LOCKER:
-        courier_id = getattr(settings, "EPAKA_LOCKER_INPOST", 6)
-    else:  # SHIPPING_PICKUP – możesz tu np. dać DHL
-        courier_id = getattr(settings, "EPAKA_COURIER_DHL", 8)
+        use_point_for_sender = False
+        use_point_for_receiver = False
 
+    else:
+        # fallback – np. odbiór osobisty, ale jak już coś idzie do Epaki,
+        # niech używa domyślnego kuriera z profilu lub InPostu
+        courier_id = default_point.get("courierId") or getattr(settings, "EPAKA_COURIER_INPOST", 12)
+        use_point_for_sender = False
+        use_point_for_receiver = False
 
+    # --- 2. pointId / pointDescription zależnie od use_point_* ---
+    sender_point_id = default_point.get("id", "") if use_point_for_sender else ""
+    sender_point_desc = default_point.get("name", "") if use_point_for_sender else ""
+
+    receiver_point_id = default_point.get("id", "") if use_point_for_receiver else ""
+    receiver_point_desc = default_point.get("name", "") if use_point_for_receiver else ""
+
+    # --- 3. dane odbiorcy z zamówienia ---
     receiver = {
         "name": order.first_name,
         "lastName": order.last_name,
@@ -67,44 +93,45 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "postCode": order.postal_code,
         "phone": order.phone,
         "email": order.email,
+        "pointId": receiver_point_id,
+        "pointDescription": receiver_point_desc,
     }
 
-    if order.shipping_method == Order.SHIPPING_INPOST_LOCKER:
-        receiver["pointId"] = default_point.get("id", "")
-        receiver["pointDescription"] = default_point.get("name", "")
-
+    # --- 4. dane nadawcy z profilu Epaki ---
     sender_payload = {
         "name": sender["name"],
         "lastName": sender["lastName"],
-        "company": sender["company"],
+        "company": sender.get("company", ""),
         "nip": profile_data.get("nip", ""),
-        "country": sender["country"],
+        "country": sender.get("country", "PL"),
         "city": sender["city"],
         "street": sender["street"],
         "houseNumber": sender["houseNumber"],
         "flatNumber": sender.get("flatNumber", ""),
         "postCode": sender["postCode"],
         "phone": sender["phone"],
-        "email": profile_data.get("email", sender["phone"]),
-        "pointId": default_point.get("id", ""),
-        "pointDescription": default_point.get("name", ""),
+        "email": profile_data.get("email", ""),
+        "pointId": sender_point_id,
+        "pointDescription": sender_point_desc,
     }
 
+    # --- 5. płatność – z salda Epaki ---
     payment_data = {
-        "paymentType": "balance",   # jak w panelu, z salda
+        "paymentType": "balance",
     }
 
-    # na sztywno podobnie jak na screenie
+    # --- 6. paczka (na razie sztywno, jak w panelu) ---
     packages = [
         {
             "weight": 6.0,
             "height": 35,
             "width": 30,
             "length": 25,
-            "type": 0,   # tu później dopasujemy do „sortowalne”, jeśli podadzą enum
+            "type": 0,
         }
     ]
 
+    # --- 7. usługi dodatkowe ---
     services = {
         "cod": False,
         "codReturnType": "account",
@@ -113,11 +140,12 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "codAmount": 0,
         "bankAccount": "",
         "insurance": True,
-        "declaredValue": float(order.total_to_pay),  # np. wartość zamówienia
-        "additionalServices": [],  # tu kiedyś dorzucimy SMS wg kodu z /v1/order/services
+        "declaredValue": float(order.total_to_pay),
+        "additionalServices": [],  # NA RAZIE pusto – bez labelSendInLocker itd.
     }
 
-    pickup_date = _nearest_workday(date.today() + timedelta(days=1)).isoformat()
+    # --- 8. pickupDate – jutro, żeby nie kłócić się z godzinami ---
+    pickup_date = date.today() + timedelta(days=1)
 
     body = {
         "sender": sender_payload,
@@ -125,7 +153,7 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "paymentData": payment_data,
         "courierId": courier_id,
         "shippingType": "package",
-        "pickupDate": pickup_date,
+        "pickupDate": pickup_date.isoformat(),
         "pickupTime": {"from": "10:30", "to": "14:30"},
         "comments": "",
         "customsService": {
@@ -141,11 +169,9 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "contents": [],
         "promoCode": "",
         "tires": {"quantity": 0, "width": 0, "profile": 0, "diameter": 0},
-
     }
 
     return body
-
 
 
 
