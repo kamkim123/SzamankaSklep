@@ -1,6 +1,6 @@
 # orders/epaka.py
 import requests
-from datetime import date
+from datetime import date, timedelta
 from django.conf import settings
 
 from .models import Order
@@ -26,6 +26,16 @@ def epaka_api_post(endpoint, access_token, payload):
     }
     return requests.post(url, headers=headers, json=payload)
 
+
+
+def _nearest_workday(start: date) -> date:
+    """
+    Zwraca najbliższy dzień roboczy >= start (pn–pt).
+    """
+    d = start
+    while d.weekday() >= 5:  # 5 = sobota, 6 = niedziela
+        d += timedelta(days=1)
+    return d
 
 
 def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
@@ -107,13 +117,15 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "additionalServices": [],  # tu kiedyś dorzucimy SMS wg kodu z /v1/order/services
     }
 
+    pickup_date = _nearest_workday(date.today() + timedelta(days=1)).isoformat()
+
     body = {
         "sender": sender_payload,
         "receiver": receiver,
         "paymentData": payment_data,
         "courierId": courier_id,
         "shippingType": "package",
-        "pickupDate": date.today().isoformat(),
+        "pickupDate": pickup_date,
         "pickupTime": {"from": "10:30", "to": "14:30"},
         "comments": "",
         "customsService": {
@@ -143,6 +155,8 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
         order.notes = (order.notes or "") + (
             f"\n[EPAKA] profile status={profile_resp.status_code}\n"
             f"[EPAKA] profile body={profile_resp.text}\n"
+
+
         )
         order.save(update_fields=["notes"])
         return None
@@ -150,6 +164,12 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
     profile_data = profile_resp.json()
 
     body = _order_to_epaka_body(order, profile_data)
+
+    order.notes = (order.notes or "") + (
+        f"\n[EPAKA-debug] shipping_method={order.shipping_method} "
+        f"courierId={body.get('courierId')} "
+        f"pickupDate={body.get('pickupDate')}\n"
+    )
 
     # 2.5. check-data – sprawdzenie po stronie Epaki
     check_resp = epaka_check_data(access_token, body)
