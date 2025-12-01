@@ -561,3 +561,169 @@ h2{ font-weight:700; letter-spacing:-0.01em; font-size:1.05rem; margin-bottom:.6
   font-weight: 600;
 }
 
+
+/* === PACZKOMATY INPOST – SEKCJA WYBORU === */
+
+.locker-box {
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+}
+
+.locker-box .t-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.locker-hint {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0.25rem 0 0.85rem;
+}
+
+/* wiersz: input + przycisk */
+
+.locker-search-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.locker-search-row input {
+  flex: 1;
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+  background: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.locker-search-row input::placeholder {
+  color: #9ca3af;
+}
+
+.locker-search-row input:focus {
+  outline: none;
+  border-color: #6366f1;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.25);
+}
+
+.locker-search-row button {
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  border: none;
+  background: #6366f1;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+}
+
+.locker-search-row button:hover {
+  background: #4f46e5;
+  box-shadow: 0 3px 7px rgba(88, 80, 236, 0.35);
+}
+
+.locker-search-row button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(88, 80, 236, 0.35);
+}
+
+/* lista wyników paczkomatów */
+
+.locker-results {
+  margin-top: 0.25rem;
+  max-height: 260px;      /* mniej więcej 8–10 pozycji */
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.locker-results p {
+  margin: 0.45rem;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.locker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.locker-item {
+  padding: 0.45rem 0.55rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.12s ease, transform 0.05s ease, color 0.12s ease;
+}
+
+.locker-item + .locker-item {
+  border-top: 1px solid #f3f4f6;
+}
+
+.locker-item:hover {
+  background: #f3f4ff;
+}
+
+.locker-item.is-active {
+  background: #e0ebff;
+  font-weight: 600;
+  color: #1f2937;
+  transform: translateX(1px);
+}
+
+/* wybrany paczkomat */
+
+.locker-picked {
+  margin-top: 0.85rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  background: #ecfdf5;
+  border: 1px solid #6ee7b7;
+}
+
+.locker-picked-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #059669;
+  margin-bottom: 0.2rem;
+}
+
+.locker-picked-name {
+  font-weight: 600;
+  color: #065f46;
+  font-size: 0.92rem;
+}
+
+.locker-picked-address {
+  font-size: 0.86rem;
+  color: #047857;
+}
+
+/* błąd walidacji paczkomatu */
+
+.locker-error {
+  margin-top: 0.55rem;
+  font-size: 0.84rem;
+  color: #b91c1c;
+  border: red 1px solid;
+  border-radius: 1rem;
+  padding: 0.2rem 0.4rem;
+}
+
