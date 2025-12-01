@@ -15,46 +15,24 @@
 <div class="user-dashboard" style="min-height:60vh; padding-top:12px;">
     <h1>Witaj, {{ user.first_name|default:user.username }}!</h1>
 
-    <!-- DANE UŻYTKOWNIKA -->
-    <div class="user-details">
-        <h2>Twoje dane</h2>
-        <ul id="user-data">
-            <li><strong>Imię:</strong> <span data-field="first_name">{{ user.first_name|default:"-" }}</span></li>
-            <li><strong>Nazwisko:</strong> <span data-field="last_name">{{ user.last_name|default:"-" }}</span></li>
-            <li><strong>Email:</strong> <span data-field="email">{{ user.email }}</span></li>
-            <li><strong>Telefon:</strong>
-                <span data-field="phone">
-                    {% if user.profile and user.profile.phone %}
-                      {{ user.profile.phone }}
-                    {% else %}
-                      -
-                    {% endif %}
-                </span>
+
+    <!-- ADRESY -->
+    <div class="user-addresses-section">
+        <h2>Twoje adresy dostawy</h2>
+        <ul id="addresses-list">
+            {% for address in addresses %}
+            <li id="address-{{ address.id }}" class="stack-sm">
+                <div>
+                    <div><strong>Ulica:</strong> <span data-a="line">{{ address.address_line_1 }}</span></div>
+                    <div><strong>Miasto:</strong> <span data-a="city">{{ address.city }}</span></div>
+                    <div><strong>Kod:</strong> <span data-a="zip">{{ address.postal_code }}</span></div>
+                </div>
+
             </li>
+            {% empty %}
+            <li class="muted">Nie masz jeszcze zapisanych adresów.</li>
+            {% endfor %}
         </ul>
-        <div class="action-row">
-            <a href="#" class="action-button" id="edit-user-data-btn">Edytuj dane</a>
-        </div>
-
-        <div id="edit-user-data-form" style="display:none;">
-            <form id="profile-form" method="post">
-                {% csrf_token %}
-                <label for="first_name">Imię:</label>
-                <input type="text" name="first_name" id="first_name" value="{{ user.first_name|default:'' }}">
-
-                <label for="last_name">Nazwisko:</label>
-                <input type="text" name="last_name" id="last_name" value="{{ user.last_name|default:'' }}">
-
-                <label for="email">Email:</label>
-                <input type="email" name="email" id="email" value="{{ user.email }}">
-
-                <label for="phone">Telefon:</label>
-                <input type="text" name="phone" id="phone" value="{{ user.profile.phone|default:'' }}">
-
-                <button type="submit" class="action-button">Zapisz</button>
-                <button type="button" id="cancel-edit" class="action-button action-button--ghost">Anuluj</button>
-            </form>
-        </div>
     </div>
 
     <!-- ZAMÓWIENIA -->
@@ -63,6 +41,7 @@
         <table>
             <thead>
             <tr>
+                <th>ID</th>
                 <th>Status</th>
                 <th>Data zamówienia</th>
                 <th>Kwota</th>
@@ -76,7 +55,9 @@
                 <td data-label="Status">{{ order.status_label }}</td>
                 <td data-label="Data zamówienia">{{ order.created_at }}</td>
                 <td data-label="Kwota">{{ order.total_to_pay_display }}</td>
-                <td data-label="Szczegóły"><a href="#">Zobacz szczegóły</a></td>
+                <td data-label="Szczegóły">
+                    <a href="{% url 'orders:order_detail' order.id %}">Zobacz szczegóły</a>
+                </td>
             </tr>
             {% empty %}
             <tr>
@@ -99,31 +80,6 @@
         </ul>
     </div>
 
-    <!-- ADRESY -->
-    <div class="user-addresses-section">
-        <h2>Twoje adresy dostawy</h2>
-        <ul id="addresses-list">
-            {% for address in addresses %}
-            <li id="address-{{ address.id }}" class="stack-sm">
-                <div>
-                    <div><strong>Ulica:</strong> <span data-a="line">{{ address.address_line_1 }}</span></div>
-                    <div><strong>Miasto:</strong> <span data-a="city">{{ address.city }}</span></div>
-                    <div><strong>Kod:</strong> <span data-a="zip">{{ address.postal_code }}</span></div>
-                </div>
-                <div class="action-row">
-                    <a href="{% url 'users:edit_address' address.id %}" class="action-button btn-edit-address"
-                       data-id="{{ address.id }}">Edytuj</a>
-                    <a href="{% url 'users:delete_address' address.id %}"
-                       class="action-button action-button--ghost btn-delete-address" data-id="{{ address.id }}">Usuń</a>
-                </div>
-            </li>
-            {% empty %}
-            <li class="muted">Nie masz jeszcze zapisanych adresów.</li>
-            {% endfor %}
-        </ul>
-
-        <a href="{% url 'users:add_address' %}" class="action-button" id="btn-add-address">Dodaj adres</a>
-    </div>
 </div>
 
 {% include "products/footer.html" %}

@@ -1,0 +1,91 @@
+/* static/orders/order_detail.css */
+
+/* Główna sekcja szczegółów zamówienia */
+.order-detail-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px 12px 32px;
+}
+
+/* Nagłówek */
+.order-detail-wrapper h1 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.order-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    margin-bottom: 18px;
+    font-size: 0.95rem;
+}
+
+.order-summary p {
+    margin: 0;
+}
+
+.order-summary strong {
+    font-weight: 600;
+}
+
+/* Tabela produktów */
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 0.95rem;
+}
+
+.order-items-table thead {
+    background-color: #f6f6f6;
+}
+
+.order-items-table th,
+.order-items-table td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.order-items-table tr:nth-child(even) td {
+    background-color: #fafafa;
+}
+
+.order-items-table tr:hover td {
+    background-color: #f0f8ff;
+}
+
+/* Stopka / link powrotny */
+.order-back-link {
+    margin-top: 20px;
+    font-size: 0.95rem;
+}
+
+.order-back-link a {
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.order-back-link a:hover {
+    color: #000;
+    border-color: #000;
+}
+
+/* Proste RWD */
+@media (max-width: 768px) {
+    .order-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .order-detail-wrapper {
+        padding: 12px 8px 24px;
+    }
+
+    .order-items-table th,
+    .order-items-table td {
+        padding: 6px 8px;
+    }
+}

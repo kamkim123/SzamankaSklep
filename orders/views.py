@@ -238,3 +238,22 @@ def epaka_points(request):
         })
 
     return JsonResponse({"points": points})
+
+
+
+# orders/views.py
+from django.contrib.auth.decorators import login_required
+
+
+@login_required
+def order_detail(request, pk):
+    # Użytkownik może zobaczyć tylko swoje zamówienie
+    order = get_object_or_404(Order, pk=pk, user=request.user)
+
+    # items mamy dzięki related_name="items"
+    items = order.items.select_related("product")
+
+    return render(request, "orders/order_detail.html", {
+        "order": order,
+        "items": items,
+    })

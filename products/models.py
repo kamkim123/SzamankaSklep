@@ -32,6 +32,7 @@ class Product(models.Model):
         choices=[("0","0%"), ("5","5%"), ("8","8%"), ("23","23%")],
         default="8"
     )
+
     product_type = models.CharField(
         max_length=20,
         choices=ProductType.choices,

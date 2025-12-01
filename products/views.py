@@ -18,7 +18,9 @@ from django.db.models import Q
 import base64
 from django.http import JsonResponse
 
+from decimal import Decimal
 
+DEFAULT_PRICE = Decimal("999.99")
 # views.py
 
 # views.py
@@ -30,7 +32,7 @@ class IndexView(generic.ListView):
     paginate_by = 24
 
     def get_queryset(self):
-        qs = Product.objects.order_by("-id")  # Pobieramy wszystkie produkty posortowane według ID
+        qs = Product.objects.exclude(price=DEFAULT_PRICE).order_by("-id")  # Pobieramy wszystkie produkty posortowane według ID
         selected = (self.request.GET.get("type") or "").strip()
 
         if selected:
@@ -42,12 +44,17 @@ class IndexView(generic.ListView):
         selected = (self.request.GET.get("type") or "").strip()
 
         # Dodajemy listę kategorii
-        ctx["categories"] = Product.objects.values("product_type").annotate(count=Count("id")).order_by("-product_type")
-        ctx["selected"] = selected
+        ctx["categories"] = (
+            Product.objects
+            .exclude(price=DEFAULT_PRICE)
+            .values("product_type")
+            .annotate(count=Count("id"))
+            .order_by("-product_type")
+        )
 
         # Pobieramy bestsellery i dodajemy do kontekstu
-        bestsellers = Product.objects.filter(is_bestseller=True)
-        ctx["bestsellers"] = bestsellers  # Dodajemy bestsellery do kontekstu
+        bestsellers = Product.objects.filter(is_bestseller=True).exclude(price=DEFAULT_PRICE)
+        ctx["bestsellers"] = bestsellers
 
         if self.request.user.is_authenticated:
             favorite_product_ids = Favorite.objects.filter(user=self.request.user).values_list('product_id', flat=True)
@@ -98,7 +105,7 @@ class ProductListView(ListView):
     paginate_by = 24
 
     def get_queryset(self):
-        qs = Product.objects.all()
+        qs = Product.objects.exclude(price=DEFAULT_PRICE)
 
         # Jeśli parametr 'bestsellers' jest w URL, filtruj produkty, które są bestsellerami
         if 'bestsellers' in self.request.GET:
@@ -120,12 +127,14 @@ class ProductListView(ListView):
         return qs
 
 
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         selected = self.request.GET.get("type", "").strip()
         ctx["selected"] = selected
         ctx["categories"] = (
             Product.objects
+            .exclude(price=DEFAULT_PRICE)
             .values("product_type")
             .annotate(count=Count("id"))
             .order_by("product_type")
@@ -155,7 +164,7 @@ class ProductSearchAPI(View):
         q = (request.GET.get("q") or "").strip()
         limit = int(request.GET.get("limit") or 10)
 
-        qs = Product.objects.all()
+        qs = Product.objects.exclude(price=DEFAULT_PRICE)
         if q:
             qs = qs.filter(Q(product_name__icontains=q))
         qs = qs.order_by("product_name")[:limit]
@@ -166,14 +175,13 @@ class ProductSearchAPI(View):
 
 
 def produkty(request):
-    product_type = request.GET.get('type', 'all')  # Domyślnie 'all' w przypadku braku parametru
+    product_type = request.GET.get('type', 'all')
     if product_type == 'all':
-        produkty = Product.objects.all()  # Wyświetlanie wszystkich produktów
+        produkty = Product.objects.exclude(price=DEFAULT_PRICE)
     else:
-        produkty = Product.objects.filter(product_type=product_type)  # Filtrujemy po typie
+        produkty = Product.objects.exclude(price=DEFAULT_PRICE).filter(product_type=product_type)
 
     return render(request, 'products/products.html', {'produkty': produkty, 'kategoria': product_type})
-
 
 
 # products/views.py
@@ -194,27 +202,25 @@ from django.http import JsonResponse
 from .models import Product
 
 def search_products(request):
-    query = request.GET.get('q', '')  # Pobieramy zapytanie 'q'
+    query = request.GET.get('q', '')
     if query:
-        # Filtrujemy produkty na podstawie nazwy
-        products = Product.objects.filter(product_name__icontains=query)
-        results = [{'id': product.id, 'product_name': product.name} for product in products]
+        products = Product.objects.exclude(price=DEFAULT_PRICE).filter(product_name__icontains=query)
+        results = [{'id': product.id, 'product_name': product.product_name} for product in products]
     else:
         results = []
     return JsonResponse({'results': results})
 
 
 
+
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect
 
-
 def search_results(request):
-    # jeśli koniecznie chcesz sprawdzić „AJAX”:
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     res = None
     game = request.POST.get('game', '')
-    qs = Product.objects.filter(product_name__icontains=game)[:10]
+    qs = Product.objects.exclude(price=DEFAULT_PRICE).filter(product_name__icontains=game)[:10]
 
     if len(qs) > 0 and len(game) > 0:
         data = []

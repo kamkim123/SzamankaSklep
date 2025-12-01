@@ -15,5 +15,6 @@ urlpatterns = [
     path("epaka/label/<int:pk>/", views.epaka_label_view, name="epaka_label"),
     path("epaka/couriers/", views.epaka_couriers_view, name="epaka_couriers"),
     path("epaka/points/", views.epaka_points, name="epaka_points"),
+    path("order/<int:pk>/", views.order_detail, name="order_detail"),
 
 ]
