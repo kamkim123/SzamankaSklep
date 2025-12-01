@@ -477,3 +477,30 @@ $(function () {
     $li.addClass("is-active");
   });
 });
+
+
+// == WALIDACJA: Paczkomaty InPost – bez wyboru paczkomatu nie puszczamy zamówienia ==
+
+$(function () {
+  const $form = $(".checkout-form");
+  const $lockerBox = $("#lockerBox");
+  const $lockerCode = $("#inpost_locker_code");
+  const $lockerError = $("#locker_error");
+
+  $form.on("submit", function (e) {
+    const shippingMethod = $('input[name="shipping_method"]:checked').val();
+
+    // jeśli wybrano "Paczkomaty InPost"
+    if (shippingMethod === "inpost_locker") {
+      // ale nie ma żadnego wybranego paczkomatu:
+      if (!$lockerCode.val()) {
+        e.preventDefault();          // blokujemy wysłanie formularza
+        $lockerError.show();         // pokazujemy czerwony komunikat
+
+        // przewiń stronę do boxa paczkomatu, żeby user widział, co poprawić
+        const offsetTop = $lockerBox.offset().top - 120;
+        $("html, body").animate({ scrollTop: offsetTop }, 350);
+      }
+    }
+  });
+});
