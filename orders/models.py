@@ -127,7 +127,7 @@ class Order(models.Model):
         constraints = [
             # przynajmniej email + (user lub cokolwiek, ale email i tak jest wymagany przez pole)
             models.CheckConstraint(
-                check=Q(email__isnull=False) & ~Q(email=""),
+                condition=Q(email__isnull=False) & ~Q(email=""),
                 name="order_email_required",
             ),
         ]
