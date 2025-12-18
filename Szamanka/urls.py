@@ -15,4 +15,7 @@ urlpatterns = [
     path("epaka/login/", views.epaka_login, name="epaka_login"),
     path("epaka/callback/", views.epaka_callback, name="epaka_callback"),
     path("epaka/profile/", views.epaka_profile_view, name="epaka_profile"),
+    path("newsletter/", include(("newsletter.urls", "newsletter"), namespace="newsletter")),
+
+
 ]

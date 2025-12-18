@@ -269,11 +269,15 @@
         <div class="newsletter-wrapper">
             <div class="newsletter">Newsletter<span class="newsletter-info">Podaj swój adres e-mail, jeżeli chcesz otrzymywać
                 informacje o nowościach i promocjach!</span>
-                <form>
-                    <label>
-                        <input type="search" placeholder="Podaj email" class="newsletter-input">
-                    </label>
+                <form method="post" action="{% url 'newsletter:signup' %}">
+                  {% csrf_token %}
+                  <label>
+                    <input type="email" name="email" placeholder="Podaj email" class="newsletter-input" required>
+                  </label>
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button type="submit">Zapisz</button>
                 </form>
+
             </div>
 
         </div>
@@ -334,13 +338,18 @@
                 <h3><a href="#" class="footer-newsletter">Podaj email</a></h3>
                 <p>Zapisz się do newslettera <br><br>i otrzymaj 5% znizki</p>
 
-                <form action="#">
-                    <i class="bx bx-mail-send"></i>
-                    <label class="input-box">
-                        <input type="email" placeholder="Email" class="email-footer">
-                    </label>
+                <form method="post" action="{% url 'newsletter:signup' %}">
+                  {% csrf_token %}
+                  <i class="bx bx-mail-send"></i>
+                  <label class="input-box1">
+                    <input type="email" name="email" placeholder="Email" class="email-footer" required>
+                  </label>
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button type="submit" aria-label="Zapisz do newslettera">
                     <i class="bx bx-right-arrow-alt"></i>
+                  </button>
                 </form>
+
             </div>
         </div>
 

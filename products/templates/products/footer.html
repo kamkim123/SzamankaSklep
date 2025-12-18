@@ -37,13 +37,18 @@
                 <h3><a href="#" class="footer-newsletter">Podaj email</a></h3>
                 <p>Zapisz się do newslettera <br>i otrzymaj 5% znizki</p>
 
-                <form action="#">
-                    <i class="bx bx-mail-send"></i>
-                    <label class="input-box1">
-                        <input type="email" placeholder="Email" class="email-footer">
-                    </label>
+                <form method="post" action="{% url 'newsletter:signup' %}">
+                  {% csrf_token %}
+                  <i class="bx bx-mail-send"></i>
+                  <label class="input-box1">
+                    <input type="email" name="email" placeholder="Email" class="email-footer" required>
+                  </label>
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button type="submit" aria-label="Zapisz do newslettera">
                     <i class="bx bx-right-arrow-alt"></i>
+                  </button>
                 </form>
+
             </div>
         </div>
 

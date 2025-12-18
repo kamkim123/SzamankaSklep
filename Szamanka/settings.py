@@ -34,6 +34,7 @@ os.environ.setdefault("SSL_CERT_FILE", certifi.where())
 
 
 INSTALLED_APPS = [
+    "newsletter.apps.NewsletterConfig",
     "users.apps.UsersConfig",
     "orders.apps.OrdersConfig",
     "products.apps.ProductsConfig",
