@@ -796,14 +796,14 @@ nav {
     position: absolute;
     top: .5rem;
     right: .8rem;
-    font-size: 40px;
+    font-size: 35px;
     color: rgb(255, 59, 0);
     cursor: pointer;
     transition: transform .3s ease;
 }
 
 /* Efekt hover na sercu */
-.product .bx.bx-heart, .product .bxs-heart:hover {
+.product .bx.bx-heart:hover, .product .bxs-heart:hover {
     transform: scale(1.1);
     color: #e74c3c;
 }
