@@ -99,7 +99,7 @@ body {
   border-bottom: 0;
 }
 
-.products-menu-link,
+
 .title-link {
   display: inline-flex;
   align-items: center;
@@ -113,13 +113,56 @@ body {
   cursor: pointer;
 }
 
+.products-menu-link{
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .65rem;
+  margin: .35rem .2rem .35rem 0;
+  border-radius: 999px;
+  transition: background-color .2s ease, color .2s ease, transform .12s ease;
+  font-weight: 500;
+  color: inherit;
+  cursor: pointer;
+
+}
+
+.products-menu-p{
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .65rem;
+  margin: .35rem .2rem .35rem 0;
+  border-radius: 999px;
+  transition: background-color .2s ease, color .2s ease, transform .12s ease;
+  font-weight: 500;
+  color: inherit;
+  cursor: default;
+}
+
+.products-menu-p:hover{
+  color: var(--brand);
+  background: rgba(95,172,33,.08);
+  transform: translateY(-1px);
+}
+
 .title-link {
   box-shadow: 0 0 2px green;
+}
+
+#title-only-no-link{
+    cursor:default;
 }
 
 
 .products-menu a:hover,
 .title-link:hover {
+  color: var(--brand);
+  background: rgba(95,172,33,.08);
+  transform: translateY(-1px);
+}
+
+.products-menu-link:hover{
   color: var(--brand);
   background: rgba(95,172,33,.08);
   transform: translateY(-1px);
@@ -137,6 +180,7 @@ body {
   font-size: .95rem !important;
   margin: .4rem 0 0 0;
   line-height: 1.2;
+  box-shadow: 0 0 0 1px var(--ring);
 }
 
 .products-cat2 {
@@ -148,6 +192,7 @@ body {
   background: #fff;
   box-shadow: 0 1px 0 rgba(0, 0, 0, .04);
   color: inherit;
+  cursor:default;
 }
 
 .products-cat2:hover {

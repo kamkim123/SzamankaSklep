@@ -115,7 +115,7 @@ if (menuLeft) {
   leftMenu.addEventListener('click', function (e) {
     if (e.target.closest('.submenu-toggle')) return;
 
-    var link = e.target.closest('.products-menu-link, .products-cat2, .title-link');
+    var link = e.target.closest('.products-menu-link, .title-link');
     if (!link) return;
 
     var isSectionTitle = link.classList.contains('title-link') && !link.hasAttribute('data-type');
@@ -130,7 +130,7 @@ if (menuLeft) {
     var addBestsellers = (value === "Bestsellery");
 
     // Usuwamy klasę 'active' ze wszystkich linków
-    leftMenu.querySelectorAll('.products-menu-link, .products-cat2, .title-link').forEach(function (el) {
+    leftMenu.querySelectorAll('.products-menu-link, .title-link').forEach(function (el) {
       el.classList.remove('active');
     });
 
@@ -148,7 +148,7 @@ if (menuLeft) {
 
 
   if (currentType || currentBestsellers || currentNowosci || currentPromocje) {
-    leftMenu.querySelectorAll('.products-menu-link, .products-cat2, .title-link').forEach(function (el) {
+    leftMenu.querySelectorAll('.products-menu-link, .title-link').forEach(function (el) {
       var val = (el.getAttribute('data-type') || el.textContent).trim();
 
       // Ustawiamy klasę 'active' jeśli link ma odpowiednią kategorię lub jest to "Bestsellery"
