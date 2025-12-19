@@ -21,6 +21,17 @@ from django.http import JsonResponse
 from decimal import Decimal
 
 DEFAULT_PRICE = Decimal("999.99")
+
+DEFAULT_IMAGE = "static/products/images/default-image.png"
+
+def only_with_price_and_image(qs):
+    return (
+        qs.exclude(price=DEFAULT_PRICE)
+          .exclude(product_image__isnull=True)
+          .exclude(product_image="")
+          .exclude(product_image=DEFAULT_IMAGE)
+    )
+
 # views.py
 
 # views.py
@@ -32,7 +43,9 @@ class IndexView(generic.ListView):
     paginate_by = 24
 
     def get_queryset(self):
-        qs = Product.objects.exclude(price=DEFAULT_PRICE).order_by("-id")  # Pobieramy wszystkie produkty posortowane według ID
+        qs = only_with_price_and_image(Product.objects.all()).order_by("-id")
+  # Pobieramy wszystkie produkty posortowane według ID
+
         selected = (self.request.GET.get("type") or "").strip()
 
         if selected:
@@ -45,15 +58,15 @@ class IndexView(generic.ListView):
 
         # Dodajemy listę kategorii
         ctx["categories"] = (
-            Product.objects
-            .exclude(price=DEFAULT_PRICE)
+            only_with_price_and_image(Product.objects.all())
             .values("product_type")
             .annotate(count=Count("id"))
             .order_by("-product_type")
         )
 
         # Pobieramy bestsellery i dodajemy do kontekstu
-        bestsellers = Product.objects.filter(is_bestseller=True).exclude(price=DEFAULT_PRICE)
+        bestsellers = only_with_price_and_image(Product.objects.filter(is_bestseller=True))
+
         ctx["bestsellers"] = bestsellers
 
         if self.request.user.is_authenticated:
@@ -78,7 +91,11 @@ class DetailView(DetailView):
         product = self.object  # Produkt, który jest oglądany
 
         # Dodanie podobnych produktów (bestsellerów)
-        similar_products = Product.objects.filter(is_bestseller=True).exclude(pk=product.pk)  # Wykluczamy obecny produkt
+        similar_products = (
+            only_with_price_and_image(Product.objects.filter(is_bestseller=True))
+            .exclude(pk=product.pk)
+        )
+        # Wykluczamy obecny produkt
         context['similar_products'] = similar_products
 
         # Dodajemy listę produktów w ulubionych, jeśli użytkownik jest zalogowany
@@ -105,7 +122,8 @@ class ProductListView(ListView):
     paginate_by = 24
 
     def get_queryset(self):
-        qs = Product.objects.exclude(price=DEFAULT_PRICE)
+        qs = only_with_price_and_image(Product.objects.all())
+
 
         # Jeśli parametr 'bestsellers' jest w URL, filtruj produkty, które są bestsellerami
         if 'bestsellers' in self.request.GET:
@@ -133,8 +151,7 @@ class ProductListView(ListView):
         selected = self.request.GET.get("type", "").strip()
         ctx["selected"] = selected
         ctx["categories"] = (
-            Product.objects
-            .exclude(price=DEFAULT_PRICE)
+            only_with_price_and_image(Product.objects.all())
             .values("product_type")
             .annotate(count=Count("id"))
             .order_by("product_type")
@@ -164,7 +181,8 @@ class ProductSearchAPI(View):
         q = (request.GET.get("q") or "").strip()
         limit = int(request.GET.get("limit") or 10)
 
-        qs = Product.objects.exclude(price=DEFAULT_PRICE)
+        qs = only_with_price_and_image(Product.objects.all())
+
         if q:
             qs = qs.filter(Q(product_name__icontains=q))
         qs = qs.order_by("product_name")[:limit]
@@ -177,9 +195,11 @@ class ProductSearchAPI(View):
 def produkty(request):
     product_type = request.GET.get('type', 'all')
     if product_type == 'all':
-        produkty = Product.objects.exclude(price=DEFAULT_PRICE)
+        produkty = only_with_price_and_image(Product.objects.all())
+
     else:
-        produkty = Product.objects.exclude(price=DEFAULT_PRICE).filter(product_type=product_type)
+        produkty = only_with_price_and_image(Product.objects.filter(product_type=product_type))
+
 
     return render(request, 'products/products.html', {'produkty': produkty, 'kategoria': product_type})
 
@@ -204,7 +224,10 @@ from .models import Product
 def search_products(request):
     query = request.GET.get('q', '')
     if query:
-        products = Product.objects.exclude(price=DEFAULT_PRICE).filter(product_name__icontains=query)
+        products = only_with_price_and_image(
+            Product.objects.filter(product_name__icontains=query)
+        )
+
         results = [{'id': product.id, 'product_name': product.product_name} for product in products]
     else:
         results = []
@@ -220,7 +243,9 @@ def search_results(request):
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     res = None
     game = request.POST.get('game', '')
-    qs = Product.objects.exclude(price=DEFAULT_PRICE).filter(product_name__icontains=game)[:10]
+    qs = only_with_price_and_image(
+        Product.objects.filter(product_name__icontains=game)
+    )[:10]
 
     if len(qs) > 0 and len(game) > 0:
         data = []

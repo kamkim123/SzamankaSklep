@@ -80,16 +80,28 @@ footer{
     cursor: pointer;
 }
 
-.bx-right-arrow-alt {
+.arrow-icon-newsletter{
     font-size: 30px;
-    margin-top: 10px;
+
     margin-right: 0.5rem;
     border-radius:10px;
     border: 1px solid white;
     cursor: pointer;
+    width:35px;
+    height:35px;
+    background: transparent;
+    margin-top:10px;
 }
 
-.bx-right-arrow-alt:hover {
+.bx-right-arrow-alt {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+
+}
+
+.arrow-icon-newsletter:hover {
     background-color: rgba(255, 255, 255, 0.16);
 }
 
@@ -315,7 +327,6 @@ font-size: 1.3rem !important;
 
     .bx-right-arrow-alt {
         font-size: 22px;
-
     }
 
     .footer-social img {
