@@ -318,9 +318,8 @@ def p24_start(request, pk: int):
     order.save(update_fields=["p24_token"])
 
     # przekierowanie do P24 po TOKEN
-    return redirect(f"{settings.P24_BASE_URL}/trnRequest/{token}")  # placeholder (usuń)
-
-
+    base_url = "https://sandbox.przelewy24.pl" if settings.P24_SANDBOX else "https://secure.przelewy24.pl"
+    return redirect(f"{base_url}/trnRequest/{token}")
 
 
 @csrf_exempt
