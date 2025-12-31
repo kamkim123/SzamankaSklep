@@ -240,8 +240,6 @@ P24_POS_ID = int(os.getenv("P24_POS_ID", str(P24_MERCHANT_ID)))  # często to sa
 P24_CRC = os.getenv("P24_CRC", "")
 P24_API_KEY = os.getenv("P24_API_KEY", "")  # do basicAuth (reports key)
 
-P24_BASE_URL = "https://sandbox.przelewy24.pl" if P24_SANDBOX else "https://secure.przelewy24.pl"
-P24_API_BASE = f"{P24_BASE_URL}/api/v1"
 
 if P24_SANDBOX:
     P24_API_BASE = "https://sandbox.przelewy24.pl/api/v1"

@@ -78,3 +78,30 @@ def verify_transaction(*, session_id: str, order_id: int, amount: int, currency:
     )
     r.raise_for_status()
     return r.json()
+
+# w orders/p24.py
+def sign_notification(*, merchant_id: int, pos_id: int, session_id: str, amount: int, origin_amount: int,
+                      currency: str, order_id: int, method_id: int, statement: str, crc: str) -> str:
+    params = OrderedDict([
+        ("merchantId", merchant_id),
+        ("posId", pos_id),
+        ("sessionId", session_id),
+        ("amount", amount),
+        ("originAmount", origin_amount),
+        ("currency", currency),
+        ("orderId", order_id),
+        ("methodId", method_id),
+        ("statement", statement),
+        ("crc", crc),
+    ])
+    return _sha384_of_json(params)
+
+
+def test_access():
+    r = requests.get(
+        f"{settings.P24_API_BASE}/testAccess",
+        auth=(str(settings.P24_POS_ID), settings.P24_API_KEY),
+        timeout=20,
+    )
+    r.raise_for_status()
+    return r.json()

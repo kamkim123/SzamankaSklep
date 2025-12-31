@@ -320,19 +320,21 @@ def p24_start(request, pk: int):
     # przekierowanie do P24 po TOKEN
     return redirect(f"{settings.P24_BASE_URL}/trnRequest/{token}")  # placeholder (usuń)
 
+
+
+
 @csrf_exempt
 @require_POST
 def p24_status(request):
     """
-    Webhook z P24 (JSON). Uwaga: P24 wysyła notyfikację tylko dla poprawnej wpłaty,
-    i ponawia wysyłkę jeśli nie zrobisz poprawnej weryfikacji. :contentReference[oaicite:6]{index=6}
+    WEBHOOK Przelewy24:
+    P24 wysyła POST na urlStatus po udanej płatności.
+    Tu robimy weryfikację (verify) i dopiero wtedy oznaczamy zamówienie jako opłacone.
     """
     try:
         payload = json.loads(request.body.decode("utf-8"))
     except Exception:
         return HttpResponseBadRequest("invalid json")
-
-
 
     session_id = payload.get("sessionId")
     order_id = payload.get("orderId")
@@ -343,40 +345,50 @@ def p24_status(request):
     if not (session_id and order_id and amount and incoming_sign):
         return HttpResponseBadRequest("missing fields")
 
-    # (opcjonalnie) wstępna walidacja sign z webhooka (jak dla verify: sessionId+orderId+amount+currency+crc)
-    expected = p24.sign_verify(session_id, int(order_id), int(amount), currency, settings.P24_CRC)
+    # --- (OPCJONALNE, ale ok) sprawdzenie sign notyfikacji zgodnie z dokumentacją ---
+    origin_amount = int(payload.get("originAmount", amount))
+    method_id = int(payload.get("methodId", 0))
+    statement = payload.get("statement", "")
+
+    expected = p24.sign_notification(
+        merchant_id=settings.P24_MERCHANT_ID,
+        pos_id=settings.P24_POS_ID,
+        session_id=session_id,
+        amount=int(amount),
+        origin_amount=origin_amount,
+        currency=currency,
+        order_id=int(order_id),
+        method_id=method_id,
+        statement=statement,
+        crc=settings.P24_CRC,
+    )
     if expected != incoming_sign:
         return HttpResponseBadRequest("bad sign")
 
+    # znajdź zamówienie po sessionId
     order = get_object_or_404(Order, p24_session_id=session_id)
 
-    # idempotencja (P24 ponawia webhooki)
+    # idempotencja: P24 może ponowić webhook
     if order.paid:
         return HttpResponse("OK")
 
-    # kluczowa rzecz: verify
+    # --- KLUCZOWE: verify ---
     try:
-        verify_resp = p24.verify_transaction(
+        _verify_resp = p24.verify_transaction(
             session_id=session_id,
             order_id=int(order_id),
             amount=int(amount),
             currency=currency,
         )
-    except Exception as e:
-        # zwróć błąd, żeby P24 spróbowało ponownie
+    except Exception:
+        # zwróć błąd → P24 spróbuje ponownie
         return HttpResponseBadRequest("verify failed")
 
-    # jeżeli verify OK – oznacz zamówienie jako opłacone
+    # oznacz opłacone
     order.paid = True
     order.paid_at = timezone.now()
     order.status = Order.STATUS_PAID
     order.p24_order_id = str(order_id)
     order.save(update_fields=["paid", "paid_at", "status", "p24_order_id"])
 
-    # tutaj (dopiero teraz) jest najlepsze miejsce na:
-    # - zdjęcie stanów magazynowych
-    # - utworzenie przesyłki w ePaka
-    # bo masz potwierdzoną płatność
-
     return HttpResponse("OK")
-
