@@ -117,6 +117,10 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    p24_session_id = models.CharField(max_length=80, blank=True)
+    p24_token = models.CharField(max_length=80, blank=True)
+    p24_order_id = models.CharField(max_length=80, blank=True)
+
     class Meta:
         ordering = ["-created_at"]
         indexes = [

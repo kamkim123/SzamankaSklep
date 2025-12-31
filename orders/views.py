@@ -14,6 +14,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from .epaka import create_epaka_order, epaka_get_document
 from django.http import JsonResponse
 from .epaka import epaka_api_get
+from django.conf import settings
 
 
 @ensure_csrf_cookie
@@ -80,11 +81,19 @@ def cart_update_qty(request):
 def checkout(request):
     cart = Cart(request)
     if request.method == "POST":
-        # 👉 odczytujemy metodę dostawy i kod paczkomatu z formularza
         shipping_method = request.POST.get("shipping_method", Order.SHIPPING_INPOST_COURIER)
         inpost_locker_code = request.POST.get("inpost_locker_code", "").strip()
 
-        # Stworzenie zamówienia
+        # ✅ to przychodzi z Twojego template: payment_provider = p24/card/transfer
+        provider = request.POST.get("payment_provider", "transfer")
+
+        if provider == "transfer":
+            payment_method = Order.PAYMENT_TRANSFER
+        elif provider in ("p24", "card"):
+            payment_method = Order.PAYMENT_ONLINE
+        else:
+            payment_method = Order.PAYMENT_TRANSFER
+
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             first_name=request.POST.get('first_name'),
@@ -97,9 +106,8 @@ def checkout(request):
 
             shipping_cost=cart.shipping,
             status=Order.STATUS_NEW,
-            payment_method=request.POST.get('payment_method', Order.PAYMENT_TRANSFER),
+            payment_method=payment_method,
 
-            # 🔻 NOWE:
             shipping_method=shipping_method,
             inpost_locker_code=inpost_locker_code,
         )
@@ -112,6 +120,14 @@ def checkout(request):
                 quantity=item["quantity"],
             )
 
+        # wyczyść koszyk po utworzeniu zamówienia
+        cart.clear()
+
+        # ✅ jeśli online → idź do P24
+        if payment_method == Order.PAYMENT_ONLINE:
+            return redirect("orders:p24_start", pk=order.pk)
+
+        # (opcjonalnie) ePaka tylko dla nie-online, bo masz token w session
         access_token = request.session.get("epaka_access_token")
         if access_token:
             epaka_data = create_epaka_order(order, access_token)
@@ -120,10 +136,10 @@ def checkout(request):
         else:
             print(f"[EPAKA] Brak access_token w sesji – zamówienie {order.pk} nie wysłane do Epaki")
 
-        cart.clear()
         return redirect("orders:thank_you", pk=order.pk)
 
     return render(request, "orders/checkout.html", {"cart": cart})
+
 
 
 
@@ -187,7 +203,7 @@ def epaka_couriers_view(request):
 
 
 # orders/views.py
-from django.conf import settings
+
 
 
 
@@ -257,3 +273,110 @@ def order_detail(request, pk):
         "order": order,
         "items": items,
     })
+
+
+import json
+from uuid import uuid4
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.urls import reverse
+
+from . import p24
+
+def _amount_grosze(order: Order) -> int:
+    # total_to_pay masz jako Decimal
+    return int((order.total_to_pay * Decimal("100")).quantize(Decimal("1")))
+
+def p24_start(request, pk: int):
+    order = get_object_or_404(Order, pk=pk)
+
+    if order.paid:
+        return redirect("orders:thank_you", pk=order.pk)
+
+    if not order.p24_session_id:
+        order.p24_session_id = f"order-{order.pk}-{uuid4().hex}"
+        order.save(update_fields=["p24_session_id"])
+
+    amount = _amount_grosze(order)
+    currency = "PLN"
+
+    url_return = request.build_absolute_uri(reverse("orders:thank_you", args=[order.pk]))
+    url_status = request.build_absolute_uri(reverse("orders:p24_status"))
+
+    token, _raw = p24.register_transaction(
+        session_id=order.p24_session_id,
+        amount=amount,
+        currency=currency,
+        description=f"Zamówienie #{order.pk}",
+        email=order.email,
+        url_return=url_return,
+        url_status=url_status,
+    )
+
+    order.p24_token = token
+    order.save(update_fields=["p24_token"])
+
+    # przekierowanie do P24 po TOKEN
+    return redirect(f"{settings.P24_BASE_URL}/trnRequest/{token}")  # placeholder (usuń)
+
+@csrf_exempt
+@require_POST
+def p24_status(request):
+    """
+    Webhook z P24 (JSON). Uwaga: P24 wysyła notyfikację tylko dla poprawnej wpłaty,
+    i ponawia wysyłkę jeśli nie zrobisz poprawnej weryfikacji. :contentReference[oaicite:6]{index=6}
+    """
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except Exception:
+        return HttpResponseBadRequest("invalid json")
+
+
+
+    session_id = payload.get("sessionId")
+    order_id = payload.get("orderId")
+    amount = payload.get("amount")
+    currency = payload.get("currency", "PLN")
+    incoming_sign = payload.get("sign")
+
+    if not (session_id and order_id and amount and incoming_sign):
+        return HttpResponseBadRequest("missing fields")
+
+    # (opcjonalnie) wstępna walidacja sign z webhooka (jak dla verify: sessionId+orderId+amount+currency+crc)
+    expected = p24.sign_verify(session_id, int(order_id), int(amount), currency, settings.P24_CRC)
+    if expected != incoming_sign:
+        return HttpResponseBadRequest("bad sign")
+
+    order = get_object_or_404(Order, p24_session_id=session_id)
+
+    # idempotencja (P24 ponawia webhooki)
+    if order.paid:
+        return HttpResponse("OK")
+
+    # kluczowa rzecz: verify
+    try:
+        verify_resp = p24.verify_transaction(
+            session_id=session_id,
+            order_id=int(order_id),
+            amount=int(amount),
+            currency=currency,
+        )
+    except Exception as e:
+        # zwróć błąd, żeby P24 spróbowało ponownie
+        return HttpResponseBadRequest("verify failed")
+
+    # jeżeli verify OK – oznacz zamówienie jako opłacone
+    order.paid = True
+    order.paid_at = timezone.now()
+    order.status = Order.STATUS_PAID
+    order.p24_order_id = str(order_id)
+    order.save(update_fields=["paid", "paid_at", "status", "p24_order_id"])
+
+    # tutaj (dopiero teraz) jest najlepsze miejsce na:
+    # - zdjęcie stanów magazynowych
+    # - utworzenie przesyłki w ePaka
+    # bo masz potwierdzoną płatność
+
+    return HttpResponse("OK")
+

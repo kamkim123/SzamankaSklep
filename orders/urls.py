@@ -16,5 +16,7 @@ urlpatterns = [
     path("epaka/couriers/", views.epaka_couriers_view, name="epaka_couriers"),
     path("epaka/points/", views.epaka_points, name="epaka_points"),
     path("order/<int:pk>/", views.order_detail, name="order_detail"),
+    path("pay/p24/start/<int:pk>/", views.p24_start, name="p24_start"),
+    path("pay/p24/status/", views.p24_status, name="p24_status"),   # webhook
 
 ]
