@@ -1,21 +1,23 @@
+// === HARD reload po powrocie na checkout (Back z P24 itp.) ===
+(() => {
+  const KEY = "checkout_force_reload";
 
+  // ustaw flagę przy opuszczaniu strony
+  window.addEventListener("pagehide", () => {
+    sessionStorage.setItem(KEY, "1");
+  });
 
-// Cofnięcie z P24: wymuś odświeżenie checkout (bfcache/back-forward)
-window.addEventListener('pageshow', (e) => {
-  const nav = performance.getEntriesByType?.('navigation')?.[0];
-  const isBackForward = nav && nav.type === 'back_forward';
-  if (e.persisted || isBackForward) {
-    window.location.reload();
-  }
-});
+  // jeśli wracamy na stronę (back/forward/bfcache) — odśwież
+  window.addEventListener("pageshow", () => {
+    if (sessionStorage.getItem(KEY) === "1") {
+      sessionStorage.removeItem(KEY);
+      setTimeout(() => window.location.reload(), 0);
+    }
+  });
 
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    // jak wrócisz na kartę/stronę, odśwież stan
-    // (minimalnie agresywne, ale skuteczne)
-    window.location.reload();
-  }
-});
+  // pomaga wyłączyć bfcache w części przeglądarek
+  window.addEventListener("unload", () => {});
+})();
 
 (function() {
   /* ===== Helpers ===== */
