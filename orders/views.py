@@ -17,13 +17,11 @@ from .epaka import epaka_api_get
 from django.conf import settings
 
 SHIPPING_PRICES = {
-    Order.SHIPPING_INPOST_COURIER: Decimal("18.00"),
+    Order.SHIPPING_INPOST_COURIER: Decimal("21.00"),
     Order.SHIPPING_DPD_COURIER: Decimal("18.00"),
     Order.SHIPPING_INPOST_LOCKER: Decimal("18.00"),
     Order.SHIPPING_PICKUP: Decimal("0.00"),
-    # jeśli chcesz mieć COD w dostawie, musisz dodać je też do Order.SHIPPING_CHOICES
-    # "dpd_cod": Decimal("21.00"),
-    # "inpost_cod": Decimal("21.00"),
+
 }
 
 def shipping_for_method(method: str) -> Decimal:
@@ -105,6 +103,11 @@ def checkout(request):
         else:
             payment_method = Order.PAYMENT_TRANSFER
 
+        shipping_method = (request.POST.get("shipping_method") or Order.SHIPPING_INPOST_COURIER).strip()
+        print("POST shipping_method:", repr(shipping_method))
+        shipping_cost = shipping_for_method(shipping_method)
+        print("CALC shipping_cost:", shipping_cost)
+
         shipping_cost = shipping_for_method(shipping_method)
 
         order = Order.objects.create(
@@ -116,6 +119,7 @@ def checkout(request):
             address=request.POST.get('address'),
             postal_code=request.POST.get('postal_code'),
             city=request.POST.get('city'),
+
 
             shipping_cost=shipping_cost,
             status=Order.STATUS_NEW,
