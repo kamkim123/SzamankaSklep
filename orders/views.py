@@ -16,6 +16,19 @@ from django.http import JsonResponse
 from .epaka import epaka_api_get
 from django.conf import settings
 
+SHIPPING_PRICES = {
+    Order.SHIPPING_INPOST_COURIER: Decimal("18.00"),
+    Order.SHIPPING_DPD_COURIER: Decimal("18.00"),
+    Order.SHIPPING_INPOST_LOCKER: Decimal("18.00"),
+    Order.SHIPPING_PICKUP: Decimal("0.00"),
+    # jeśli chcesz mieć COD w dostawie, musisz dodać je też do Order.SHIPPING_CHOICES
+    # "dpd_cod": Decimal("21.00"),
+    # "inpost_cod": Decimal("21.00"),
+}
+
+def shipping_for_method(method: str) -> Decimal:
+    return SHIPPING_PRICES.get(method, Decimal("0.00"))
+
 
 @ensure_csrf_cookie
 def cart_view(request):
@@ -76,23 +89,23 @@ def cart_update_qty(request):
 
 
 # orders/views.py
-
 @require_http_methods(["GET", "POST"])
 def checkout(request):
     cart = Cart(request)
+
     if request.method == "POST":
         shipping_method = request.POST.get("shipping_method", Order.SHIPPING_INPOST_COURIER)
         inpost_locker_code = request.POST.get("inpost_locker_code", "").strip()
 
-        # ✅ to przychodzi z Twojego template: payment_provider = p24/card/transfer
         provider = request.POST.get("payment_provider", "transfer")
-
         if provider == "transfer":
             payment_method = Order.PAYMENT_TRANSFER
         elif provider in ("p24", "card"):
             payment_method = Order.PAYMENT_ONLINE
         else:
             payment_method = Order.PAYMENT_TRANSFER
+
+        shipping_cost = shipping_for_method(shipping_method)
 
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
@@ -104,7 +117,7 @@ def checkout(request):
             postal_code=request.POST.get('postal_code'),
             city=request.POST.get('city'),
 
-            shipping_cost=cart.shipping,
+            shipping_cost=shipping_cost,
             status=Order.STATUS_NEW,
             payment_method=payment_method,
 
@@ -120,14 +133,11 @@ def checkout(request):
                 quantity=item["quantity"],
             )
 
-        # wyczyść koszyk po utworzeniu zamówienia
         cart.clear()
 
-        # ✅ jeśli online → idź do P24
         if payment_method == Order.PAYMENT_ONLINE:
             return redirect("orders:p24_start", pk=order.pk)
 
-        # (opcjonalnie) ePaka tylko dla nie-online, bo masz token w session
         access_token = request.session.get("epaka_access_token")
         if access_token:
             epaka_data = create_epaka_order(order, access_token)
@@ -138,9 +148,18 @@ def checkout(request):
 
         return redirect("orders:thank_you", pk=order.pk)
 
-    return render(request, "orders/checkout.html", {"cart": cart})
+    # ======= TO JEST CZĘŚĆ GET (czyli wejście na checkout) =======
+    default_method = Order.SHIPPING_INPOST_COURIER
+    checkout_shipping = shipping_for_method(default_method)
+    checkout_grand = cart.subtotal + checkout_shipping
 
-
+    return render(request, "orders/checkout.html", {
+        "cart": cart,
+        "checkout_subtotal": cart.subtotal,
+        "checkout_shipping": checkout_shipping,
+        "checkout_grand": checkout_grand,
+        "checkout_method": default_method,
+    })
 
 
 def thank_you(request, pk):
