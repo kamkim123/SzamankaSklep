@@ -5,6 +5,9 @@ from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
 
+from django.views.decorators.cache import never_cache
+
+
 from .cart import Cart
 from products.models import Product
 from .models import Order, OrderItem
@@ -87,6 +90,7 @@ def cart_update_qty(request):
 
 
 # orders/views.py
+@never_cache
 @require_http_methods(["GET", "POST"])
 def checkout(request):
     cart = Cart(request)
@@ -412,5 +416,12 @@ def p24_status(request):
     order.status = Order.STATUS_PAID
     order.p24_order_id = str(order_id)
     order.save(update_fields=["paid", "paid_at", "status", "p24_order_id"])
+    access_token = request.session.get("epaka_access_token")
+    if access_token:
+        epaka_data = create_epaka_order(order, access_token)
+        if epaka_data is None:
+            print(f"[EPAKA] Nie udało się utworzyć przesyłki dla zamówienia {order.pk}")
+    else:
+        print(f"[EPAKA] Brak access_token w sesji – zamówienie {order.pk} nie wysłane do Epaki")
 
     return HttpResponse("OK")

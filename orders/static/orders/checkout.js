@@ -1,4 +1,22 @@
 
+
+// Cofnięcie z P24: wymuś odświeżenie checkout (bfcache/back-forward)
+window.addEventListener('pageshow', (e) => {
+  const nav = performance.getEntriesByType?.('navigation')?.[0];
+  const isBackForward = nav && nav.type === 'back_forward';
+  if (e.persisted || isBackForward) {
+    window.location.reload();
+  }
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    // jak wrócisz na kartę/stronę, odśwież stan
+    // (minimalnie agresywne, ale skuteczne)
+    window.location.reload();
+  }
+});
+
 (function() {
   /* ===== Helpers ===== */
   const $  = sel => document.querySelector(sel);
