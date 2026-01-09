@@ -1,6 +1,11 @@
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from django.conf import settings
 from products.models import Product
+
+MONEY_Q = Decimal("0.01")
+
+def qmoney(x: Decimal) -> Decimal:
+    return x.quantize(MONEY_Q, rounding=ROUND_HALF_UP)
 
 class Cart:
     def __init__(self, request):
@@ -15,9 +20,8 @@ class Cart:
         pid = str(product.id)
         item = self.cart.get(pid, {"quantity": 0, "price": None})
 
-        # KLUCZOWE: cena jako STRING w sesji (nie Decimal!)
         if item["price"] is None:
-            item["price"] = str(product.price)  # np. "129.99"
+            item["price"] = str(product.price)
 
         quantity = int(quantity)
         if override_quantity:
@@ -43,13 +47,13 @@ class Cart:
         products = Product.objects.filter(id__in=product_ids)
         for p in products:
             raw = self.cart[str(p.id)]
-            price = Decimal(raw["price"])  # do rachunków
+            price = Decimal(raw["price"])
             qty = int(raw["quantity"])
             yield {
                 "product": p,
-                "price": price,  # Decimal tylko w Pythonie
+                "price": qmoney(price),
                 "quantity": qty,
-                "total_price": price * qty,  # Decimal
+                "total_price": qmoney(price * qty),
             }
 
     def __len__(self):
@@ -57,15 +61,18 @@ class Cart:
 
     @property
     def subtotal(self) -> Decimal:
-        return sum(Decimal(i["price"]) * int(i["quantity"]) for i in self.cart.values()) or Decimal("0")
+        sub = sum(Decimal(i["price"]) * int(i["quantity"]) for i in self.cart.values())
+        return qmoney(sub) if sub else Decimal("0.00")
 
     @property
     def shipping(self) -> Decimal:
-        return Decimal("0") if self.subtotal >= Decimal("200") else Decimal("15")
+        # ✅ W KOSZYKU ZAWSZE 0
+        return Decimal("0.00")
 
     @property
     def grand_total(self) -> Decimal:
-        return self.subtotal + self.shipping
+        # ✅ do zapłaty w koszyku = suma produktów
+        return self.subtotal
 
     def clear(self):
         self.session.pop(settings.CART_SESSION_ID, None)
