@@ -172,6 +172,21 @@ class OrderItem(models.Model):
 
 
 
+from django.utils import timezone
+
+class EpakaToken(models.Model):
+    access_token = models.TextField()
+    expires_at = models.DateTimeField()
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def get_valid(cls):
+        tok = cls.objects.order_by("-updated_at").first()
+        if tok and tok.expires_at > timezone.now() + timezone.timedelta(seconds=30):
+            return tok.access_token
+        return None
+
 
 
 

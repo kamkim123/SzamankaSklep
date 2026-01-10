@@ -7,6 +7,7 @@ from django.http import JsonResponse
 
 from django.views.decorators.cache import never_cache
 
+from .epaka_auth import get_epaka_access_token
 
 from .cart import Cart
 from products.models import Product
@@ -146,13 +147,6 @@ def checkout(request):
         if payment_method == Order.PAYMENT_ONLINE:
             return redirect("orders:p24_start", pk=order.pk)
 
-        access_token = request.session.get("epaka_access_token")
-        if access_token:
-            epaka_data = create_epaka_order(order, access_token)
-            if epaka_data is None:
-                print(f"[EPAKA] Nie udało się utworzyć przesyłki dla zamówienia {order.pk}")
-        else:
-            print(f"[EPAKA] Brak access_token w sesji – zamówienie {order.pk} nie wysłane do Epaki")
 
         return redirect("orders:thank_you", pk=order.pk)
 
@@ -172,6 +166,16 @@ def checkout(request):
 
 def thank_you(request, pk):
     order = get_object_or_404(Order, pk=pk)
+
+    # ✅ ePaka tylko dla opłaconych, tylko raz
+    if order.paid and not order.epaka_order_id:
+        access_token = request.session.get("epaka_access_token")
+        if access_token:
+            create_epaka_order(order, access_token)
+        else:
+            order.notes = (order.notes or "") + "\n[EPAKA] Brak epaka_access_token w sesji na thank_you\n"
+            order.save(update_fields=["notes"])
+
     return render(request, "orders/thank_you.html", {"order": order})
 
 
@@ -416,12 +420,14 @@ def p24_status(request):
     order.status = Order.STATUS_PAID
     order.p24_order_id = str(order_id)
     order.save(update_fields=["paid", "paid_at", "status", "p24_order_id"])
-    access_token = request.session.get("epaka_access_token")
-    if access_token:
-        epaka_data = create_epaka_order(order, access_token)
-        if epaka_data is None:
-            print(f"[EPAKA] Nie udało się utworzyć przesyłki dla zamówienia {order.pk}")
-    else:
-        print(f"[EPAKA] Brak access_token w sesji – zamówienie {order.pk} nie wysłane do Epaki")
+
+    if not order.epaka_order_id:
+        access_token = get_epaka_access_token()
+        if access_token:
+            epaka_data = create_epaka_order(order, access_token)
+            if epaka_data is None:
+                print(f"[EPAKA] Nie udało się utworzyć przesyłki dla zamówienia {order.pk}")
+        else:
+            print("[EPAKA] Nie udało się pobrać tokena ePaka (server-to-server)")
 
     return HttpResponse("OK")
