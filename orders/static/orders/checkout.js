@@ -1,23 +1,29 @@
-// === HARD reload po powrocie na checkout (Back z P24 itp.) ===
+// Reload checkout TYLKO gdy wracamy strzałką wstecz po próbie płatności (P24)
 (() => {
-  const KEY = "checkout_force_reload";
+  const KEY = "checkout_submitted";
 
-  // ustaw flagę przy opuszczaniu strony
-  window.addEventListener("pagehide", () => {
-    sessionStorage.setItem(KEY, "1");
-  });
+  window.addEventListener("pageshow", (e) => {
+    const nav = performance.getEntriesByType?.("navigation")?.[0];
+    const isBackForward = nav?.type === "back_forward";
 
-  // jeśli wracamy na stronę (back/forward/bfcache) — odśwież
-  window.addEventListener("pageshow", () => {
-    if (sessionStorage.getItem(KEY) === "1") {
+    if ((e.persisted || isBackForward) && sessionStorage.getItem(KEY) === "1") {
       sessionStorage.removeItem(KEY);
-      setTimeout(() => window.location.reload(), 0);
+      window.location.reload();
     }
   });
 
-  // pomaga wyłączyć bfcache w części przeglądarek
-  window.addEventListener("unload", () => {});
-})();
+  // ustawiamy flagę tylko przy wysłaniu checkout (czyli przejściu do P24)
+document.addEventListener("submit", (evt) => {
+  const form = evt.target;
+  if (!form || !form.classList.contains("checkout-form")) return;
+
+  // jeśli ktoś zablokował submit (preventDefault), nie ustawiaj flagi
+  if (evt.defaultPrevented) return;
+
+  sessionStorage.setItem(KEY, "1");
+}, true);
+
+
 
 (function() {
   /* ===== Helpers ===== */
