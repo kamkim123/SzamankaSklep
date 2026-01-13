@@ -302,3 +302,6 @@ def delete_address(request, pk):
         messages.success(request, "Usunięto adres.")
         return redirect("users:user-panel")
     return HttpResponseBadRequest("Nieprawidłowe żądanie.")
+
+
+import logging

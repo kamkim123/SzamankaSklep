@@ -33,6 +33,7 @@ else:
     DEFAULT_FROM_EMAIL = "jaystar1003@gmail.com"  # na początek ustaw tak samo
     SERVER_EMAIL = "jaystar1003@gmail.com"
 
+USE_X_FORWARDED_HOST = True
 
 
 import certifi
