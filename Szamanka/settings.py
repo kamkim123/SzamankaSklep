@@ -189,8 +189,8 @@ CSRF_TRUSTED_ORIGINS = ["https://szamankasklep.pl", "https://www.szamankasklep.p
 
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 CART_SESSION_ID = "cart"
 
@@ -236,7 +236,8 @@ EPAKA_LOCKER_INPOST = 6
 
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 30 * 60
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 14  # 14 dni jako domyślna "długa" sesja
+
 
 
 

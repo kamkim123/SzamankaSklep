@@ -178,13 +178,12 @@ class EmailLoginView(LoginView):
 
     def form_valid(self, form):
         remember = self.request.POST.get("remember")
-        # Domyślnie sesja wygaśnie po zamknięciu przeglądarki.
-        # Jeśli zaznaczono remember -> ustaw czas życia np. 2 tygodnie.
         if remember:
-            self.request.session.set_expiry(60 * 60 * 24 * 14)
+            self.request.session.set_expiry(60 * 60 * 24 * 14)  # 14 dni
         else:
             self.request.session.set_expiry(0)  # do zamknięcia przeglądarki
         return super().form_valid(form)
+
 
 
 from django.shortcuts import render, redirect

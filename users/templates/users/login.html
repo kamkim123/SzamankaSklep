@@ -48,7 +48,8 @@
 
             <div class="remember-forgot">
                 <label>
-                    <input type="checkbox" name="remember"> Zapamiętaj mnie
+                  <input type="checkbox" name="remember" {% if request.POST.remember %}checked{% endif %}>
+                  Zapamiętaj mnie
                 </label>
                 <a href="{% url 'users:password_reset' %}">Zapomniałeś hasła?</a>
 
