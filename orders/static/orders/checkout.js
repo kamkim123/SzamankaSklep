@@ -33,7 +33,7 @@ document.addEventListener("submit", (evt) => {
 
   sessionStorage.setItem(KEY, "1");
 }, true);
-
+})();
 
 
 (function() {
@@ -413,9 +413,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-    // na start – żeby było dobrze ustawione po załadowaniu
-    updateLockerVisibility();
-});
 
 
 

@@ -1,11 +1,20 @@
 const burger = document.querySelector('.burger');
 const kategorieNav = document.querySelector('.kategorie-nav');
 
-
-burger.addEventListener('click', () => {
+if (burger && kategorieNav) {
+  burger.addEventListener('click', () => {
     burger.classList.toggle('active');
     kategorieNav.classList.toggle('active');
-})
+  });
+
+  document.querySelectorAll(".kategorie-nav").forEach(n =>
+    n.addEventListener("click", () => {
+      burger.classList.remove('active');
+      kategorieNav.classList.remove('active');
+    })
+  );
+}
+
 
 document.querySelectorAll(".kategorie-nav").forEach(n => n.addEventListener("click", () => {
     burger.classList.remove('active');
@@ -70,28 +79,43 @@ document.querySelectorAll(".kategorie-nav").forEach(n => n.addEventListener("cli
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    const menu = document.querySelector('.products-menu');
+  const menu = document.querySelector('.products-menu');
+  if (!menu) return;
 
+  menu.addEventListener('click', (e) => {
+    const btn = e.target.closest('.submenu-toggle');
+    if (!btn) return;
 
-    menu.addEventListener('click', (e) => {
-        const btn = e.target.closest('.submenu-toggle');
-        if (!btn) return;
+    const block = btn.closest('.submenu-block');
+    const panel = block && block.nextElementSibling;
 
-        const block = btn.closest('.submenu-block');
-        const panel = block && block.nextElementSibling;
+    if (!panel || !panel.classList.contains('submenu-panel')) return;
 
-        if (!panel || !panel.classList.contains('submenu-panel')) return;
-
-        const willOpen = !panel.classList.contains('is-open');
-
-        panel.classList.toggle('is-open', willOpen);
-        btn.classList.toggle('is-open', willOpen);
-    });
+    const willOpen = !panel.classList.contains('is-open');
+    panel.classList.toggle('is-open', willOpen);
+    btn.classList.toggle('is-open', willOpen);
+  });
 });
 
 
+
 const box = document.getElementById('search');
-const btn = box.querySelector('.search__toggle');
+if (box) {
+  const btn = box.querySelector('.search__toggle');
+  const inp = box.querySelector('.search__input');
+  const clearBtn = box.querySelector('.search__clear');
+
+  function openSearch() { ... }
+  function closeSearch() { ... }
+
+  btn?.addEventListener('click', () => {
+    if (!box.classList.contains('active-search')) openSearch();
+    else inp?.focus();
+  });
+  clearBtn?.addEventListener('click', closeSearch);
+  box.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+}
+
 const inp = box.querySelector('.search__input');
 const clearBtn = box.querySelector('.search__clear');
 
@@ -120,22 +144,27 @@ box.addEventListener('keydown', e => {
 
 
 const g = document.querySelector('.image-wrapper2');
-const m = g.querySelector(':scope > img');
-if(g){
+if (g) {
+  const m = g.querySelector(':scope > img');
+  if (m) {
     g.addEventListener('click', e => {
-        const t = e.target.closest('img');
-        if (!t || t === m) return;
-        m.src = t.dataset.full || t.src;
-        m.alt = t.alt || '';
+      const t = e.target.closest('img');
+      if (!t || t === m) return;
+      m.src = t.dataset.full || t.src;
+      m.alt = t.alt || '';
     });
+  }
 }
 
 
+
 document.querySelectorAll('.mini-photo img').forEach(img => {
-    img.addEventListener('click', () => {
-      document.querySelector('.main-image').src = img.dataset.full;
-    });
+  img.addEventListener('click', () => {
+    const main = document.querySelector('.main-image');
+    if (main) main.src = img.dataset.full;
   });
+});
+
 
 
 
@@ -144,9 +173,11 @@ document.querySelectorAll('.mini-photo img').forEach(img => {
 
 document.addEventListener('DOMContentLoaded', function () {
     // Znajdź przycisk "Dodaj do koszyka" i licznik ilości
-    const cartButton = document.querySelector('.cart');
-    const quantityInput = document.querySelector('.calc-input');
-    const productId = cartButton.getAttribute('data-product-id');  // Pobieramy ID produktu
+      const cartButton = document.querySelector('.cart');
+      const quantityInput = document.querySelector('.calc-input');
+      if (!cartButton || !quantityInput) return;
+
+  const productId = cartButton.getAttribute('data-product-id');
 
     // Funkcja do aktualizacji ilości produktu
     function setQty(q) {
