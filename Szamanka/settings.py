@@ -31,6 +31,8 @@ DEFAULT_FROM_EMAIL = "jaystar1003@gmail.com"               # na początek ustaw 
 SERVER_EMAIL = "jaystar1003@gmail.com"
 
 
+
+
 import certifi
 os.environ.setdefault("SSL_CERT_FILE", certifi.where())
 
