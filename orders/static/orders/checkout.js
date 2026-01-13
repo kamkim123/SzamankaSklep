@@ -1,4 +1,15 @@
 // Reload checkout TYLKO gdy wracamy strzałką wstecz po próbie płatności (P24)
+
+
+if (!(window.CSS && CSS.escape)) {
+  window.CSS = window.CSS || {};
+  CSS.escape = function (value) {
+    return String(value).replace(/[^a-zA-Z0-9_\-]/g, (ch) => "\\" + ch);
+  };
+}
+
+
+
 (() => {
   const KEY = "checkout_submitted";
 
@@ -389,21 +400,18 @@ try { updatePaymentUI(); } catch(_) {}
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    const lockerField = document.getElementById("locker-field");
-    const shippingRadios = document.querySelectorAll('input[name="shipping_method"]');
+  const lockerField = document.getElementById("lockerBox"); // <-- poprawione ID
+  if (!lockerField) return;
 
-    function updateLockerVisibility() {
-      const checked = document.querySelector('input[name="shipping_method"]:checked');
-      if (checked && checked.value === "inpost_locker") {
-        lockerField.style.display = "block";
-      } else {
-        lockerField.style.display = "none";
-      }
-    }
+  const shippingRadios = document.querySelectorAll('input[name="shipping_method"]');
+  function updateLockerVisibility() {
+    const checked = document.querySelector('input[name="shipping_method"]:checked');
+    lockerField.style.display = (checked && checked.value === "inpost_locker") ? "block" : "none";
+  }
+  shippingRadios.forEach(r => r.addEventListener("change", updateLockerVisibility));
+  updateLockerVisibility();
+});
 
-    shippingRadios.forEach(radio => {
-      radio.addEventListener("change", updateLockerVisibility);
-    });
 
     // na start – żeby było dobrze ustawione po załadowaniu
     updateLockerVisibility();
