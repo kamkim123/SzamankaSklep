@@ -17,19 +17,21 @@ ALLOWED_HOSTS = [
 
 import os
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True          # STARTTLS
-EMAIL_USE_SSL = False
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
 
-EMAIL_HOST_USER = "jaystar1003@gmail.com"                  # konto, którym wysyłasz
-EMAIL_HOST_PASSWORD = "vzbigvgrxktftohf" # ← TU wstaw hasło aplikacji (lub użyj env)
-DEFAULT_FROM_EMAIL = "jaystar1003@gmail.com"               # na początek ustaw tak samo
-SERVER_EMAIL = "jaystar1003@gmail.com"
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.gmail.com"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True  # STARTTLS
+    EMAIL_USE_SSL = False
 
+    EMAIL_HOST_USER = "jaystar1003@gmail.com"  # konto, którym wysyłasz
+    EMAIL_HOST_PASSWORD = "vzbigvgrxktftohf"  # ← TU wstaw hasło aplikacji (lub użyj env)
+    DEFAULT_FROM_EMAIL = "jaystar1003@gmail.com"  # na początek ustaw tak samo
+    SERVER_EMAIL = "jaystar1003@gmail.com"
 
 
 
