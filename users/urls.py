@@ -22,7 +22,7 @@ urlpatterns = [
 
     path(
         "password-reset/",
-        views.PasswordResetViewDebug.as_view(
+        auth_views.PasswordResetView.as_view(
             template_name="users/password_reset_form.html",
             email_template_name="users/password_reset_email.txt",
             subject_template_name="users/password_reset_subject.txt",
