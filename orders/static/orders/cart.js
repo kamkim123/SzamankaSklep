@@ -3,6 +3,12 @@
   const btn = document.getElementById('checkoutBtn');
   const fmt = n => Number(n).toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' });
 
+    const toNum = (v) => {
+    if (v == null) return 0;
+    return Number(String(v).replace(/\s/g, '').replace(',', '.')) || 0;
+  };
+
+
   const els = {
     subtotal: document.getElementById('subtotal'),
     shipping: document.getElementById('shipping'),
@@ -158,7 +164,7 @@ list.addEventListener('click', (e) => {
 
     const display = li.querySelector('.qty-display');
     const priceEl = li.querySelector('.price');
-    const unitPrice = parseFloat(priceEl.dataset.unitPrice);
+    const unitPrice = toNum(priceEl.dataset.unitPrice);
     const pid = li.dataset.productId;
 
     const currentQty = parseInt(display.textContent, 10) || 1;
@@ -189,7 +195,7 @@ list.addEventListener('click', (e) => {
     const items = document.querySelectorAll('.item3');
     items.forEach(item => {
       const quantity = parseInt(item.querySelector('.qty-display').textContent, 10) || 1;
-      const unitPrice = parseFloat(item.dataset.price);  // Cena jednostkowa
+      const unitPrice = toNum(item.dataset.price);  // Cena jednostkowa
       const totalPrice = unitPrice * quantity;  // Całkowita cena (unitPrice * quantity)
 
       // Zaktualizuj cenę jednostkową (zależną od ilości)

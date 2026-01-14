@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Koszyk</title> {% load static %}
+
+    <title>Koszyk</title> {% load static l10n %}
     <link rel="stylesheet" href="{% static 'orders/cart.css' %}">
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
@@ -11,6 +12,8 @@
 </head>
 <body>
 {% include "products/navbar.html" %}
+
+
 
 <div class="container">
 
@@ -21,20 +24,31 @@
     </form>
     <section class="card"><h2>Koszyk</h2>
         <ul class="cart-list" id="cartList"> {% for item in cart %}
-            <li class="item3" data-product-id="{{ item.product.id }}" data-price="{{ item.price|floatformat:2 }}"
+            <li class="item3"
+                data-product-id="{{ item.product.id }}"
+                data-price="{{ item.price|unlocalize|floatformat:2 }}"
                 data-update-url="{% url 'orders:cart_update' %}">
                 <img src="{% if item.product.product_image %}{{ item.product.product_image }}{% else %}{% static 'products/images/default-image.png' %}{% endif %}"
                      alt="{{ item.product.product_name }}" class="cart-product-image"/>
-                <div class="info"><h3>{{ item.product.product_name }}</h3>
-                    <!-- Jeśli masz warianty/kolor, wyświetl tu --> </div>
-                <div class="price" data-unit-price="{{ item.price|floatformat:2 }}"> {{ item.price }}&nbsp;zł</div>
+
+                <div class="info">
+                    <h3>{{ item.product.product_name }}</h3>
+                </div>
+
+                <div class="price"
+                     data-unit-price="{{ item.price|unlocalize|floatformat:2 }}">
+                    {{ item.price }}&nbsp;zł
+                </div>
+
                 <div class="qty">
                     <button class="qty-btn qty-minus" aria-label="Zmniejsz ilość">-</button>
                     <span class="qty-display">{{ item.quantity }}</span>
                     <button class="qty-btn qty-plus" aria-label="Zwiększ ilość">+</button>
                 </div>
+
                 <button class="remove" aria-label="Usuń" data-url="{% url 'orders:cart_remove' %}">×</button>
             </li>
+
             {% empty %}
             <li class="empty-cart">Twój koszyk jest pusty.</li>
             {% endfor %}
