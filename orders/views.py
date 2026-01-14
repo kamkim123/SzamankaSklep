@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
+from django.contrib import messages
 
 from django.views.decorators.cache import never_cache
 
@@ -97,6 +98,9 @@ def checkout(request):
     cart = Cart(request)
 
     if request.method == "POST":
+        if len(cart) == 0:
+            messages.error(request, "Koszyk jest pusty — dodaj produkty i spróbuj ponownie.")
+            return redirect("orders:cart")
         shipping_method = request.POST.get("shipping_method", Order.SHIPPING_INPOST_COURIER)
         inpost_locker_code = request.POST.get("inpost_locker_code", "").strip()
 
@@ -113,7 +117,7 @@ def checkout(request):
         shipping_cost = shipping_for_method(shipping_method)
         print("CALC shipping_cost:", shipping_cost)
 
-        shipping_cost = shipping_for_method(shipping_method)
+
 
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
@@ -142,12 +146,12 @@ def checkout(request):
                 quantity=item["quantity"],
             )
 
-        cart.clear()
-
+        # ✅ Online: NIE czyścimy koszyka tutaj
         if payment_method == Order.PAYMENT_ONLINE:
             return redirect("orders:p24_start", pk=order.pk)
 
-
+        # ✅ Offline (transfer): możesz wyczyścić od razu
+        cart.clear()
         return redirect("orders:thank_you", pk=order.pk)
 
     # ======= TO JEST CZĘŚĆ GET (czyli wejście na checkout) =======
@@ -166,15 +170,9 @@ def checkout(request):
 
 def thank_you(request, pk):
     order = get_object_or_404(Order, pk=pk)
+    if order.paid:
+        Cart(request).clear()
 
-    # ✅ ePaka tylko dla opłaconych, tylko raz
-    if order.paid and not order.epaka_order_id:
-        access_token = request.session.get("epaka_access_token")
-        if access_token:
-            create_epaka_order(order, access_token)
-        else:
-            order.notes = (order.notes or "") + "\n[EPAKA] Brak epaka_access_token w sesji na thank_you\n"
-            order.save(update_fields=["notes"])
 
     return render(request, "orders/thank_you.html", {"order": order})
 
@@ -190,10 +188,9 @@ def epaka_label_view(request, pk):
             "To zamówienie nie ma epaka_order_id – nie zostało wysłane do Epaki."
         )
 
-    access_token = request.session.get("epaka_access_token")
+    access_token = get_epaka_access_token()
     if not access_token:
-        # jeśli admin/ty nie masz aktualnie tokena w sesji – przekieruj do logowania z Epaką
-        return redirect("epaka_login")
+        return HttpResponseBadRequest("Brak tokena ePaka (server-to-server).")
 
     # pobieramy dokument typu 'label' (klasyczny PDF)
     resp = epaka_get_document(int(order.epaka_order_id), access_token, doc_type="label")
@@ -322,23 +319,12 @@ def _amount_grosze(order: Order) -> int:
 def p24_start(request, pk: int):
     order = get_object_or_404(Order, pk=pk)
 
-    print(
-        "P24 CONFIG:",
-        "SANDBOX=", settings.P24_SANDBOX,
-        "MERCHANT_ID=", settings.P24_MERCHANT_ID,
-        "POS_ID=", settings.P24_POS_ID,
-        "HAS_API_KEY=", bool(settings.P24_API_KEY),
-        "HAS_CRC=", bool(settings.P24_CRC),
-        "API_BASE=", settings.P24_API_BASE,
-    )
-    print(
-        "P24 ORDER:",
-        "id=", order.pk,
-        "paid=", order.paid,
-        "total_to_pay=", getattr(order, "total_to_pay", None),
-        "shipping_cost=", getattr(order, "shipping_cost", None),
-        "items=", order.items.count() if hasattr(order, "items") else "no-related",
-    )
+    if order.items.count() == 0:
+        return HttpResponseBadRequest("Order has no items")
+
+    amount = _amount_grosze(order)
+    if amount <= 0:
+        return HttpResponseBadRequest("Invalid amount")
 
     if order.paid:
         return redirect("orders:thank_you", pk=order.pk)
@@ -353,15 +339,23 @@ def p24_start(request, pk: int):
     url_return = request.build_absolute_uri(reverse("orders:thank_you", args=[order.pk]))
     url_status = request.build_absolute_uri(reverse("orders:p24_status"))
 
-    token, _raw = p24.register_transaction(
-        session_id=order.p24_session_id,
-        amount=amount,
-        currency=currency,
-        description=f"Zamówienie #{order.pk}",
-        email=order.email,
-        url_return=url_return,
-        url_status=url_status,
-    )
+    try:
+        token, _raw = p24.register_transaction(
+            session_id=order.p24_session_id,
+            amount=amount,
+            currency=currency,
+            description=f"Zamówienie #{order.pk}",
+            email=order.email,
+            url_return=url_return,
+            url_status=url_status,
+        )
+    except Exception as e:
+        order.notes = (order.notes or "") + f"\n[P24] register error: {repr(e)}\n"
+        # opcjonalnie ustaw status błędu jeśli masz taki:
+        # order.status = Order.STATUS_FAILED
+        order.save(update_fields=["notes"])  # albo ["notes","status"] jeśli ustawisz status
+        messages.error(request, "Nie udało się rozpocząć płatności. Sprawdź e-mail i spróbuj ponownie.")
+        return redirect("orders:checkout")
 
     order.p24_token = token
     order.save(update_fields=["p24_token"])
