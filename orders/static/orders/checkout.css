@@ -727,3 +727,43 @@ h2{ font-weight:700; letter-spacing:-0.01em; font-size:1.05rem; margin-bottom:.6
   padding: 0.2rem 0.4rem;
 }
 
+
+/* ===== Django messages ===== */
+.messages {
+  margin: 12px 0 18px;
+}
+
+.msg {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* ERROR = czerwone obramowanie + delikatne tło */
+.msg--error {
+  border-color: #e53935;
+  background: rgba(229, 57, 53, 0.10);
+  color: #b71c1c;
+}
+
+/* opcjonalnie inne typy */
+.msg--success {
+  border-color: #2e7d32;
+  background: rgba(46, 125, 50, 0.10);
+  color: #1b5e20;
+}
+
+.msg--warning {
+  border-color: #f9a825;
+  background: rgba(249, 168, 37, 0.12);
+  color: #7a4f00;
+}
+
+.msg--info {
+  border-color: #1e88e5;
+  background: rgba(30, 136, 229, 0.10);
+  color: #0d47a1;
+}
+

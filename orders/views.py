@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
 from django.contrib import messages
-
+import re
 from django.views.decorators.cache import never_cache
 
 from .epaka_auth import get_epaka_access_token
@@ -117,14 +117,24 @@ def checkout(request):
         shipping_cost = shipping_for_method(shipping_method)
         print("CALC shipping_cost:", shipping_cost)
 
+        # --- WALIDACJA TELEFONU ---
+        raw_phone = (request.POST.get("phone", "") or "").strip()
+        digits = re.sub(r"\D+", "", raw_phone)  # zostaw tylko cyfry
 
+        if len(digits) < 9:
+            messages.error(request, "Numer telefonu jest za krótki (min. 9 cyfr).")
+            return redirect("orders:checkout")
+
+        if len(digits) > 15:
+            messages.error(request, "Numer telefonu jest za długi (max. 15 cyfr).")
+            return redirect("orders:checkout")
 
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             first_name=request.POST.get('first_name'),
             last_name=request.POST.get('last_name'),
             email=request.POST.get('email'),
-            phone=request.POST.get('phone', ''),
+            phone=digits,
             address=request.POST.get('address'),
             postal_code=request.POST.get('postal_code'),
             city=request.POST.get('city'),
