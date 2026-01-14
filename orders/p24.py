@@ -48,11 +48,15 @@ def register_transaction(*, session_id: str, amount: int, currency: str, descrip
     r = requests.post(
         f"{settings.P24_API_BASE}/transaction/register",
         json=payload,
-        auth=(str(settings.P24_POS_ID), settings.P24_API_KEY),  # basicAuth
+        auth=(str(settings.P24_POS_ID), settings.P24_API_KEY),
         timeout=20,
     )
-    r.raise_for_status()
+
+    if r.status_code >= 400:
+        raise RuntimeError(f"P24 register failed status={r.status_code} body={r.text}")
+
     data = r.json()
+
     # najczęściej: data["data"]["token"]
     token = (data.get("data") or {}).get("token") or data.get("token")
     if not token:

@@ -322,6 +322,24 @@ def _amount_grosze(order: Order) -> int:
 def p24_start(request, pk: int):
     order = get_object_or_404(Order, pk=pk)
 
+    print(
+        "P24 CONFIG:",
+        "SANDBOX=", settings.P24_SANDBOX,
+        "MERCHANT_ID=", settings.P24_MERCHANT_ID,
+        "POS_ID=", settings.P24_POS_ID,
+        "HAS_API_KEY=", bool(settings.P24_API_KEY),
+        "HAS_CRC=", bool(settings.P24_CRC),
+        "API_BASE=", settings.P24_API_BASE,
+    )
+    print(
+        "P24 ORDER:",
+        "id=", order.pk,
+        "paid=", order.paid,
+        "total_to_pay=", getattr(order, "total_to_pay", None),
+        "shipping_cost=", getattr(order, "shipping_cost", None),
+        "items=", order.items.count() if hasattr(order, "items") else "no-related",
+    )
+
     if order.paid:
         return redirect("orders:thank_you", pk=order.pk)
 
