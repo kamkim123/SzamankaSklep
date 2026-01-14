@@ -22,9 +22,9 @@ from .epaka import epaka_api_get
 from django.conf import settings
 
 SHIPPING_PRICES = {
-    Order.SHIPPING_INPOST_COURIER: Decimal("21.00"),
+    Order.SHIPPING_INPOST_COURIER: Decimal("18.00"),
     Order.SHIPPING_DPD_COURIER: Decimal("18.00"),
-    Order.SHIPPING_INPOST_LOCKER: Decimal("18.00"),
+    Order.SHIPPING_INPOST_LOCKER: Decimal("19.00"),
     Order.SHIPPING_PICKUP: Decimal("0.00"),
 
 }
