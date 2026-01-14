@@ -156,6 +156,12 @@ def checkout(request):
                 quantity=item["quantity"],
             )
 
+        postal_code = (request.POST.get("postal_code", "") or "").strip()
+
+        if not re.fullmatch(r"\d{2}-\d{3}", postal_code):
+            messages.error(request, "Nieprawidłowy kod pocztowy. Poprawny format to 00-000.")
+            return redirect("orders:checkout")
+
         # ✅ Online: NIE czyścimy koszyka tutaj
         if payment_method == Order.PAYMENT_ONLINE:
             return redirect("orders:p24_start", pk=order.pk)
