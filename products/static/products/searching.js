@@ -2,6 +2,8 @@ const url = window.location.href
 const searchForm = document.getElementById('search-form')
 const searchInput = document.getElementById('search-input')
 const resultsBox = document.getElementById('live-results')
+const btn = document.querySelector('.search__toggle');
+const clearBtn = document.querySelector('.search__clear');
 
 const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
 

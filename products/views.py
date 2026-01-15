@@ -20,6 +20,33 @@ from django.http import JsonResponse
 
 from decimal import Decimal
 
+
+
+
+def get_categories_for_navbar():
+    """
+    Zwraca listę kategorii do navbaru w formie:
+    [{value: 'spozywcze', label: 'Spożywcze', count: 12}, ...]
+    """
+    choices = dict(Product.ProductType.choices)
+
+    raw = (
+        only_with_price_and_image(Product.objects.all())
+        .values("product_type")
+        .annotate(count=Count("id"))
+        .order_by("product_type")
+    )
+
+    return [
+        {
+            "value": r["product_type"],  # to idzie do URL ?type=
+            "label": choices.get(r["product_type"], r["product_type"]),  # to wyświetlamy
+            "count": r["count"],
+        }
+        for r in raw
+    ]
+
+
 DEFAULT_PRICE = Decimal("999.99")
 
 DEFAULT_IMAGE = "static/products/images/default-image.png"
@@ -57,12 +84,8 @@ class IndexView(generic.ListView):
         selected = (self.request.GET.get("type") or "").strip()
 
         # Dodajemy listę kategorii
-        ctx["categories"] = (
-            only_with_price_and_image(Product.objects.all())
-            .values("product_type")
-            .annotate(count=Count("id"))
-            .order_by("-product_type")
-        )
+        ctx["categories"] = get_categories_for_navbar()
+
 
         # Pobieramy bestsellery i dodajemy do kontekstu
         bestsellers = only_with_price_and_image(Product.objects.filter(is_bestseller=True))
@@ -80,6 +103,10 @@ from django.views.generic import DetailView
 
 
 
+from django.db.models import Count
+
+from django.db.models import Count
+
 class DetailView(DetailView):
     model = Product
     template_name = "products/detail.html"
@@ -87,23 +114,25 @@ class DetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        product = self.object
 
-        product = self.object  # Produkt, który jest oglądany
-
-        # Dodanie podobnych produktów (bestsellerów)
-        similar_products = (
+        context["similar_products"] = (
             only_with_price_and_image(Product.objects.filter(is_bestseller=True))
             .exclude(pk=product.pk)
         )
-        # Wykluczamy obecny produkt
-        context['similar_products'] = similar_products
 
-        # Dodajemy listę produktów w ulubionych, jeśli użytkownik jest zalogowany
+        # ✅ kategorie do navbaru w formacie {value,label,count}
+        context["categories"] = get_categories_for_navbar()
+
         if self.request.user.is_authenticated:
-            favorite_product_ids = Favorite.objects.filter(user=self.request.user).values_list('product_id', flat=True)
-            context["favorite_product_ids"] = favorite_product_ids
+            context["favorite_product_ids"] = Favorite.objects.filter(
+                user=self.request.user
+            ).values_list('product_id', flat=True)
 
         return context
+
+
+
 
 
 # Jeśli naprawdę potrzebujesz ResultsView pod oddzielny template,
@@ -150,12 +179,8 @@ class ProductListView(ListView):
         ctx = super().get_context_data(**kwargs)
         selected = self.request.GET.get("type", "").strip()
         ctx["selected"] = selected
-        ctx["categories"] = (
-            only_with_price_and_image(Product.objects.all())
-            .values("product_type")
-            .annotate(count=Count("id"))
-            .order_by("product_type")
-        )
+        ctx["categories"] = get_categories_for_navbar()
+
 
         if self.request.user.is_authenticated:
             favorite_product_ids = Favorite.objects.filter(user=self.request.user).values_list('product_id', flat=True)

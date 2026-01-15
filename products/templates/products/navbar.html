@@ -41,9 +41,12 @@
                 <ul class="menu">
                     {% for c in categories %}
                     <li>
-                        <a href="{% url 'products:produkty' %}">{{ c.product_type }}</a>
+                        <a href="{% url 'products:produkty' %}?type={{ c.value|urlencode }}">
+                            {{ c.label }}
+                        </a>
                     </li>
                     {% endfor %}
+
                 </ul>
             </div>
             <div>

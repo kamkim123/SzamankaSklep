@@ -89,72 +89,10 @@ dropdowns.forEach((dropdown) => {
 
 
 
-const resultsBox = document.getElementById('live-results'); // Kontener dla wyników wyszukiwania
-const btn = document.querySelector('.search__toggle'); // Przycisk do otwierania wyszukiwarki
-const clearBtn = document.querySelector('.search__clear'); // Przycisk do czyszczenia wyszukiwania
-
-// Funkcja wyświetlająca wyniki wyszukiwania
-
-
-// Aktywacja wyszukiwania po kliknięciu w przycisk otwierający wyszukiwarkę
-btn.addEventListener('click', () => {
-        console.log('search clicked')
-        if (!searchInput.disabled) {
-        searchInput.disabled = false;
-        searchInput.focus();
-        document.getElementById('search').classList.add('active-search');
-    }
-});
-
-
-
-// Wyczyść wyniki po kliknięciu w przycisk czyszczenia
-clearBtn.addEventListener('click', () => {
-        console.log('X search clicked')
-     resultsBox.classList.add('not-visible');
-     searchInput.value = '';
-     resultsBox.innerHTML = '';
-     console.log('hello')
-
-});
-
-// Reagowanie na każde wpisanie tekstu w pole wyszukiwania
-inp.addEventListener('input', showResults);  // Zainicjowanie funkcji pokazującej wyniki
 
 
 
 
-  // ===== IKONA KOSZYKA - Dodaj produkt do koszyka =====
-  document.querySelectorAll('.cart-icon').forEach(button => {
-    button.addEventListener('click', function () {
-        const productId = this.getAttribute('data-product-id'); // Pobieramy ID produktu
-        const quantity = 1; // Na razie zakładamy, że zawsze dodajemy 1 sztukę
-
-        // Wysyłamy żądanie do backendu, żeby dodać produkt do koszyka
-        fetch("{% url 'orders:cart_add' %}", {
-            method: 'POST',
-            headers: {
-                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: new URLSearchParams({
-                'product_id': productId,
-                'quantity': quantity
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.ok) {
-                // Zaktualizuj UI – np. wyświetl komunikat, zaktualizuj liczbę w koszyku w nagłówku
-                alert("hbgjfsbjbfbbsgr!");
-                document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
-            }
-        })
-        .catch(error => {
-            console.error("Wystąpił błąd:", error);
-        });
-    });
-  });
 
 
 // --- User popover toggle (mobile + a11y) ---
@@ -185,127 +123,46 @@ inp.addEventListener('input', showResults);  // Zainicjowanie funkcji pokazując
 })();
 
 
-document.addEventListener('DOMContentLoaded', function () {
-  const loginLink = document.querySelector('#burger-icon1 a');
-  const logoutLink = document.querySelector('#burger-icon2 form');
-
-  if (loginLink && logoutLink) {
-    // Warunek, który sprawdza czy użytkownik jest zalogowany
-    {% if user.is_authenticated %}
-        // Jeśli zalogowany, zmień "Zaloguj" na "Mój profil"
-        loginLink.textContent = 'Mój profil';
-
-        // Jeśli zalogowany, pokazujemy formularz wylogowania
-        logoutLink.style.display = 'block'; // Pokaż wylogowanie w menu
-    {% else %}
-        // Jeśli niezalogowany, pokazujemy formularz logowania
-        loginLink.textContent = 'Zaloguj';
-        logoutLink.style.display = 'none'; // Ukryj wylogowanie w menu
-    {% endif %}
-  }
-});
 
 
 
 
 
 
-function() {
-  const input = document.getElementById("search__input");
-  const box = document.getElementById("live-results");
-  const apiUrl = "{% url 'product_search_api' %}";
-  console.log("API URL:", apiUrl);  // Logowanie URL API
-  let lastController = null;
-  let activeIndex = -1;
-  let items = [];
+  // ===== SEARCH (tylko otwórz/zamknij) =====
+  const searchBox = document.getElementById('search');
+  if (searchBox) {
+    const btn = searchBox.querySelector('.search__toggle');
+    const inp = searchBox.querySelector('.search__input');
+    const clearBtn = searchBox.querySelector('.search__clear');
+    const resultsBox = document.getElementById('live-results');
 
-  function debounce(fn, delay) {
-    let t;
-    return function(...args) {
-      clearTimeout(t);
-      t = setTimeout(() => fn.apply(this, args), delay);
-    };
-  }
-
-  function clearBox() {
-    box.innerHTML = "";
-    box.style.display = "none";
-    items = [];
-    activeIndex = -1;
-  }
-
-function render(results) {
-  console.log("Rendering results: ", results);  // Logowanie wyników
-  if (!results.length) { clearBox(); return; }
-  box.innerHTML = results.map(r => `
-    <div class="live-result">${escapeHtml(r.product_name)}</div>
-  `).join("");
-  box.style.display = "block";
-}
-
-  function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, s => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[s]));
-  }
-
-const fetchLive = debounce(async function(q) {
-  if (!q) {
-    clearBox();
-    return;
-  }
-  console.log("Fetching API with query: ", q);  // Sprawdzenie, czy zapytanie jest wysyłane
-  try {
-    if (lastController) lastController.abort();
-    lastController = new AbortController();
-    const url = `${apiUrl}?q=${encodeURIComponent(q)}&limit=8`;
-    console.log("Request URL: ", url);  // Logowanie pełnego URL
-    const res = await fetch(url, { signal: lastController.signal, headers: { "Accept": "application/json" }});
-    console.log("API response status: ", res.status);  // Sprawdzamy status odpowiedzi
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const data = await res.json();
-    console.log("API response data: ", data);  // Logowanie odpowiedzi z API
-    render(data.results || []);
-  } catch (e) {
-    console.error("API fetch error: ", e);  // Logowanie błędów
-    if (e.name !== "AbortError") {
-      clearBox();
+    function openSearch() {
+      searchBox.classList.add('active-search');
+      if (inp) { inp.disabled = false; inp.focus(); }
     }
-  }
-}, 250);
 
-  input.addEventListener("input", (e) => {
-    console.log("Input value:", e.target.value);  // Logowanie wartości wejściowej
-    fetchLive(e.target.value.trim());  // Wysyłanie zapytania
-  });
-
-  input.addEventListener("blur", () => setTimeout(clearBox, 120));
-
-  input.addEventListener("keydown", (e) => {
-    if (!items.length) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      activeIndex = (activeIndex + 1) % items.length;
-      updateActive();
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      activeIndex = (activeIndex - 1 + items.length) % items.length;
-      updateActive();
-    } else if (e.key === "Enter") {
-      if (activeIndex >= 0 && items[activeIndex]) {
-        const url = items[activeIndex].getAttribute("data-url");
-        if (url) { e.preventDefault(); window.location.href = url; }
-      }
-    } else if (e.key === "Escape") {
-      clearBox();
+    function closeSearch() {
+      searchBox.classList.remove('active-search');
+      if (inp) { inp.value = ''; inp.blur(); inp.disabled = true; }
+      if (resultsBox) { resultsBox.classList.add('not-visible'); resultsBox.innerHTML = ''; }
     }
-  });
 
-  function updateActive() {
-    items.forEach((el, i) => el.setAttribute("aria-selected", i === activeIndex ? "true" : "false"));
-    if (items[activeIndex]) items[activeIndex].scrollIntoView({ block: "nearest" });
+    if (btn) btn.addEventListener('click', () => {
+      if (!searchBox.classList.contains('active-search')) openSearch();
+      else inp && inp.focus();
+    });
+
+    if (clearBtn) clearBtn.addEventListener('click', closeSearch);
+
+    searchBox.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSearch();
+    });
   }
-}();
+
+}); // <-- to jest koniec DOMContentLoaded
+
+
 
 
 

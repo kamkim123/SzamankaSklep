@@ -1,3 +1,5 @@
+console.log("DETAIL.JS WSTAJE");
+
 const burger = document.querySelector('.burger');
 const kategorieNav = document.querySelector('.kategorie-nav');
 
@@ -303,6 +305,102 @@ function getCookie(name) {
 }
 
 
+// ===== NAVBAR (burger + dropdown + search UI) =====
+document.addEventListener('DOMContentLoaded', function () {
+  // --- BURGER ---
+  var burger = document.querySelector('.burger');
+  var kategorieNav = document.querySelector('.kategorie-nav');
+
+  if (burger && kategorieNav) {
+    burger.addEventListener('click', function () {
+      burger.classList.toggle('active');
+      kategorieNav.classList.toggle('active');
+    });
+
+    document.querySelectorAll('.kategorie-nav').forEach(function (n) {
+      n.addEventListener('click', function () {
+        burger.classList.remove('active');
+        kategorieNav.classList.remove('active');
+      });
+    });
+  }
+
+  // --- DROPDOWN (hover + click -> ustawia ?type=...) ---
+  var dropdowns = document.querySelectorAll('.dropdown');
+  dropdowns.forEach(function (dropdown) {
+    var menu = dropdown.querySelector('.menu');
+    var options = dropdown.querySelectorAll('.menu li');
+    if (!menu || !options.length) return;
+
+    dropdown.addEventListener('mouseenter', function () {
+      menu.classList.add('menu-open');
+    });
+    dropdown.addEventListener('mouseleave', function () {
+      menu.classList.remove('menu-open');
+    });
+
+    options.forEach(function (option) {
+      option.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        // aktywna klasa
+        options.forEach(function (o) { o.classList.remove('active'); });
+        option.classList.add('active');
+        menu.classList.remove('menu-open');
+
+        // wartość filtra (data-value albo tekst)
+        var raw = option.getAttribute('data-value');
+        var value = (raw !== null ? raw : option.textContent)
+          .trim()
+          .replace(/\s*\(\d+\)\s*$/, '');
+
+        // docelowa ścieżka: dropdown ma data-target="/products/"
+        var targetPath = dropdown.getAttribute('data-target') || '/products/';
+
+        // budujemy URL
+        try {
+          var url = new URL(targetPath, window.location.origin);
+          if (value) url.searchParams.set('type', value);
+          else url.searchParams.delete('type');
+          url.searchParams.delete('page');
+          window.location.assign(url.toString());
+        } catch (err) {
+          var q = value ? ('?type=' + encodeURIComponent(value)) : '';
+          window.location.href = targetPath + q;
+        }
+      });
+    });
+  });
+
+  // --- SEARCH (otwórz/zamknij input) ---
+  var box = document.getElementById('search');
+  if (box) {
+    var btn = box.querySelector('.search__toggle');
+    var inp = box.querySelector('.search__input');
+    var clearBtn = box.querySelector('.search__clear');
+
+    function openSearch() {
+      box.classList.add('active-search');
+      if (inp) { inp.disabled = false; inp.focus(); }
+    }
+    function closeSearch() {
+      box.classList.remove('active-search');
+      if (inp) { inp.value = ''; inp.blur(); inp.disabled = true; }
+    }
+
+    if (btn) {
+      btn.addEventListener('click', function () {
+        if (!box.classList.contains('active-search')) openSearch();
+        else if (inp) inp.focus();
+      });
+    }
+    if (clearBtn) clearBtn.addEventListener('click', closeSearch);
+
+    box.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeSearch();
+    });
+  }
+});
 
 
 
@@ -312,3 +410,4 @@ function getCookie(name) {
 
 
 
+console.log("NAVBAR SNIPPET START");

@@ -7,6 +7,9 @@
     {% load static %}
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="{% static 'products/detail.css' %}"/>
+    <link rel="stylesheet" href="{% static 'products/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'products/animations.css' %}">
+
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 
@@ -150,14 +153,6 @@
                 <a href="{% url 'products:detail' p.pk %}">
                     <img src="{{ p.product_image }}" alt="{{ p.product_name }}"/>
                     <h3>{{ p.product_name }}</h3>
-                    <div style="padding:10px;border:1px solid red;margin:10px 0">
-                      DEBUG:
-                      is_promotion={{ product.is_promotion }},
-                      promo_price={{ product.promo_price }},
-                      has_promo={{ product.has_promo }},
-                      final_price={{ product.final_price }}
-                    </div>
-
                     {% if p.has_promo %}
                       <span class="price">
                         <strong>{{ p.final_price|floatformat:2 }} zł</strong>
@@ -178,6 +173,11 @@
 
 {% include "products/footer.html" %}
 
-<script src="{% static 'products/detail.js' %}"></script>
+
+<script src="{% static 'products/navbar.js' %}"></script>
+<script src="{% static 'products/searching.js' %}" defer></script>
+<script src="{% static 'products/cart-animations.js' %}"></script>
+
+
 </body>
 </html>
