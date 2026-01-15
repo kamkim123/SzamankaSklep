@@ -1429,7 +1429,9 @@ body {
 
 .product-price--promo,
 .price__new {
-  font-weight: 800;
+  font-weight: 600;
+  font-size: 1.1rem;
+
 }
 
 .product-discount,
@@ -1448,6 +1450,8 @@ body {
   gap: .4rem;
   flex-wrap: wrap;
 }
+
+
 
 
 

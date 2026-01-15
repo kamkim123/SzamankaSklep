@@ -200,9 +200,8 @@
 
                 {% if p.has_promo %}
                   <div class="price price--wrap">
-                    <span class="price__new">{{ p.final_price|floatformat:2 }} zł</span>
-                    <span class="price__old">{{ p.price|floatformat:2 }} zł</span>
-                    <span class="price__disc">-{{ p.discount_percent }}%</span>
+                      <span class="price__old">{{ p.price|floatformat:2 }} zł</span>
+                      <p class="price__new">{{ p.final_price|floatformat:2 }} zł</p>
                   </div>
                 {% else %}
                   <h4 class="price">{{ p.price|floatformat:2 }} zł</h4>

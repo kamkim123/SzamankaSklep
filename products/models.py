@@ -58,7 +58,10 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     # DODAJ:
-    promo_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    promo_price = models.DecimalField(
+        max_digits=10, decimal_places=2,
+        null=True, blank=True
+    )
 
     is_promotion = models.BooleanField(default=False)
 
@@ -71,8 +74,8 @@ class Product(models.Model):
                 raise ValidationError({"promo_price": "Cena promocyjna musi być niższa od ceny podstawowej."})
 
     @property
-    def has_promo(self) -> bool:
-        return bool(self.is_promotion and self.promo_price is not None and self.promo_price < self.price)
+    def has_promo(self):
+        return self.is_promotion and self.promo_price is not None and self.promo_price < self.price
 
     @property
     def final_price(self):

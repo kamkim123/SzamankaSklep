@@ -2155,6 +2155,25 @@ iframe {
 
 
 
+/* Promo price (index/home) */
+.price--promo{
+  display: flex;
+  flex-direction:column;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: center; /* jeśli chcesz jak było */
+}
+
+.price--promo .price__new{
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.price--promo .price__old{
+  text-decoration: line-through;
+  opacity: .6;
+  font-size: 14px;
+}
 
 
 

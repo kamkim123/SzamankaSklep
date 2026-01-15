@@ -150,6 +150,14 @@
                 <a href="{% url 'products:detail' p.pk %}">
                     <img src="{{ p.product_image }}" alt="{{ p.product_name }}"/>
                     <h3>{{ p.product_name }}</h3>
+                    <div style="padding:10px;border:1px solid red;margin:10px 0">
+                      DEBUG:
+                      is_promotion={{ product.is_promotion }},
+                      promo_price={{ product.promo_price }},
+                      has_promo={{ product.has_promo }},
+                      final_price={{ product.final_price }}
+                    </div>
+
                     {% if p.has_promo %}
                       <span class="price">
                         <strong>{{ p.final_price|floatformat:2 }} zł</strong>

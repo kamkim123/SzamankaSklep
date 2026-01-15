@@ -171,6 +171,7 @@ class ProductAdmin(ImportExportModelAdmin):
         "product_code",
         "product_name",
         "price",
+        "promo_price",
         "product_stock",
         "product_vat",
         "product_category",
@@ -185,5 +186,5 @@ class ProductAdmin(ImportExportModelAdmin):
     )
     search_fields = ("product_name", "product_brand", "product_category", "product_code")  # intowe product_code pomijamy w search_fields
     list_filter = ("product_vat", "product_type", "product_category", "product_brand")
-    list_editable = ("is_bestseller", "is_promotion", "is_new", "is_popular",)
+    list_editable = ("is_bestseller", "is_promotion", "promo_price", "is_new", "is_popular",)
 

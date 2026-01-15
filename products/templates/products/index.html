@@ -189,7 +189,15 @@
                          alt="{{ product.product_name }}" class="product-image">
                 </a>
                 <h3><a href="{% url 'products:detail' product.pk %}">{{ product.product_name }}</a></h3>
-                <h4 class="price">{{ product.price|floatformat:2 }} zł</h4>
+                {% if product.is_promotion and product.promo_price %}
+                  <div class="price price--promo">
+                      <span class="price__old">{{ product.price|floatformat:2 }} zł</span>
+                      <span class="price__new">{{ product.promo_price|floatformat:2 }} zł</span>
+                  </div>
+                {% else %}
+                  <h4 class="price">{{ product.price|floatformat:2 }} zł</h4>
+                {% endif %}
+
 
                 <!-- Dodanie do koszyka -->
                 <form method="post" action="{% url 'orders:cart_add' %}">
@@ -363,8 +371,6 @@
             <img src="{% static 'products/images/card.png' %}" alt="Mastercard" class="pay-icons">
             <img src="{% static 'products/images/blik.png' %}" alt="BLIK" class="pay-icons" id="ikonka-blik">
             <img src="{% static 'products/images/przelewy24.png' %}" alt="Przelewy24" class="pay-icons" id="przelewy24">
-            <img src="{% static 'products/images/payu.png' %}" alt="PayU" class="pay-icons">
-            <img src="{% static 'products/images/paypal.png' %}" alt="PeoPay" class="pay-icons">
         </div>
     </div>
 </section>
