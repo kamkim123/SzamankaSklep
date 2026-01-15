@@ -35,6 +35,14 @@
     </script>
 
 </head>
+
+    {% if messages %}
+      <div class="flash-messages">
+        {% for message in messages %}
+          <div class="flash flash--{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
 <body>
 
 <form method="get" id="navFilterForm" action="{% url 'products:index' %}" style="display:none">
@@ -343,7 +351,7 @@
 
         <div class="footer-box" id="call-to-mail">
             <div class="nowrap-email">
-                <h3><a href="#" class="footer-newsletter">Podaj email</a></h3>
+                <h3 class="footer-newsletter"> Podaj email</h3>
                 <p>Zapisz się do newslettera <br>i otrzymuj informacje o promocjach</p>
 
                 <form method="post" action="{% url 'newsletter:signup' %}">
