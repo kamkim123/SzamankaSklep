@@ -97,6 +97,8 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",  # <— ważne
                 "Szamanka.context_processors.categories_ctx",
                 "orders.context_processors.cart_counts",
+                "products.context_processors.navbar_categories",
+
             ],
         },
     },

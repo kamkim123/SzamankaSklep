@@ -39,15 +39,15 @@
                        aria-expanded="false">Produkty</a>
                 </div>
                 <ul class="menu">
-                    {% for c in categories %}
-                    <li>
-                        <a href="{% url 'products:produkty' %}?type={{ c.value|urlencode }}">
-                            {{ c.label }}
-                        </a>
+                  {% for c in categories %}
+                    <li data-value="{{ c.value }}">
+                      <a href="{% url 'products:produkty' %}?type={{ c.value|urlencode }}">
+                        {{ c.label }}
+                      </a>
                     </li>
-                    {% endfor %}
-
+                  {% endfor %}
                 </ul>
+
             </div>
             <div>
                 <a href="{% url 'products:produkty' %}?bestsellers=true" class="pasek1">Bestsellery</a>

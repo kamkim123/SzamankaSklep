@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var kategorieNav = document.querySelector('.kategorie-nav');
 
   if (burger && kategorieNav) {
+  console.log("burger exists?", !!burger, "kategorieNav exists?", !!kategorieNav);
+
     burger.addEventListener('click', function () {
       burger.classList.toggle('active');
       kategorieNav.classList.toggle('active');
@@ -19,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
+
 
 
 
@@ -54,10 +57,10 @@ dropdowns.forEach((dropdown) => {
       menu && menu.classList.remove('menu-open');
 
       // --- Wartość filtra z data-value lub z tekstu (bez " (123)")
-      const raw   = option.getAttribute('data-value');
-      const value = (raw !== null ? raw : option.textContent)
-                      .replace(/\s*\(\d+\)\s*$/, '')
-                      .trim();
+      const raw = option.getAttribute('data-value');
+      const value = (raw || '').trim();
+
+      if (!value) return;
 
       // --- Preferencja: submit ukrytego formularza (ładnie przechodzi do listy)
       if (form && typeInput) {
