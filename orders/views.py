@@ -248,9 +248,9 @@ def epaka_couriers_view(request):
 
 # orders/views.py
 
-
-
-
+# !!!!!!!!!
+#      JAK EPAKA NIE BEDZIE DZIALAC blad 403. to trzeba powiazac konto .../epaka/login powiaz konto. !!!!!!!!
+# !!!!!!!!!
 def epaka_points(request):
     """
     AJAX: szukanie paczkomatów InPost (courierId = EPAKA_LOCKER_INPOST)

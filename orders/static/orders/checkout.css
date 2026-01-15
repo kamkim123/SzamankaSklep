@@ -767,3 +767,13 @@ h2{ font-weight:700; letter-spacing:-0.01em; font-size:1.05rem; margin-bottom:.6
   color: #0d47a1;
 }
 
+
+.locker-error-msg{
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #e11d48;
+  background: #fff1f2;
+  color: #9f1239;
+  border-radius: 10px;
+  font-weight: 600;
+}

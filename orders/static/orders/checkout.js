@@ -482,13 +482,36 @@ $(function () {
 
         $lockerResults.empty().append($ul);
       })
+
+        //JAK EPAKA NIE BEDZIE DZIALAC blad 403. to trzeba powiazac konto .../epaka/login powiaz konto.
+
       .fail(function (xhr) {
-        $lockerResults.html(
-          "<p>Błąd podczas pobierania paczkomatów (" +
-          xhr.status +
-          ").</p>"
-        );
-      });
+      let msg = "Nie udało się pobrać listy paczkomatów. Spróbuj ponownie za chwilę.";
+
+      // 404 najczęściej oznacza: zły URL endpointu (/epaka/points/) albo brak routingu
+      if (xhr.status === 404) {
+        msg = "Nie udało się wyszukać paczkomatów. Sprawdź wpisane miasto/kod i spróbuj ponownie.";
+        // jeśli chcesz bardziej technicznie:
+        // msg = "Wyszukiwarka paczkomatów jest chwilowo niedostępna. Spróbuj ponownie za chwilę.";
+      } else if (xhr.status === 403) {
+        msg = "Wyszukiwarka paczkomatów jest niedostępna (brak autoryzacji).";
+      } else if (xhr.status === 400) {
+        msg = "Podaj poprawne miasto lub kod pocztowy (np. 00-001).";
+      } else if (xhr.status >= 500) {
+        msg = "Błąd serwera podczas pobierania paczkomatów. Spróbuj ponownie za chwilę.";
+      }
+
+      // jeśli backend zwróci JSON z {error: "..."} lub {details: "..."} – pokaż to zamiast statusu
+      try {
+        const data = xhr.responseJSON;
+        if (data && (data.error || data.details)) {
+          msg = data.error || data.details;
+        }
+      } catch (_) {}
+
+      $lockerResults.html(`<p class="locker-error-msg">${msg}</p>`);
+    });
+
   });
 
   // kliknięcie w konkretny paczkomat
