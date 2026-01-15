@@ -18,6 +18,37 @@
       </div>
     {% endif %}
 
+    <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const box = document.querySelector('.flash-messages');
+    if (!box) return;
+
+    // czas w ms (np. 6000 = 6 sekund)
+    const HIDE_AFTER = 6000;
+
+    // animacja zanikania
+    const messages = box.querySelectorAll('.flash');
+    messages.forEach((msg) => {
+      // przygotuj transition
+      msg.style.transition = 'opacity 300ms ease, transform 300ms ease';
+      msg.style.opacity = '1';
+
+      setTimeout(() => {
+        msg.style.opacity = '0';
+        msg.style.transform = 'translateY(-6px)';
+        // po animacji usuń z DOM
+        setTimeout(() => msg.remove(), 350);
+      }, HIDE_AFTER);
+    });
+
+    // jeśli wszystkie znikną, usuń też kontener
+    setTimeout(() => {
+      if (box && box.querySelectorAll('.flash').length === 0) box.remove();
+    }, HIDE_AFTER + 500);
+  });
+</script>
+
+
 <footer class="footer">
     <div class="footer-container">
 
