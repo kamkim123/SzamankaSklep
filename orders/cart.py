@@ -20,8 +20,8 @@ class Cart:
         pid = str(product.id)
         item = self.cart.get(pid, {"quantity": 0, "price": None})
 
-        if item["price"] is None:
-            item["price"] = str(product.price)
+        # Zawsze zapisuj aktualną cenę (promo albo normalna)
+        item["price"] = str(product.effective_price)
 
         quantity = int(quantity)
         if override_quantity:

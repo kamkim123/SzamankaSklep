@@ -90,3 +90,11 @@ class Product(models.Model):
 
     def __str__(self):
         return self.product_name
+
+    @property
+    def effective_price(self) -> Decimal:
+        """Cena, którą faktycznie ma zapłacić klient."""
+        promo = getattr(self, "promo_price", None)
+        if self.is_promotion and promo not in (None, ""):
+            return promo
+        return self.price
