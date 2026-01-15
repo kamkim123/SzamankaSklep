@@ -277,9 +277,12 @@ def epaka_points(request):
 
     resp = epaka_api_get("/v1/points", access_token, params=params)
     if resp.status_code != 200:
+        # czytelny komunikat dla usera:
+        user_msg = "Nie znaleziono paczkomatów. Podaj pełną nazwę miasta lub kod paczkomatu/kod pocztowy."
+
         return JsonResponse(
-            {"error": "Epaka error", "details": resp.text},
-            status=resp.status_code,
+            {"error": user_msg, "details": resp.text},
+            status=200,  # <-- ważne: frontend nie wejdzie w .fail, tylko w .done
         )
 
     data = resp.json()  # PointsResponse
