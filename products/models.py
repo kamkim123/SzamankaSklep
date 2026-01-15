@@ -2,6 +2,8 @@ import datetime
 
 from django.db import models
 from django.utils import timezone
+from decimal import Decimal
+from django.core.exceptions import ValidationError
 
 
 def was_published_recently(self):
@@ -52,3 +54,36 @@ class Product(models.Model):
     def __str__(self):
         return self.product_name
 
+
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # DODAJ:
+    promo_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    is_promotion = models.BooleanField(default=False)
+
+    def clean(self):
+        # walidacja spójności
+        if self.is_promotion:
+            if self.promo_price is None:
+                raise ValidationError({"promo_price": "Ustaw cenę promocyjną albo wyłącz promocję."})
+            if self.promo_price >= self.price:
+                raise ValidationError({"promo_price": "Cena promocyjna musi być niższa od ceny podstawowej."})
+
+    @property
+    def has_promo(self) -> bool:
+        return bool(self.is_promotion and self.promo_price is not None and self.promo_price < self.price)
+
+    @property
+    def final_price(self):
+        return self.promo_price if self.has_promo else self.price
+
+    @property
+    def discount_percent(self) -> int:
+        if not self.has_promo:
+            return 0
+        # zaokrąglamy do int
+        return int((Decimal("1") - (self.promo_price / self.price)) * 100)
+
+    def __str__(self):
+        return self.product_name

@@ -77,8 +77,15 @@
                 <p class="product-short-desc">{{ product.short_description }}</p>
 
                 <div class="price-row">
+                  {% if product.has_promo %}
+                    <span class="product-price product-price--promo">{{ product.final_price|floatformat:2 }} zł</span>
+                    <span class="product-price-old">{{ product.price|floatformat:2 }} zł</span>
+                    <span class="product-discount">-{{ product.discount_percent }}%</span>
+                  {% else %}
                     <span class="product-price">{{ product.price|floatformat:2 }} zł</span>
+                  {% endif %}
                 </div>
+
 
                 <div class="quantity">
                     <div class="calc-container" aria-label="Wybierz ilość" role="group">
@@ -143,7 +150,14 @@
                 <a href="{% url 'products:detail' p.pk %}">
                     <img src="{{ p.product_image }}" alt="{{ p.product_name }}"/>
                     <h3>{{ p.product_name }}</h3>
-                    <span class="price">{{ p.price|floatformat:2 }} zł</span>
+                    {% if p.has_promo %}
+                      <span class="price">
+                        <strong>{{ p.final_price|floatformat:2 }} zł</strong>
+                        <s class="price__old">{{ p.price|floatformat:2 }} zł</s>
+                      </span>
+                    {% else %}
+                      <span class="price">{{ p.price|floatformat:2 }} zł</span>
+                    {% endif %}
                 </a>
             </div>
             {% endfor %}

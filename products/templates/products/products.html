@@ -198,7 +198,15 @@
                     <a href="{% url 'products:detail' p.pk %}">{{ p.product_name }}</a>
                 </h3>
 
-                <h4 class="price">{{ p.price|floatformat:2 }}&nbsp;zł</h4>
+                {% if p.has_promo %}
+                  <div class="price price--wrap">
+                    <span class="price__new">{{ p.final_price|floatformat:2 }} zł</span>
+                    <span class="price__old">{{ p.price|floatformat:2 }} zł</span>
+                    <span class="price__disc">-{{ p.discount_percent }}%</span>
+                  </div>
+                {% else %}
+                  <h4 class="price">{{ p.price|floatformat:2 }} zł</h4>
+                {% endif %}
 
                 <form method="post" action="{% url 'orders:cart_add' %}">
                     {% csrf_token %}
