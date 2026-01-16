@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== Podstawy produkcyjne =====
-DEBUG = True
+DEBUG = False
 SECRET_KEY = os.getenv("SECRET_KEY", "dber74gf7%&DFcwcwdq!")
 ALLOWED_HOSTS = [
     "szamankasklep.pl",
@@ -25,13 +25,14 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = "smtp.gmail.com"
     EMAIL_PORT = 587
-    EMAIL_USE_TLS = True  # STARTTLS
+    EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False
 
-    EMAIL_HOST_USER = "jaystar1003@gmail.com"  # konto, którym wysyłasz
-    EMAIL_HOST_PASSWORD = "vzbigvgrxktftohf"  # ← TU wstaw hasło aplikacji (lub użyj env)
-    DEFAULT_FROM_EMAIL = "jaystar1003@gmail.com"  # na początek ustaw tak samo
-    SERVER_EMAIL = "jaystar1003@gmail.com"
+    EMAIL_HOST_USER = "szamankasklep@gmail.com"
+    EMAIL_HOST_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
+
+    DEFAULT_FROM_EMAIL = "szamankasklep@gmail.com"
+    SERVER_EMAIL = "szamankasklep@gmail.com"
 
 USE_X_FORWARDED_HOST = True
 
