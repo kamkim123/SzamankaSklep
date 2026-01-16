@@ -19,9 +19,17 @@ def epaka_api_get(endpoint, access_token, params=None):
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json",
-        # UWAGA: NIE dajemy Content-Type do GET
+        "Content-Type": "application/json",
     }
-    return requests.get(url, headers=headers, params=params or {}, timeout=20)
+    # ePaka potrafi wymagać Content-Type nawet na GET i oczekiwać json-body.
+    return requests.request(
+        "GET",
+        url,
+        headers=headers,
+        params=params or {},
+        json={},          # <-- pusty body JSON, żeby nie było 415
+        timeout=20,
+    )
 
 
 
