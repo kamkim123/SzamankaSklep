@@ -15,13 +15,14 @@ PACKAGE_DIMENSIONS = {
 
 
 def epaka_api_get(endpoint, access_token, params=None):
-    url = settings.EPAKA_API_BASE_URL + endpoint
+    url = settings.EPAKA_API_BASE_URL.rstrip("/") + endpoint
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json",
-        # UWAGA: NIE dawaj Content-Type w GET
+        # UWAGA: NIE dajemy Content-Type do GET
     }
     return requests.get(url, headers=headers, params=params or {}, timeout=20)
+
 
 
 
@@ -219,11 +220,12 @@ def create_epaka_order(order: Order, access_token: str) -> dict | None:
         return None
 
     profile_resp = epaka_api_get("/v1/user", access_token)
+
     if profile_resp.status_code != 200:
         order.epaka_last_error = f"EPAKA /v1/user status={profile_resp.status_code}"
         order.notes = (order.notes or "") + (
-            f"\n[EPAKA] profile status={profile_resp.status_code}\n"
-            f"[EPAKA] profile body={profile_resp.text}\n"
+            f"\n[EPAKA] /v1/user status={profile_resp.status_code}\n"
+            f"[EPAKA] /v1/user body={profile_resp.text[:2000]}\n"
         )
         order.save(update_fields=["epaka_last_error", "notes", "updated_at"])
         return None
