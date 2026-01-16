@@ -129,6 +129,24 @@ def checkout(request):
             messages.error(request, "Numer telefonu jest za długi (max. 15 cyfr).")
             return redirect("orders:checkout")
 
+        postal_code_raw = (request.POST.get("postal_code", "") or "").strip()
+        postal_code_raw = postal_code_raw.replace(" ", "").replace("\u00A0", "")  # usuń spacje/NBSP
+
+        # pozwól też na 5 cyfr bez myślnika
+        if re.fullmatch(r"\d{5}", postal_code_raw):
+            postal_code = postal_code_raw[:2] + "-" + postal_code_raw[2:]
+        else:
+            postal_code = postal_code_raw
+
+        if not re.fullmatch(r"\d{2}-\d{3}", postal_code):
+            messages.error(request, "Nieprawidłowy kod pocztowy. Poprawny format to 00-000.")
+            return redirect("orders:checkout")
+
+        city = (request.POST.get("city", "") or "").strip()
+        if not city:
+            messages.error(request, "Podaj miasto.")
+            return redirect("orders:checkout")
+
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             first_name=request.POST.get('first_name'),
@@ -136,9 +154,8 @@ def checkout(request):
             email=request.POST.get('email'),
             phone=digits,
             address=request.POST.get('address'),
-            postal_code=request.POST.get('postal_code'),
-            city=request.POST.get('city'),
-
+            postal_code=postal_code,
+            city=city,
 
             shipping_cost=shipping_cost,
             status=Order.STATUS_NEW,
@@ -156,11 +173,7 @@ def checkout(request):
                 quantity=item["quantity"],
             )
 
-        postal_code = (request.POST.get("postal_code", "") or "").strip()
 
-        if not re.fullmatch(r"\d{2}-\d{3}", postal_code):
-            messages.error(request, "Nieprawidłowy kod pocztowy. Poprawny format to 00-000.")
-            return redirect("orders:checkout")
 
         # ✅ Online: NIE czyścimy koszyka tutaj
         if payment_method == Order.PAYMENT_ONLINE:
