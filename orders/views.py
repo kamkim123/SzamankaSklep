@@ -452,13 +452,11 @@ def p24_status(request):
     order.p24_order_id = str(order_id)
     order.save(update_fields=["paid", "paid_at", "status", "p24_order_id"])
 
-    if not order.epaka_order_id:
-        access_token = get_epaka_access_token()
-        if access_token:
-            epaka_data = create_epaka_order(order, access_token)
-            if epaka_data is None:
-                print(f"[EPAKA] Nie udało się utworzyć przesyłki dla zamówienia {order.pk}")
-        else:
-            print("[EPAKA] Nie udało się pobrać tokena ePaka (server-to-server)")
+    # ✅ Od teraz NIE wysyłamy automatycznie do ePaki po płatności.
+    # Przesyłkę tworzysz ręcznie w adminie akcją "Wyślij do ePaki" po ustawieniu package_size.
+    order.epaka_last_error = "Czeka na wybór rozmiaru paczki i ręczne wysłanie do ePaki (admin)."
+    order.save(update_fields=["epaka_last_error", "updated_at"])
 
     return HttpResponse("OK")
+
+

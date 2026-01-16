@@ -2,8 +2,16 @@
 import requests
 from datetime import date, timedelta
 from django.conf import settings
-
+import re
 from .models import Order
+
+
+# Mapowanie rozmiaru paczki -> wymiary dla ePaki (dostosuj do siebie)
+PACKAGE_DIMENSIONS = {
+    "S": {"weight": 1.0, "height": 10, "width": 20, "length": 30},
+    "M": {"weight": 3.0, "height": 20, "width": 30, "length": 40},
+    "L": {"weight": 6.0, "height": 35, "width": 30, "length": 50},
+}
 
 
 def epaka_api_get(endpoint, access_token, params=None):
@@ -11,9 +19,9 @@ def epaka_api_get(endpoint, access_token, params=None):
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json",
-        "Content-Type": "application/json",   # 👈 to dodajemy
     }
     return requests.get(url, headers=headers, params=params or {})
+
 
 
 
@@ -92,6 +100,16 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
             receiver_point_id = default_point.get("id", "")
             receiver_point_desc = default_point.get("name", "")
 
+    street = (order.address or "").strip()
+    house_number = "1"
+    flat_number = ""
+
+    # np. "Kwiatowa 12/3" albo "Kwiatowa 12-3" albo "Kwiatowa 12"
+    m = re.search(r"(.+?)\s+(\d+[A-Za-z]?)(?:[\ /\- ](\d+[A-Za-z]?))?$", street)
+    if m:
+        street = m.group(1).strip()
+        house_number = m.group(2)
+        flat_number = m.group(3) or ""
     # --- 4. odbiorca ---
     receiver = {
         "name": order.first_name,
@@ -100,9 +118,9 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "nip": "",
         "country": "PL",
         "city": order.city,
-        "street": order.address,
-        "houseNumber": "1",
-        "flatNumber": "",
+        "street": street,
+        "houseNumber": house_number,
+        "flatNumber": flat_number,
         "postCode": order.postal_code,
         "phone": order.phone,
         "email": order.email,
@@ -133,12 +151,19 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "paymentType": "balance",
     }
 
+    # --- 6.1. paczka: wymiary zależne od wybranego rozmiaru w adminie ---
+    dims = PACKAGE_DIMENSIONS.get(order.package_size)
+
+    # jeśli brak rozmiaru, nie pozwalamy wysłać do ePaki
+    if not dims:
+        raise ValueError("Brak wybranego rozmiaru paczki (package_size). Ustaw S/M/L w adminie.")
+
     packages = [
         {
-            "weight": 6.0,
-            "height": 35,
-            "width": 30,
-            "length": 25,
+            "weight": float(dims["weight"]),
+            "height": int(dims["height"]),
+            "width": int(dims["width"]),
+            "length": int(dims["length"]),
             "type": 0,
         }
     ]
@@ -166,19 +191,10 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
         "pickupDate": pickup_date.isoformat(),
         "pickupTime": {"from": "09:00", "to": "17:00"},
         "comments": "",
-        "customsService": {
-            "purpose": "gift",
-            "informationAccept": False,
-            "eori": "",
-            "pesel": "",
-            "hmrc": "",
-        },
         "services": services,
         "packages": packages,
         "content": f"Zamówienie #{order.pk} ze sklepu szamankasklep.pl",
-        "contents": [],
         "promoCode": "",
-        "tires": {"quantity": 0, "width": 0, "profile": 0, "diameter": 0},
     }
 
     return body
@@ -186,20 +202,40 @@ def _order_to_epaka_body(order: Order, profile_data: dict) -> dict:
 
 
 def create_epaka_order(order: Order, access_token: str) -> dict | None:
+    if not order.paid or order.status != Order.STATUS_PAID:
+        order.epaka_last_error = "Nie wysłano do ePaki: zamówienie nie jest opłacone."
+        order.save(update_fields=["epaka_last_error", "updated_at"])
+        return None
+
+    if order.epaka_order_id:
+        order.epaka_last_error = "Nie wysłano do ePaki: zamówienie już ma epaka_order_id."
+        order.save(update_fields=["epaka_last_error", "updated_at"])
+        return None
+
+    if not order.package_size:
+        order.epaka_last_error = "Nie wysłano do ePaki: brak package_size (S/M/L)."
+        order.save(update_fields=["epaka_last_error", "updated_at"])
+        return None
+
     profile_resp = epaka_api_get("/v1/user", access_token)
     if profile_resp.status_code != 200:
+        order.epaka_last_error = f"EPAKA /v1/user status={profile_resp.status_code}"
         order.notes = (order.notes or "") + (
             f"\n[EPAKA] profile status={profile_resp.status_code}\n"
             f"[EPAKA] profile body={profile_resp.text}\n"
-
-
         )
-        order.save(update_fields=["notes"])
+        order.save(update_fields=["epaka_last_error", "notes", "updated_at"])
         return None
 
     profile_data = profile_resp.json()
 
-    body = _order_to_epaka_body(order, profile_data)
+    try:
+        body = _order_to_epaka_body(order, profile_data)
+    except ValueError as e:
+        order.epaka_last_error = str(e)
+        order.notes = (order.notes or "") + f"\n[EPAKA] ERROR: {e}\n"
+        order.save(update_fields=["epaka_last_error", "notes", "updated_at"])
+        return None
 
     order.notes = (order.notes or "") + (
         f"\n[EPAKA-debug] shipping_method={order.shipping_method} "

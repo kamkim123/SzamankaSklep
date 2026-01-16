@@ -67,6 +67,31 @@ class Order(models.Model):
         (SHIPPING_PICKUP, "Pickup"),
     ]
 
+    # orders/models.py (w klasie Order)
+
+    PACKAGE_NONE = ""
+    PACKAGE_S = "S"
+    PACKAGE_M = "M"
+    PACKAGE_L = "L"
+
+    PACKAGE_CHOICES = [
+        (PACKAGE_NONE, "— wybierz —"),
+        (PACKAGE_S, "S (mała)"),
+        (PACKAGE_M, "M (średnia)"),
+        (PACKAGE_L, "L (duża)"),
+    ]
+
+    package_size = models.CharField(
+        max_length=2,
+        choices=PACKAGE_CHOICES,
+        default=PACKAGE_NONE,
+        blank=True,
+        help_text="Wybierz rozmiar/gabaryt przed wysłaniem do ePaki.",
+    )
+
+    epaka_sent_at = models.DateTimeField(null=True, blank=True)
+    epaka_last_error = models.TextField(blank=True)
+
     # NOWE POLE
     shipping_method = models.CharField(
         max_length=20,

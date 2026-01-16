@@ -4,6 +4,10 @@ from django.utils import timezone
 from .models import Order, OrderItem
 from django.utils.html import format_html
 from django.urls import reverse
+from django.db import transaction
+from .epaka import create_epaka_order
+from .epaka_auth import get_epaka_access_token
+
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
@@ -21,15 +25,20 @@ class OrderAdmin(admin.ModelAdmin):
         "id", "created_at", "last_name", "email",
         "status_label", "shipped_at",
         "paid", "items_total_display", "total_to_pay_display",
-        "short_notes",
+        "short_notes", "package_size", "epaka_sent_at", "epaka_last_error",
         "epaka_label_link",
     )
     list_filter = ("status", "paid", "created_at", "payment_method", "shipped_at")
     search_fields = ("id", "last_name", "email", "address", "city", "tracking_number", "notes")
     inlines = [OrderItemInline]
-    readonly_fields = ("created_at", "updated_at", "items_total_display", "total_to_pay_display")
+    readonly_fields = (
+        "created_at", "updated_at",
+        "items_total_display", "total_to_pay_display",
+        "epaka_last_error", "epaka_sent_at", "epaka_order_id",
+    )
 
-    actions = ["mark_paid", "mark_shipped", "mark_cancelled"]
+    actions = ["mark_paid", "mark_shipped", "mark_cancelled", "send_to_epaka"]
+
 
     # === Kolumny/etykiety ===
     def status_label(self, obj):
@@ -102,3 +111,53 @@ class OrderAdmin(admin.ModelAdmin):
             order.save(update_fields=["status", "stock_debited", "updated_at"])
             updated += 1
         self.message_user(request, f"Anulowano: {updated}", level=messages.WARNING)
+
+
+    @admin.action(description="Wyślij do ePaki (wymaga: opłacone + rozmiar paczki)")
+    def send_to_epaka(self, request, queryset):
+        token = get_epaka_access_token()
+        if not token:
+            self.message_user(request, "Nie udało się pobrać tokena ePaki.", level=messages.ERROR)
+            return
+
+        sent = 0
+        skipped = 0
+
+        for order in queryset:
+            # 1) tylko opłacone
+            if not order.paid or order.status != Order.STATUS_PAID:
+                skipped += 1
+                continue
+
+            # 2) nie wysyłaj drugi raz
+            if order.epaka_order_id:
+                skipped += 1
+                continue
+
+            # 3) musi być rozmiar
+            if not order.package_size:
+                order.epaka_last_error = "Brak package_size – ustaw S/M/L w adminie."
+                order.notes = (order.notes or "") + f"\n[EPAKA] ERROR: {order.epaka_last_error}\n"
+                order.save(update_fields=["epaka_last_error", "notes"])
+                skipped += 1
+                continue
+
+            # 4) wysyłka do ePaki
+            with transaction.atomic():
+                data = create_epaka_order(order, token)
+                if not data:
+                    skipped += 1
+                    continue
+
+                # ✅ sukces: czyścimy błąd i zapisujemy datę wysłania do ePaki
+                order.epaka_last_error = ""
+                order.epaka_sent_at = timezone.now()
+                order.save(update_fields=["epaka_sent_at", "epaka_last_error", "updated_at"])
+
+                sent += 1
+
+        self.message_user(
+            request,
+            f"Wysłano do ePaki: {sent}, pominięto: {skipped}",
+            level=messages.SUCCESS if sent else messages.WARNING
+        )
