@@ -70,15 +70,19 @@ class Order(models.Model):
     # orders/models.py (w klasie Order)
 
     PACKAGE_NONE = ""
-    PACKAGE_S = "S"
-    PACKAGE_M = "M"
-    PACKAGE_L = "L"
+    PACKAGE_1 = "1"
+    PACKAGE_2 = "2"
+    PACKAGE_3 = "3"
+    PACKAGE_4 = "4"
+    PACKAGE_5 = "5"
 
     PACKAGE_CHOICES = [
         (PACKAGE_NONE, "— wybierz —"),
-        (PACKAGE_S, "S (mała)"),
-        (PACKAGE_M, "M (średnia)"),
-        (PACKAGE_L, "L (duża)"),
+        (PACKAGE_1, "1) 17×20×20 cm (do 2 kg)"),
+        (PACKAGE_2, "2) 25×20×20 cm (do 5 kg)"),
+        (PACKAGE_3, "3) 35×25×15 cm (do 7 kg)"),
+        (PACKAGE_4, "4) 35×35×30 cm (do 10 kg)"),
+        (PACKAGE_5, "5) 45×45×45 cm (do 20 kg)"),
     ]
 
     package_size = models.CharField(
@@ -86,7 +90,6 @@ class Order(models.Model):
         choices=PACKAGE_CHOICES,
         default=PACKAGE_NONE,
         blank=True,
-        help_text="Wybierz rozmiar/gabaryt przed wysłaniem do ePaki.",
     )
 
     epaka_sent_at = models.DateTimeField(null=True, blank=True)
