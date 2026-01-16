@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 import re
 from django.views.decorators.cache import never_cache
+from .epaka import epaka_check_data, _order_to_epaka_body
 
 from .epaka_auth import get_epaka_access_token
 
@@ -146,6 +147,44 @@ def checkout(request):
         if not city:
             messages.error(request, "Podaj miasto.")
             return redirect("orders:checkout")
+
+        # --- WALIDACJA ePaka: kod pocztowy musi pasować do miasta ---
+        access_token = get_epaka_access_token()
+        if access_token:
+            # Tworzymy "tymczasowy" obiekt order (nie zapisujemy do DB)
+            tmp_order = Order(
+                first_name=request.POST.get('first_name', ''),
+                last_name=request.POST.get('last_name', ''),
+                email=request.POST.get('email', ''),
+                phone=digits,
+                address=request.POST.get('address', ''),
+                postal_code=postal_code,
+                city=city,
+                shipping_method=shipping_method,
+                inpost_locker_code=inpost_locker_code,
+                shipping_cost=shipping_cost,
+                status=Order.STATUS_NEW,
+                payment_method=payment_method,
+                paid=False,
+            )
+
+            # profil ePaki potrzebny do body
+            profile_resp = epaka_api_get("/v1/user", access_token)
+            if profile_resp.status_code == 200:
+                body = _order_to_epaka_body(tmp_order, profile_resp.json())
+                check_resp = epaka_check_data(access_token, body)
+
+                if check_resp.status_code != 200:
+                    # wyciągnij komunikat
+                    try:
+                        data = check_resp.json()
+                        err = data.get("errors", [{}])[0]
+                        msg = err.get("message") or "Nieprawidłowe dane adresowe."
+                    except Exception:
+                        msg = "Nieprawidłowe dane adresowe."
+
+                    messages.error(request, f"Błąd adresu: {msg}")
+                    return redirect("orders:checkout")
 
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
