@@ -1,8 +1,10 @@
 import dj_database_url
 import os
+from dotenv import load_dotenv
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 # ===== Podstawy produkcyjne =====
 DEBUG = False
@@ -29,7 +31,7 @@ else:
     EMAIL_USE_SSL = False
 
     EMAIL_HOST_USER = "szamankasklep@gmail.com"
-    EMAIL_HOST_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
+    EMAIL_HOST_PASSWORD = "cghsmpbwjbxmzvnb"
 
     DEFAULT_FROM_EMAIL = "szamankasklep@gmail.com"
     SERVER_EMAIL = "szamankasklep@gmail.com"
