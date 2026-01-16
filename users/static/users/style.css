@@ -40,8 +40,8 @@ body{
     box-shadow: var(--shadow);
     position: relative;
     overflow: hidden;
-    margin:60px auto;
-    margin-bottom:6rem;
+    margin: 24px auto;
+    margin-bottom: 24px;
 }
 
 /* subtelny highlight przy krawędziach */
@@ -177,6 +177,7 @@ input:-webkit-autofill{
 @media (max-width: 420px){
     .login-box{ padding: 22px 18px; }
     .input-box input{ height: 52px; }
+    .login-box{ margin: 16px auto; }
 }
 
 
