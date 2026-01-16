@@ -142,11 +142,12 @@
             <select name="type" id="type" onchange="this.form.submit()">
                 <option value="">Wszystkie</option>
                 {% for c in categories %}
-                <option value="{{ c.product_type }}"
-                        {% if selected == c.product_type %}selected{% endif %}>
-                    {{ c.product_type }}
-                </option>
+                  <option value="{{ c.value }}"
+                          {% if selected == c.value %}selected{% endif %}>
+                    {{ c.label }}
+                  </option>
                 {% endfor %}
+
             </select>
             <noscript>
                 <button type="submit">Filtruj</button>

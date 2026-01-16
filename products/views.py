@@ -218,16 +218,17 @@ class ProductSearchAPI(View):
 
 
 def produkty(request):
-    product_type = request.GET.get('type', 'all')
-    if product_type == 'all':
-        produkty = only_with_price_and_image(Product.objects.all())
+    selected = (request.GET.get('type') or '').strip()
 
-    else:
-        produkty = only_with_price_and_image(Product.objects.filter(product_type=product_type))
+    qs = only_with_price_and_image(Product.objects.all())
+    if selected and selected != "all":
+        qs = qs.filter(product_type=selected)
 
-
-    return render(request, 'products/products.html', {'produkty': produkty, 'kategoria': product_type})
-
+    return render(request, 'products/products.html', {
+        'products': qs,                 # UWAGA: u Ciebie template używa "products" w wielu miejscach
+        'selected': selected,
+        'categories': get_categories_for_navbar(),
+    })
 
 # products/views.py
 from django.shortcuts import render
