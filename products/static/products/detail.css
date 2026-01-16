@@ -150,7 +150,7 @@ body {
 
 
 .add-info-wrapper { display: flex; gap: .75rem; align-items: center; padding: .5rem .75rem; border-radius: 12px; }
-.add-icon { width: 36px; height: 36px; }
+.add-icon { width: 28px; height: 28px; }
 .bullets { list-style: none; display: grid; gap: .35rem; color: var(--muted); }
 .bullets li { display: flex; align-items: center; gap: .5rem; }
 
