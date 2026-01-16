@@ -2,15 +2,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 *{ box-sizing: border-box; margin: 0; padding: 0; }
-
 :root{
-    /* Jasna paleta */
-    --bg: #f7faf8;                 /* globalne tło */
-    --card: #ffffff;               /* karta */
-    --card-border: #e6efe9;        /* delikatna ramka */
-    --text: #0d2a1a;               /* główny tekst */
-    --muted: #5b7a67;              /* wtórny tekst */
-    --brand: #21b66a;              /* akcent zielony */
+    --bg: #f7faf8;
+    --card: #ffffff;
+    --card-border: #e6efe9;
+    --text: #0d2a1a;
+    --muted: #5b7a67;
+    --brand: #21b66a;
     --brand-strong: #16a15b;
     --error: #d93025;
     --shadow: 0 10px 30px rgba(16, 38, 28, .08);
@@ -18,33 +16,36 @@
     --ease: cubic-bezier(.22,.61,.36,1);
 }
 
-html, body{ min-height: 100% /* nowoczesne mobile */ }
+html, body{ min-height: 100%; }
 
-body{
+body {
     font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     color: var(--text);
-    background:
-            radial-gradient(1200px 600px at 8% 12%, rgba(33,182,106,.08), transparent 60%),
-            radial-gradient(1200px 600px at 92% 88%, rgba(33,182,106,.06), transparent 60%),
-            var(--bg);
-
+    background: radial-gradient(1200px 600px at 8% 12%, rgba(33,182,106,.08), transparent 60%),
+                radial-gradient(1200px 600px at 92% 88%, rgba(33,182,106,.06), transparent 60%),
+                var(--bg); /* Dodatkowy odstęp, żeby navbar nie nachodził na formularz */
 }
 
-/* ====== Karta (elevated white) ====== */
-.login-box{
+section {
+
+     display:grid;
+     place-items:center;/* Zmniejszenie odstępu, w zależności od tego, jak wysoko navbar jest ustawiony */
+}
+
+/* ====== Karta logowania ====== */
+.login-box {
     width: min(440px, 92vw);
     background: var(--card);
     border: 1px solid var(--card-border);
     border-radius: var(--radius);
+    margin-top:5rem;
+    margin-bottom:6rem;
     padding: 28px 26px;
     box-shadow: var(--shadow);
     position: relative;
     overflow: hidden;
-    margin: 24px auto;
-    margin-bottom: 24px;
 }
 
-/* subtelny highlight przy krawędziach */
 .login-box::after{
     content:"";
     position:absolute; inset:-1px; border-radius:inherit; pointer-events:none;
@@ -60,13 +61,17 @@ h2{
     color: #0f3a25;
     font-weight: 600;
     letter-spacing: .2px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
-#registerForm{ margin-top: 8px; }
+/* ====== Formularz ====== */
+#loginForm{ margin-top: 10px; }
 
-/* ====== Pola z pływającą etykietą ====== */
-.input-box{ position: relative; width: 100%; margin: 18px 0 6px; }
+.input-box{
+    position: relative;
+    width: 100%;
+    margin: 18px 0 6px;
+}
 
 .input-box input{
     width: 100%;
@@ -76,7 +81,7 @@ h2{
     color: var(--text);
     border-radius: 12px;
     outline: none;
-    font-size: 0.98rem;
+    font-size: .98rem;
     padding: 0 46px 0 14px;   /* miejsce na ikonę po prawej */
     transition: border-color .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease), transform .05s;
     box-shadow: inset 0 1px 0 rgba(16, 38, 28, .03);
@@ -87,7 +92,7 @@ h2{
     position: absolute;
     left: 14px; top: 50%;
     transform: translateY(-50%);
-    font-size: 0.98rem;
+    font-size: .98rem;
     color: var(--muted);
     pointer-events: none;
     padding: 0 6px;
@@ -95,11 +100,10 @@ h2{
     transition: transform .2s var(--ease), color .2s var(--ease), top .2s var(--ease), font-size .2s var(--ease);
 }
 
-/* focus i niepuste */
+/* focus + niepuste */
 .input-box:has(input:focus) input{
     border-color: rgba(33,182,106,.65);
     box-shadow: 0 0 0 6px rgba(33,182,106,.14);
-    background: #ffffff;
 }
 .input-box input:focus ~ label,
 .input-box input:not(:placeholder-shown) ~ label{
@@ -110,7 +114,7 @@ h2{
     line-height: 1;
 }
 
-/* ikona po prawej */
+/* ikony po prawej */
 .input-box .icon{
     position: absolute;
     right: 12px; top: 50%; transform: translateY(-50%);
@@ -120,17 +124,41 @@ h2{
     pointer-events: none;
 }
 
-/* autofill – bez żółtego */
+/* autofill */
 input:-webkit-autofill{
     -webkit-text-fill-color: var(--text) !important;
     transition: background-color 9999s ease-in-out 0s;
 }
 
-/* ====== Przycisk ====== */
-.baton1{
+/* ====== Sekcja „pamiętaj / zapomniałem” ====== */
+.remember-forgot{
+    margin: 8px 0 4px;
+    font-size: .92rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+.remember-forgot label{
+    display: inline-flex; align-items: center; gap: 8px; user-select: none;
+    color: var(--text);
+}
+.remember-forgot a{
+    color: #0f3a25; text-decoration: none; font-weight: 600; position: relative;
+}
+.remember-forgot a::after{
+    content:""; position:absolute; left:0; bottom:-2px; width:100%; height:2px;
+    background: currentColor; transform: scaleX(0); transform-origin: left;
+    transition: transform .25s var(--ease);
+}
+.remember-forgot a:hover::after{ transform: scaleX(1); }
+
+/* ====== Przycisk logowania ====== */
+.baton {
     width: 100%;
     height: 48px;
-    margin-top: 18px;
+    margin-top: 14px;
     border: 0;
     border-radius: 12px;
     background: linear-gradient(180deg, var(--brand), var(--brand-strong));
@@ -141,11 +169,12 @@ input:-webkit-autofill{
     box-shadow: 0 10px 20px rgba(33,182,106,.18), inset 0 1px 0 rgba(255,255,255,.35);
     transition: transform .06s ease, box-shadow .25s var(--ease), filter .2s var(--ease);
 }
-.baton1:hover{ filter: brightness(1.03); box-shadow: 0 14px 28px rgba(33,182,106,.22), inset 0 1px 0 rgba(255,255,255,.45); }
-.baton1:active{ transform: translateY(1px); }
-.baton1:focus-visible{ outline: 3px solid rgba(33,182,106,.45); outline-offset: 2px; }
 
-/* ====== Link pod formularzem ====== */
+.baton:hover{ filter: brightness(1.03); box-shadow: 0 14px 28px rgba(33,182,106,.22), inset 0 1px 0 rgba(255,255,255,.45); }
+.baton:active{ transform: translateY(1px); }
+.baton:focus-visible{ outline: 3px solid rgba(33,182,106,.45); outline-offset: 2px; }
+
+/* ====== Link pod formularzem (np. „Nie masz konta?”) ====== */
 .register-link{
     text-align: center;
     margin: 16px 0 2px;
@@ -153,20 +182,16 @@ input:-webkit-autofill{
     font-size: .95rem;
 }
 .register-link a{
-    color: #0f3a25;
-    font-weight: 600;
-    text-decoration: none;
-    position: relative;
+    color: #0f3a25; font-weight: 600; text-decoration: none; position: relative;
 }
 .register-link a::after{
-    content:"";
-    position:absolute; left:0; bottom:-2px; width:100%; height:2px;
+    content:""; position:absolute; left:0; bottom:-2px; width:100%; height:2px;
     background: currentColor; transform: scaleX(0); transform-origin: left;
     transition: transform .25s var(--ease);
 }
 .register-link a:hover::after{ transform: scaleX(1); }
 
-/* ====== Stany błędów (opcjonalnie .is-invalid) ====== */
+/* ====== Błąd (opcjonalna klasa .is-invalid) ====== */
 .input-box.is-invalid input{
     border-color: rgba(217,48,37,.9);
     box-shadow: 0 0 0 6px rgba(217,48,37,.12);
@@ -175,24 +200,8 @@ input:-webkit-autofill{
 
 /* ====== Mobile ====== */
 @media (max-width: 420px){
-    .login-box{ padding: 22px 18px; }
+    .login-box{ padding: 22px 18px; width: 92vw; }
     .input-box input{ height: 52px; }
-    .login-box{ margin: 16px auto; }
 }
 
-
-
-
-.input-box1{
-    padding:1rem;
-}
-
-.input-box1 input{
-    margin-right:.4rem;
-}
-
-.input-box1 a{
-    color:green;
-    font-weight:bold;
-}
 
