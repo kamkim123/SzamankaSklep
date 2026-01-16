@@ -1,14 +1,11 @@
 // Reload checkout TYLKO gdy wracamy strzałką wstecz po próbie płatności (P24)
 
-
 if (!(window.CSS && CSS.escape)) {
   window.CSS = window.CSS || {};
   CSS.escape = function (value) {
     return String(value).replace(/[^a-zA-Z0-9_\-]/g, (ch) => "\\" + ch);
   };
 }
-
-
 
 (() => {
   const KEY = "checkout_submitted";
@@ -24,401 +21,339 @@ if (!(window.CSS && CSS.escape)) {
   });
 
   // ustawiamy flagę tylko przy wysłaniu checkout (czyli przejściu do P24)
-document.addEventListener("submit", (evt) => {
-  const form = evt.target;
-  if (!form || !form.classList.contains("checkout-form")) return;
-
-  // jeśli ktoś zablokował submit (preventDefault), nie ustawiaj flagi
-  if (evt.defaultPrevented) return;
-
-  sessionStorage.setItem(KEY, "1");
-}, true);
+  document.addEventListener(
+    "submit",
+    (evt) => {
+      const form = evt.target;
+      if (!form || !form.classList.contains("checkout-form")) return;
+      if (evt.defaultPrevented) return;
+      sessionStorage.setItem(KEY, "1");
+    },
+    true
+  );
 })();
 
-
-(function() {
+(function () {
   /* ===== Helpers ===== */
-  const $  = sel => document.querySelector(sel);
-  const $$ = sel => Array.from(document.querySelectorAll(sel));
-  const fmt = n => (n||0).toFixed(2).replace('.', ',')+' zł';
-  const parseMoney = s => s ? (parseFloat(String(s).replace(',', '.').replace(/[^\d.]/g,''))||0) : 0;
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const fmt = (n) => (n || 0).toFixed(2).replace(".", ",") + " zł";
+  const parseMoney = (s) =>
+    s ? parseFloat(String(s).replace(",", ".").replace(/[^\d.]/g, "")) || 0 : 0;
 
   /* ===== Totals ===== */
-  const totalsBox = $('#order-totals');
-  const subtotalEl = $('#subtotal-amount');
-  const shippingEl = $('#shipping-amount');
-  const grandEl = $('#grand-amount');
-  const getSubtotal = () => totalsBox ? (parseMoney(totalsBox.getAttribute('data-subtotal')) || parseMoney(subtotalEl?.textContent)) : 0;
+  const totalsBox = $("#order-totals");
+  const subtotalEl = $("#subtotal-amount");
+  const shippingEl = $("#shipping-amount");
+  const grandEl = $("#grand-amount");
+
+  const getSubtotal = () =>
+    totalsBox
+      ? parseMoney(totalsBox.getAttribute("data-subtotal")) ||
+        parseMoney(subtotalEl?.textContent)
+      : 0;
+
+  /* ===== Payment UI (notice + transferBox) ===== */
+  function getProvider() {
+    return (
+      document.querySelector('input[name="payment_provider"]:checked')?.value ||
+      "p24"
+    );
+  }
+
+  function updatePaymentUI() {
+    const provider = getProvider();
+
+    const payNotice = document.getElementById("payNotice");
+    const noticeProv = document.getElementById("noticeProvider");
+    const transferBox = document.getElementById("transferBox");
+
+    // domyślnie schowaj
+    if (payNotice) payNotice.hidden = true;
+    if (transferBox) transferBox.hidden = true;
+
+    // p24 / card -> pokazujemy informację o przekierowaniu
+    if (provider === "p24") {
+      if (payNotice) {
+        payNotice.hidden = false;
+        if (noticeProv) noticeProv.textContent = "Przelewy24";
+      }
+    }
+
+    if (provider === "card") {
+      if (payNotice) {
+        payNotice.hidden = false;
+        if (noticeProv) noticeProv.textContent = "Przelewy24";
+      }
+    }
+
+    // transfer -> pokazujemy instrukcję przelewu
+    if (provider === "transfer") {
+      if (transferBox) transferBox.hidden = false;
+    }
+
+    // Uaktualnij kwotę w instrukcji przelewu (gdy przeliczy się dostawa)
+    const g = document.getElementById("grand-amount");
+    const t = document.getElementById("transferAmountCalc");
+    if (g && t) t.textContent = " " + g.textContent;
+  }
 
   const recalc = () => {
     const sub = getSubtotal();
     const shipRadio = $('input[name="shipping_method"]:checked');
     const shipCost = shipRadio ? parseMoney(shipRadio.dataset.price) : 0;
+
     if (shippingEl) shippingEl.textContent = fmt(shipCost);
-    if (grandEl)    grandEl.textContent    = fmt(sub + shipCost);
+    if (grandEl) grandEl.textContent = fmt(sub + shipCost);
+
+    // po przeliczeniu aktualizujemy też UI płatności (kwota w przelewie + notice)
+    try {
+      updatePaymentUI();
+    } catch (_) {}
   };
 
   /* ===== Accept terms lock ===== */
-  const acceptTerms = $('#accept_terms');
-  const submitBtn = $('.checkout-btn.pretty');
+  const acceptTerms = $("#accept_terms");
+  const submitBtn = $(".checkout-btn.pretty");
   const lockSubmit = () => {
     if (!acceptTerms || !submitBtn) return;
     submitBtn.disabled = !acceptTerms.checked;
-    submitBtn.classList.toggle('btn--disabled', !acceptTerms.checked);
+    submitBtn.classList.toggle("btn--disabled", !acceptTerms.checked);
   };
-  acceptTerms?.addEventListener('change', lockSubmit);
+  acceptTerms?.addEventListener("change", lockSubmit);
   lockSubmit();
 
   /* ===== Shipping dropdown ===== */
-  const shipBtn  = $('#shipBtn');
-  const shipMenu = $('#shipMenu');
-  const shipRoot = $('#shipSelect');
+  const shipBtn = $("#shipBtn");
+  const shipMenu = $("#shipMenu");
+  const shipRoot = $("#shipSelect");
 
   const shipGetLabel = (val) => {
-    const li = shipMenu?.querySelector(`.ship-option[data-value="${CSS.escape(val)}"]`);
-    return { title: li?.querySelector('.title')?.textContent?.trim() || '', sub: li?.querySelector('.price')?.textContent?.trim() || '' };
+    const li = shipMenu?.querySelector(
+      `.ship-option[data-value="${CSS.escape(val)}"]`
+    );
+    return {
+      title: li?.querySelector(".title")?.textContent?.trim() || "",
+      sub: li?.querySelector(".price")?.textContent?.trim() || "",
+    };
   };
+
   const shipUpdateBtn = () => {
-    const r = $('input[name="shipping_method"]:checked'); if (!r || !shipBtn) return;
+    const r = $('input[name="shipping_method"]:checked');
+    if (!r || !shipBtn) return;
     const { title, sub } = shipGetLabel(r.value);
-    shipBtn.querySelector('.ship-select__current-title').textContent = title;
-    shipBtn.querySelector('.ship-select__current-price').textContent  = sub;
-    shipMenu?.querySelectorAll('.ship-option').forEach(o => o.setAttribute('aria-selected', String(o.dataset.value === r.value)));
+    shipBtn.querySelector(".ship-select__current-title").textContent = title;
+    shipBtn.querySelector(".ship-select__current-price").textContent = sub;
+    shipMenu
+      ?.querySelectorAll(".ship-option")
+      .forEach((o) =>
+        o.setAttribute("aria-selected", String(o.dataset.value === r.value))
+      );
   };
-  const shipOpen  = () => { if(!shipMenu||!shipBtn||!shipRoot) return; shipMenu.hidden=false; shipBtn.setAttribute('aria-expanded','true'); shipRoot.classList.add('is-open'); shipMenu.focus(); };
-  const shipClose = () => { if(!shipMenu||!shipBtn||!shipRoot) return; shipMenu.hidden=true;  shipBtn.setAttribute('aria-expanded','false'); shipRoot.classList.remove('is-open'); };
 
-  shipBtn?.addEventListener('click', () => (shipBtn.getAttribute('aria-expanded')==='true') ? shipClose() : shipOpen());
-  shipMenu?.addEventListener('click', e => {
-    const li = e.target.closest('.ship-option'); if (!li) return;
-    const r = document.querySelector(`input[name="shipping_method"][value="${CSS.escape(li.dataset.value)}"]`);
-    if (r){ r.checked = true; r.dispatchEvent(new Event('change', {bubbles:true})); }
-    shipUpdateBtn(); recalc(); shipClose(); shipBtn.focus();
+  const shipOpen = () => {
+    if (!shipMenu || !shipBtn || !shipRoot) return;
+    shipMenu.hidden = false;
+    shipBtn.setAttribute("aria-expanded", "true");
+    shipRoot.classList.add("is-open");
+    shipMenu.focus();
+  };
+
+  const shipClose = () => {
+    if (!shipMenu || !shipBtn || !shipRoot) return;
+    shipMenu.hidden = true;
+    shipBtn.setAttribute("aria-expanded", "false");
+    shipRoot.classList.remove("is-open");
+  };
+
+  shipBtn?.addEventListener("click", () =>
+    shipBtn.getAttribute("aria-expanded") === "true" ? shipClose() : shipOpen()
+  );
+
+  shipMenu?.addEventListener("click", (e) => {
+    const li = e.target.closest(".ship-option");
+    if (!li) return;
+    const r = document.querySelector(
+      `input[name="shipping_method"][value="${CSS.escape(li.dataset.value)}"]`
+    );
+    if (r) {
+      r.checked = true;
+      r.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    shipUpdateBtn();
+    recalc();
+    shipClose();
+    shipBtn.focus();
   });
-  document.addEventListener('click', e => { if (shipRoot && !shipRoot.contains(e.target) && shipBtn?.getAttribute('aria-expanded')==='true') shipClose(); });
-  shipMenu?.addEventListener('keydown', e => { if (e.key==='Escape'){ e.preventDefault(); shipClose(); shipBtn.focus(); }});
-  $$('input[name="shipping_method"]').forEach(r => r.addEventListener('change', () => { shipUpdateBtn(); recalc(); }));
-  shipUpdateBtn(); recalc();
 
-  /* ===== Payment: provider dropdown + channel list (P24, Card, Transfer) ===== */
-  const payRoot   = $('#paySelect');
-  const payBtn    = $('#payBtn');
-  const payMenu   = $('#payMenu');
-  const payPicked = $('#payPicked');
-  const channelGrid   = $('#channelGrid');
-  const channelMore   = $('#channelMore');
-  const channelSearch = $('#channelSearch');
-  const channelInfo   = $('#channelInfo');
-  const channelError  = $('#channelError');
+  document.addEventListener("click", (e) => {
+    if (
+      shipRoot &&
+      !shipRoot.contains(e.target) &&
+      shipBtn?.getAttribute("aria-expanded") === "true"
+    )
+      shipClose();
+  });
+
+  shipMenu?.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      shipClose();
+      shipBtn.focus();
+    }
+  });
+
+  $$('input[name="shipping_method"]').forEach((r) =>
+    r.addEventListener("change", () => {
+      shipUpdateBtn();
+      recalc();
+    })
+  );
+
+  shipUpdateBtn();
+  recalc();
+
+  /* ===== Payment provider dropdown (P24 / Card / Transfer) ===== */
+  const payRoot = $("#paySelect");
+  const payBtn = $("#payBtn");
+  const payMenu = $("#payMenu");
   const hiddenProviderRadios = $$('input[name="payment_provider"]');
-  const hiddenChannel = $('#payment_channel');
-
-  const ICON_BASE = channelGrid?.dataset.iconBase || '/static/payments/icons/';
-
-  const CHANNELS = {
-    p24: [
-      {code:'blik', name:'BLIK'},
-      {code:'mbank', name:'mBank'},
-      {code:'pko', name:'PKO BP'},
-      {code:'pekao', name:'Pekao SA'},
-      {code:'santander', name:'Santander'},
-      {code:'ing', name:'ING'},
-      {code:'alior', name:'Alior Bank'},
-      {code:'millennium', name:'Bank Millennium'},
-      {code:'bnp', name:'BNP Paribas'},
-      {code:'handlowy', name:'Citi Handlowy'},
-      {code:'inteligo', name:'Inteligo'},
-      {code:'velobank', name:'VeloBank'},
-      {code:'pocztowy', name:'Bank Pocztowy'},
-      {code:'nest', name:'Nest Bank'},
-      {code:'bos', name:'BOŚ Bank'},
-      {code:'credit-agricole', name:'Credit Agricole'},
-      {code:'revolut', name:'Revolut'},
-      {code:'raiffeisen-digital', name:'Raiffeisen Digital'},
-      {code:'plusbank', name:'Plus Bank'},
-      {code:'skok', name:'SKOK'},
-      {code:'toyota', name:'Toyota Bank'},
-      {code:'noble', name:'Noble Bank'},
-      {code:'sgb', name:'SGB'}
-    ],
-    card: [
-      {code:'visa', name:'Visa'},
-      {code:'mastercard', name:'Mastercard'},
-      {code:'applepay', name:'Apple Pay'},
-      {code:'googlepay', name:'Google Pay'}
-    ],
-    transfer: []
-  };
-  const PAY_LIMIT = 12;
-
-  const getProvider = () => (document.querySelector('input[name="payment_provider"]:checked')?.value) || 'p24';
 
   const payGetLabel = (val) => {
     const li = payMenu?.querySelector(`.pay-option[data-value="${CSS.escape(val)}"]`);
-    return { title: li?.querySelector('.title')?.textContent?.trim()||'', sub: li?.querySelector('.desc')?.textContent?.trim()||'' };
+    return {
+      title: li?.querySelector(".title")?.textContent?.trim() || "",
+      sub: li?.querySelector(".desc")?.textContent?.trim() || "",
+    };
   };
 
   const updatePayButton = () => {
     const provider = getProvider();
-    const {title, sub} = payGetLabel(provider);
-    payBtn.querySelector('.pay-select__current-title').textContent = title;
-    payBtn.querySelector('.pay-select__current-desc').textContent  = sub;
-    payMenu?.querySelectorAll('.pay-option').forEach(o => o.setAttribute('aria-selected', String(o.dataset.value === provider)));
+    const { title, sub } = payGetLabel(provider);
+    if (payBtn) {
+      payBtn.querySelector(".pay-select__current-title").textContent = title;
+      payBtn.querySelector(".pay-select__current-desc").textContent = sub;
+    }
+    payMenu
+      ?.querySelectorAll(".pay-option")
+      .forEach((o) =>
+        o.setAttribute("aria-selected", String(o.dataset.value === provider))
+      );
   };
 
-  const initials = name => (name.match(/\b\w/g)||['?']).slice(0,2).join('').toUpperCase();
-  const makeLogo = (code, name) => {
-    const wrap = document.createElement('span'); wrap.className = 'channel-logo';
-    const img = document.createElement('img'); img.alt = name; img.src = `${ICON_BASE}${code}.svg`;
-    img.onload = () => wrap.classList.add('is-loaded');
-    img.onerror = () => { img.onerror = null; img.src = `${ICON_BASE}${code}.png`; };
-    const fb = document.createElement('span'); fb.className = 'logo-fallback'; fb.textContent = initials(name);
-    wrap.appendChild(img); wrap.appendChild(fb); return wrap;
+  const payOpen = () => {
+    if (!payMenu || !payBtn || !payRoot) return;
+    payMenu.hidden = false;
+    payBtn.setAttribute("aria-expanded", "true");
+    payRoot.classList.add("is-open");
+    payMenu.focus();
   };
 
-  const selectChannel = (code, name, {silent=false}={}) => {
-    hiddenChannel.value = code;
-    $$('#channelGrid .channel-tile').forEach(b => {
-      const active = b.dataset.code === code;
-      b.classList.toggle('is-active', active);
-      b.setAttribute('aria-pressed', String(active));
-    });
-    payPicked.innerHTML = `Wybrany kanał: <strong>${name}</strong>`;
-    if (!silent) channelError.hidden = true;
+  const payClose = () => {
+    if (!payMenu || !payBtn || !payRoot) return;
+    payMenu.hidden = true;
+    payBtn.setAttribute("aria-expanded", "false");
+    payRoot.classList.remove("is-open");
   };
 
-  const renderChannels = () => {
-    const provider = getProvider();
-    const requireChannel = CHANNELS[provider]?.length > 0;
-    channelGrid.innerHTML = '';
-    channelError.hidden = true;
+  payBtn?.addEventListener("click", () =>
+    payBtn.getAttribute("aria-expanded") === "true" ? payClose() : payOpen()
+  );
 
-    if (!requireChannel) {
-      channelGrid.hidden = true;
-      channelMore.hidden = true;
-      channelSearch.value = '';
-      channelSearch.parentElement.style.display = 'none';
-      channelInfo.hidden = false;
-      const { title } = payGetLabel(provider);
-      payPicked.innerHTML = `Wybrany sposób: <strong>${title}</strong>`;
-      hiddenChannel.value = '';
-      return;
+  payMenu?.addEventListener("click", (e) => {
+    const li = e.target.closest(".pay-option");
+    if (!li) return;
+    const val = li.dataset.value;
+
+    const radio = document.querySelector(
+      `input[name="payment_provider"][value="${CSS.escape(val)}"]`
+    );
+    if (radio) {
+      radio.checked = true;
+      radio.dispatchEvent(new Event("change", { bubbles: true }));
     }
 
-    channelGrid.hidden = false;
-    channelSearch.parentElement.style.display = '';
-    channelInfo.hidden = true;
+    updatePayButton();
+    updatePaymentUI();
+    payClose();
+    payBtn.focus();
+  });
 
-    const items = (CHANNELS[provider] || []).slice();
-    const q = channelSearch.value.trim().toLowerCase();
-    const filtered = q ? items.filter(i => i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q)) : items;
+  document.addEventListener("click", (e) => {
+    if (
+      payRoot &&
+      !payRoot.contains(e.target) &&
+      payBtn?.getAttribute("aria-expanded") === "true"
+    )
+      payClose();
+  });
 
-    const needMore = filtered.length > PAY_LIMIT;
-    const visible = filtered.slice(0, needMore ? PAY_LIMIT : filtered.length);
-
-    for (const ch of visible) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'channel-tile';
-      btn.dataset.code = ch.code;
-      btn.setAttribute('aria-pressed', 'false');
-
-      const left = makeLogo(ch.code, ch.name);
-      const right = document.createElement('span');
-      right.innerHTML = `<span class="channel-name">${ch.name}</span><br><span class="channel-sub">${provider.toUpperCase()} • ${ch.code}</span>`;
-      btn.append(left, right);
-
-      if (hiddenChannel.value && hiddenChannel.value === ch.code) {
-        btn.classList.add('is-active'); btn.setAttribute('aria-pressed','true');
-      }
-      btn.addEventListener('click', () => selectChannel(ch.code, ch.name));
-      channelGrid.appendChild(btn);
+  payMenu?.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      payClose();
+      payBtn.focus();
     }
+  });
 
-    if (needMore) {
-      channelMore.hidden = false;
-      channelMore.dataset.state = 'collapsed';
-      const hiddenCount = filtered.length - PAY_LIMIT;
-      channelMore.textContent = `Pokaż więcej kanałów (${hiddenCount})`;
-
-      channelMore.onclick = () => {
-        const expanded = channelMore.dataset.state === 'expanded';
-        if (!expanded) {
-          for (const ch of filtered.slice(PAY_LIMIT)) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'channel-tile';
-            btn.dataset.code = ch.code;
-            btn.setAttribute('aria-pressed','false');
-
-            const left = makeLogo(ch.code, ch.name);
-            const right = document.createElement('span');
-            right.innerHTML = `<span class="channel-name">${ch.name}</span><br><span class="channel-sub">${provider.toUpperCase()} • ${ch.code}</span>`;
-            btn.append(left, right);
-            btn.addEventListener('click', () => selectChannel(ch.code, ch.name));
-            channelGrid.appendChild(btn);
-          }
-          channelMore.dataset.state = 'expanded';
-          channelMore.textContent = 'Pokaż mniej';
-        } else {
-          renderChannels();
-          channelGrid.scrollIntoView({behavior:'smooth', block:'start'});
-        }
-      };
-    } else {
-      channelMore.hidden = true;
-    }
-
-    if (!hiddenChannel.value && filtered.length) {
-      selectChannel(filtered[0].code, filtered[0].name, {silent:true});
-    } else if (hiddenChannel.value) {
-      const chosen = filtered.find(c => c.code === hiddenChannel.value);
-      if (chosen) payPicked.innerHTML = `Wybrany kanał: <strong>${chosen.name}</strong>`;
-    }
-  };
-
-  /* Provider dropdown open/close */
-  const payOpen  = () => { payMenu.hidden=false; payBtn.setAttribute('aria-expanded','true'); payRoot.classList.add('is-open'); payMenu.focus(); };
-  const payClose = () => { payMenu.hidden=true;  payBtn.setAttribute('aria-expanded','false'); payRoot.classList.remove('is-open'); };
+  hiddenProviderRadios.forEach((r) =>
+    r.addEventListener("change", () => {
+      updatePayButton();
+      updatePaymentUI();
+    })
+  );
 
   updatePayButton();
-  renderChannels();
-
-  payBtn?.addEventListener('click', () => (payBtn.getAttribute('aria-expanded')==='true') ? payClose() : payOpen());
-  payMenu?.addEventListener('click', e => {
-    const li = e.target.closest('.pay-option'); if (!li) return;
-    const val = li.dataset.value;
-    const radio = document.querySelector(`input[name="payment_provider"][value="${CSS.escape(val)}"]`);
-    if (radio){ radio.checked = true; radio.dispatchEvent(new Event('change', {bubbles:true})); }
-    updatePayButton();
-    hiddenChannel.value = '';
-    renderChannels();
-    payClose(); payBtn.focus();
-  });
-  document.addEventListener('click', e => { if (payRoot && !payRoot.contains(e.target) && payBtn?.getAttribute('aria-expanded')==='true') payClose(); });
-  payMenu?.addEventListener('keydown', e => { if (e.key==='Escape'){ e.preventDefault(); payClose(); payBtn.focus(); }});
-  hiddenProviderRadios.forEach(r => r.addEventListener('change', () => { updatePayButton(); renderChannels(); }));
-  channelSearch?.addEventListener('input', () => renderChannels());
+  updatePaymentUI();
 
   /* ===== Order list: Show more (>10) ===== */
-  const list = $('#order-list');
-  const toggleBtn = $('#order-toggle');
+  const list = $("#order-list");
+  const toggleBtn = $("#order-toggle");
   if (list && toggleBtn) {
-    const items = $$('.order-item').filter(li => !li.classList.contains('order-item--empty'));
+    const items = $$(".order-item").filter(
+      (li) => !li.classList.contains("order-item--empty")
+    );
     const LIMIT = 10;
     if (items.length > LIMIT) {
-      items.slice(LIMIT).forEach(li => li.classList.add('is-hidden'));
+      items.slice(LIMIT).forEach((li) => li.classList.add("is-hidden"));
       toggleBtn.hidden = false;
-      toggleBtn.dataset.state = 'collapsed';
+      toggleBtn.dataset.state = "collapsed";
       const hiddenCount = items.length - LIMIT;
       toggleBtn.textContent = `Pokaż więcej (${hiddenCount})`;
-      toggleBtn.addEventListener('click', () => {
-        const collapsed = toggleBtn.dataset.state !== 'expanded';
+      toggleBtn.addEventListener("click", () => {
+        const collapsed = toggleBtn.dataset.state !== "expanded";
         if (collapsed) {
-          items.slice(LIMIT).forEach(li => li.classList.remove('is-hidden'));
-          toggleBtn.dataset.state = 'expanded';
-          toggleBtn.textContent = 'Pokaż mniej';
+          items.slice(LIMIT).forEach((li) => li.classList.remove("is-hidden"));
+          toggleBtn.dataset.state = "expanded";
+          toggleBtn.textContent = "Pokaż mniej";
         } else {
-          items.slice(LIMIT).forEach(li => li.classList.add('is-hidden'));
-          toggleBtn.dataset.state = 'collapsed';
+          items.slice(LIMIT).forEach((li) => li.classList.add("is-hidden"));
+          toggleBtn.dataset.state = "collapsed";
           toggleBtn.textContent = `Pokaż więcej (${hiddenCount})`;
-          list.scrollIntoView({ behavior:'smooth', block:'start' });
+          list.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       });
     }
   }
-
-  /* ===== Submit validation: channel required for providers with channels ===== */
-  const form = document.querySelector('form.checkout-form') || document.querySelector('form');
-  form?.addEventListener('submit', (e) => {
-    const provider = getProvider();
-    const requiresChannel = CHANNELS[provider]?.length > 0;
-    if (requiresChannel && !hiddenChannel.value) {
-      e.preventDefault();
-      channelError.hidden = false;
-      document.getElementById('paymentCard').scrollIntoView({behavior:'smooth', block:'start'});
-    }
-  });
 })();
 
-// >>> DODAJ GDZIEŚ OBOK INNYCH FUNKCJI (po zdefiniowaniu getProvider / hiddenChannel):
-function updatePaymentUI() {
-  const provider = (document.querySelector('input[name="payment_provider"]:checked')?.value) || 'p24';
-  const channel  = document.getElementById('payment_channel')?.value || '';
-
-  const payNotice   = document.getElementById('payNotice');
-  const noticeProv  = document.getElementById('noticeProvider');
-  const transferBox = document.getElementById('transferBox');
-  const blikBox     = document.getElementById('blikBox'); // jeśli kiedyś użyjesz widgetu – odkomentuj w HTML
-
-  // domyślnie schowaj
-  if (payNotice)   payNotice.hidden = true;
-  if (transferBox) transferBox.hidden = true;
-  if (blikBox)     blikBox.hidden = true;
-
-  // Provider: p24 -> informacja o przekierowaniu (i ewentualny BLIK inline)
-  if (provider === 'p24') {
-    if (payNotice) {
-      payNotice.hidden = false;
-      if (noticeProv) noticeProv.textContent = 'Przelewy24';
-    }
-    // Przykład: pokaż BLIK input tylko jeśli wdrożysz SDK i wybrano kanał 'blik'
-    // if (channel === 'blik' && blikBox) blikBox.hidden = false;
-  }
-
-  // Provider: card -> informacja o przekierowaniu do bramki kartowej
-  if (provider === 'card') {
-    if (payNotice) {
-      payNotice.hidden = false;
-      if (noticeProv) noticeProv.textContent = 'operatora kartowego';
-    }
-  }
-
-  // Provider: transfer -> instrukcja przelewu, bez przekierowania
-  if (provider === 'transfer') {
-    if (transferBox) transferBox.hidden = false;
-  }
-
-  // Uaktualnij kwotę w instrukcji przelewu (gdy przeliczy się dostawa)
-  const g = document.getElementById('grand-amount');
-  const t = document.getElementById('transferAmountCalc');
-  if (g && t) t.textContent = ' ' + g.textContent;
-}
-
-// >>> PODŁĄCZ WYWOŁANIA (masz już nasłuchy – dopisz tylko te linie):
-document.querySelectorAll('input[name="payment_provider"]').forEach(r =>
-  r.addEventListener('change', updatePaymentUI)
-);
-document.getElementById('channelGrid')?.addEventListener('click', (e) => {
-  if (e.target.closest('.channel-tile')) updatePaymentUI();
-});
-
-// Po inicjalizacji płatności i po recalc:
-updatePaymentUI();
-// …a w Twojej funkcji recalc() – dodaj na końcu:
-try { updatePaymentUI(); } catch(_) {}
-
+/* ===== Paczkomaty: widoczność boxa + wyszukiwanie Epaka /v1/points ===== */
 
 document.addEventListener("DOMContentLoaded", function () {
-  const lockerField = document.getElementById("lockerBox"); // <-- poprawione ID
+  const lockerField = document.getElementById("lockerBox");
   if (!lockerField) return;
 
   const shippingRadios = document.querySelectorAll('input[name="shipping_method"]');
   function updateLockerVisibility() {
     const checked = document.querySelector('input[name="shipping_method"]:checked');
-    lockerField.style.display = (checked && checked.value === "inpost_locker") ? "block" : "none";
+    lockerField.style.display =
+      checked && checked.value === "inpost_locker" ? "block" : "none";
   }
-  shippingRadios.forEach(r => r.addEventListener("change", updateLockerVisibility));
+  shippingRadios.forEach((r) => r.addEventListener("change", updateLockerVisibility));
   updateLockerVisibility();
 });
 
-
-
-
-
-
 // == PACZKOMATY INPOST (Epaka /v1/points) ==
-
 $(function () {
   const $lockerBox = $("#lockerBox");
   const $lockerSearch = $("#locker_search");
@@ -438,10 +373,8 @@ $(function () {
     }
   }
 
-  // wywołaj przy starcie
   toggleLockerBox();
 
-  // reaguj na zmianę metody dostawy (Twoje radio inputy)
   $(document).on("change", 'input[name="shipping_method"]', function () {
     toggleLockerBox();
   });
@@ -482,39 +415,30 @@ $(function () {
 
         $lockerResults.empty().append($ul);
       })
-
-        //JAK EPAKA NIE BEDZIE DZIALAC blad 403. to trzeba powiazac konto .../epaka/login powiaz konto.
-
       .fail(function (xhr) {
-      let msg = "Nie udało się pobrać listy paczkomatów. Spróbuj ponownie za chwilę.";
+        let msg = "Nie udało się pobrać listy paczkomatów. Spróbuj ponownie za chwilę.";
 
-      // 404 najczęściej oznacza: zły URL endpointu (/epaka/points/) albo brak routingu
-      if (xhr.status === 404) {
-        msg = "Nie udało się wyszukać paczkomatów. Sprawdź wpisane miasto/kod i spróbuj ponownie.";
-        // jeśli chcesz bardziej technicznie:
-        // msg = "Wyszukiwarka paczkomatów jest chwilowo niedostępna. Spróbuj ponownie za chwilę.";
-      } else if (xhr.status === 403) {
-        msg = "Wyszukiwarka paczkomatów jest niedostępna (brak autoryzacji).";
-      } else if (xhr.status === 400) {
-        msg = "Podaj poprawne miasto lub kod pocztowy (np. 00-001).";
-      } else if (xhr.status >= 500) {
-        msg = "Błąd serwera podczas pobierania paczkomatów. Spróbuj ponownie za chwilę.";
-      }
-
-      // jeśli backend zwróci JSON z {error: "..."} lub {details: "..."} – pokaż to zamiast statusu
-      try {
-        const data = xhr.responseJSON;
-        if (data && (data.error || data.details)) {
-          msg = data.error || data.details;
+        if (xhr.status === 404) {
+          msg = "Nie udało się wyszukać paczkomatów. Sprawdź wpisane miasto/kod i spróbuj ponownie.";
+        } else if (xhr.status === 403) {
+          msg = "Wyszukiwarka paczkomatów jest niedostępna (brak autoryzacji).";
+        } else if (xhr.status === 400) {
+          msg = "Podaj poprawne miasto lub kod pocztowy (np. 00-001).";
+        } else if (xhr.status >= 500) {
+          msg = "Błąd serwera podczas pobierania paczkomatów. Spróbuj ponownie za chwilę.";
         }
-      } catch (_) {}
 
-      $lockerResults.html(`<p class="locker-error-msg">${msg}</p>`);
-    });
+        try {
+          const data = xhr.responseJSON;
+          if (data && (data.error || data.details)) {
+            msg = data.error || data.details;
+          }
+        } catch (_) {}
 
+        $lockerResults.html(`<p class="locker-error-msg">${msg}</p>`);
+      });
   });
 
-  // kliknięcie w konkretny paczkomat
   $(document).on("click", ".locker-item", function () {
     const $li = $(this);
     const pointId = $li.data("pointId");
@@ -532,9 +456,7 @@ $(function () {
   });
 });
 
-
 // == WALIDACJA: Paczkomaty InPost – bez wyboru paczkomatu nie puszczamy zamówienia ==
-
 $(function () {
   const $form = $(".checkout-form");
   const $lockerBox = $("#lockerBox");
@@ -544,14 +466,11 @@ $(function () {
   $form.on("submit", function (e) {
     const shippingMethod = $('input[name="shipping_method"]:checked').val();
 
-    // jeśli wybrano "Paczkomaty InPost"
     if (shippingMethod === "inpost_locker") {
-      // ale nie ma żadnego wybranego paczkomatu:
       if (!$lockerCode.val()) {
-        e.preventDefault();          // blokujemy wysłanie formularza
-        $lockerError.show();         // pokazujemy czerwony komunikat
+        e.preventDefault();
+        $lockerError.show();
 
-        // przewiń stronę do boxa paczkomatu, żeby user widział, co poprawić
         const offsetTop = $lockerBox.offset().top - 120;
         $("html, body").animate({ scrollTop: offsetTop }, 350);
       }

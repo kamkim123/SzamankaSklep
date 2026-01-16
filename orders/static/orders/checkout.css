@@ -777,3 +777,9 @@ h2{ font-weight:700; letter-spacing:-0.01em; font-size:1.05rem; margin-bottom:.6
   border-radius: 10px;
   font-weight: 600;
 }
+
+
+.pay-visual { display: grid; gap: 12px; margin-top: 14px; }
+.pay-visual__item { display:flex; gap:10px; align-items:flex-start; padding:12px; border:1px solid rgba(0,0,0,.08); border-radius:14px; }
+.pay-visual__title { font-weight:700; }
+.pay-visual__desc { opacity:.75; font-size:14px; margin-top:2px; }
