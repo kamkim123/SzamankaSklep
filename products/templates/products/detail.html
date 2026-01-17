@@ -35,42 +35,46 @@
             <!-- LEWA KOLUMNA: GALERIA + OPIS POD ZDJĘCIEM -->
             <div class="left-col">
                 <!-- GALERIA -->
-                <div class="image-card card">
-                    {% if product.is_promotion %}
-                      <span class="badge badge--promo">Promocja</span>
-                    {% endif %}
+                <div class="gallery-wrap">
+                    <div class="image-card card">
+                        {% if product.is_promotion %}
+                          <span class="badge badge--promo">Promocja</span>
+                        {% endif %}
 
-                    <div class="image-wrapper2">
-                        <img src="{{ product.product_image }}" alt="{{ product.product_name }}" class="main-image"/>
-                        <div class="mini-photos" role="list" aria-label="Dodatkowe zdjęcia">
-                            {% for img in product.gallery.all %}
-                            <button class="mini-photo" type="button" role="listitem"
-                                    aria-label="Pokaż zdjęcie {{ forloop.counter }}">
-                                <img src="{{ product.product_image }}" data-full="{{ product.product_image }}"
-                                     alt="{{ product.product_name }} – miniatura {{ forloop.counter }}"/>
-                            </button>
-                            {% endfor %}
+                        <div class="image-wrapper2">
+                            <img src="{{ product.product_image }}" alt="{{ product.product_name }}" class="main-image"/>
+                            <div class="mini-photos" role="list" aria-label="Dodatkowe zdjęcia">
+                                {% for img in product.gallery.all %}
+                                <button class="mini-photo" type="button" role="listitem"
+                                        aria-label="Pokaż zdjęcie {{ forloop.counter }}">
+                                    <img src="{{ product.product_image }}" data-full="{{ product.product_image }}"
+                                         alt="{{ product.product_name }} – miniatura {{ forloop.counter }}"/>
+                                </button>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- OPIS PRODUKTU POD ZDJĘCIEM -->
-                <article class="product-description card" id="opis">
-                    <h2>Opis produktu</h2>
-                    <div class="prose">
-                        <p>
-                            {{ product.product_info }}
-                        </p>
-                    </div>
-
-                    <div class="meta-grid">
-                        <div>
-                            <span class="meta-label">Kategoria</span>
-                            <span class="meta-value">{{ product.product_type }}</span>
+                <div class="desc-wrap">
+                    <article class="product-description card" id="opis">
+                        <h2>Opis produktu</h2>
+                        <div class="prose">
+                            <p>
+                                {{ product.product_info }}
+                            </p>
                         </div>
 
-                    </div>
-                </article>
+                        <div class="meta-grid">
+                            <div>
+                                <span class="meta-label">Kategoria</span>
+                                <span class="meta-value">{{ product.product_type }}</span>
+                            </div>
+
+                        </div>
+                    </article>
+                </div>
             </div>
 
             <!-- PRAWA KOLUMNA: INFORMACJE I CTA -->
