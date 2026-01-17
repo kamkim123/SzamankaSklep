@@ -895,6 +895,12 @@ nav {
     font-weight: 600;
     color: rgb(95, 172, 33, 0.9);
     font-size: 1.2rem;
+}
+
+.transmisje-wrapper p a:hover{
+
+    color: rgb(95, 172, 33, 0.9);
+    text-decoration:underline;
 
 }
 
