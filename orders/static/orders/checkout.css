@@ -239,7 +239,7 @@ h2{ font-weight:700; letter-spacing:-0.01em; font-size:1.05rem; margin-bottom:.6
 .ship-select__current-title,
 .pay-select__current-title { font-weight: 800; color: var(--text); }
 .ship-select__current-price,
-.pay-select__current-desc { font-weight: 700; color: var(--text-soft); }
+.pay-select__current-desc { font-weight: 700; color: var(--text-soft); font-size: 16px; }
 
 /* Menu */
 .ship-select__menu, .pay-select__menu {
@@ -779,7 +779,7 @@ h2{ font-weight:700; letter-spacing:-0.01em; font-size:1.05rem; margin-bottom:.6
 }
 
 
-.pay-visual { display: grid; gap: 12px; margin-top: 14px; }
+.pay-visual { display: grid; gap: 12px; margin-top: 0; }
 .pay-visual__item { display:flex; gap:10px; align-items:flex-start; padding:12px; border:1px solid rgba(0,0,0,.08); border-radius:14px; }
 .pay-visual__title { font-weight:700; }
 .pay-visual__desc { opacity:.75; font-size:14px; margin-top:2px; }
