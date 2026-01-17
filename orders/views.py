@@ -7,8 +7,6 @@ from django.http import JsonResponse
 from django.contrib import messages
 import re
 from django.views.decorators.cache import never_cache
-from .epaka import epaka_check_data, _order_to_epaka_body
-
 from .epaka_auth import get_epaka_access_token
 
 from .cart import Cart
@@ -102,8 +100,9 @@ def checkout(request):
         if len(cart) == 0:
             messages.error(request, "Koszyk jest pusty — dodaj produkty i spróbuj ponownie.")
             return redirect("orders:cart")
-        shipping_method = request.POST.get("shipping_method", Order.SHIPPING_INPOST_COURIER)
-        inpost_locker_code = request.POST.get("inpost_locker_code", "").strip()
+
+        shipping_method = (request.POST.get("shipping_method") or Order.SHIPPING_INPOST_COURIER).strip()
+        inpost_locker_code = (request.POST.get("inpost_locker_code", "") or "").strip()
 
         provider = request.POST.get("payment_provider", "transfer")
         if provider == "transfer":
@@ -113,27 +112,21 @@ def checkout(request):
         else:
             payment_method = Order.PAYMENT_TRANSFER
 
-        shipping_method = (request.POST.get("shipping_method") or Order.SHIPPING_INPOST_COURIER).strip()
-        print("POST shipping_method:", repr(shipping_method))
         shipping_cost = shipping_for_method(shipping_method)
-        print("CALC shipping_cost:", shipping_cost)
 
         # --- WALIDACJA TELEFONU ---
         raw_phone = (request.POST.get("phone", "") or "").strip()
-        digits = re.sub(r"\D+", "", raw_phone)  # zostaw tylko cyfry
-
+        digits = re.sub(r"\D+", "", raw_phone)
         if len(digits) < 9:
             messages.error(request, "Numer telefonu jest za krótki (min. 9 cyfr).")
             return redirect("orders:checkout")
-
         if len(digits) > 15:
             messages.error(request, "Numer telefonu jest za długi (max. 15 cyfr).")
             return redirect("orders:checkout")
 
+        # --- WALIDACJA KODU POCZTOWEGO (tylko format) ---
         postal_code_raw = (request.POST.get("postal_code", "") or "").strip()
-        postal_code_raw = postal_code_raw.replace(" ", "").replace("\u00A0", "")  # usuń spacje/NBSP
-
-        # pozwól też na 5 cyfr bez myślnika
+        postal_code_raw = postal_code_raw.replace(" ", "").replace("\u00A0", "")
         if re.fullmatch(r"\d{5}", postal_code_raw):
             postal_code = postal_code_raw[:2] + "-" + postal_code_raw[2:]
         else:
@@ -148,44 +141,6 @@ def checkout(request):
             messages.error(request, "Podaj miasto.")
             return redirect("orders:checkout")
 
-        # --- WALIDACJA ePaka: kod pocztowy musi pasować do miasta ---
-        access_token = get_epaka_access_token()
-        if access_token:
-            # Tworzymy "tymczasowy" obiekt order (nie zapisujemy do DB)
-            tmp_order = Order(
-                first_name=request.POST.get('first_name', ''),
-                last_name=request.POST.get('last_name', ''),
-                email=request.POST.get('email', ''),
-                phone=digits,
-                address=request.POST.get('address', ''),
-                postal_code=postal_code,
-                city=city,
-                shipping_method=shipping_method,
-                inpost_locker_code=inpost_locker_code,
-                shipping_cost=shipping_cost,
-                status=Order.STATUS_NEW,
-                payment_method=payment_method,
-                paid=False,
-            )
-
-            # profil ePaki potrzebny do body
-            profile_resp = epaka_api_get("/v1/user", access_token)
-            if profile_resp.status_code == 200:
-                body = _order_to_epaka_body(tmp_order, profile_resp.json())
-                check_resp = epaka_check_data(access_token, body)
-
-                if check_resp.status_code != 200:
-                    # wyciągnij komunikat
-                    try:
-                        data = check_resp.json()
-                        err = data.get("errors", [{}])[0]
-                        msg = err.get("message") or "Nieprawidłowe dane adresowe."
-                    except Exception:
-                        msg = "Nieprawidłowe dane adresowe."
-
-                    messages.error(request, f"Błąd adresu: {msg}")
-                    return redirect("orders:checkout")
-
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             first_name=request.POST.get('first_name'),
@@ -195,11 +150,9 @@ def checkout(request):
             address=request.POST.get('address'),
             postal_code=postal_code,
             city=city,
-
             shipping_cost=shipping_cost,
             status=Order.STATUS_NEW,
             payment_method=payment_method,
-
             shipping_method=shipping_method,
             inpost_locker_code=inpost_locker_code,
         )
@@ -212,17 +165,14 @@ def checkout(request):
                 quantity=item["quantity"],
             )
 
-
-
-        # ✅ Online: NIE czyścimy koszyka tutaj
+        # Online: NIE czyścimy koszyka tutaj
         if payment_method == Order.PAYMENT_ONLINE:
             return redirect("orders:p24_start", pk=order.pk)
 
-        # ✅ Offline (transfer): możesz wyczyścić od razu
+        # Offline (transfer): wyczyść koszyk od razu
         cart.clear()
         return redirect("orders:thank_you", pk=order.pk)
 
-    # ======= TO JEST CZĘŚĆ GET (czyli wejście na checkout) =======
     default_method = Order.SHIPPING_INPOST_COURIER
     checkout_shipping = shipping_for_method(default_method)
     checkout_grand = cart.subtotal + checkout_shipping
@@ -234,6 +184,7 @@ def checkout(request):
         "checkout_grand": checkout_grand,
         "checkout_method": default_method,
     })
+
 
 
 def thank_you(request, pk):
