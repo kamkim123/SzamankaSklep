@@ -637,6 +637,14 @@ nav {
     text-shadow: 0 0 1px black;
 }
 
+.text-container1 p span:hover{
+    text-decoration:underline;
+}
+
+.trans-trans1{
+    font-weight: 600;
+}
+
 .text-container1 img{
     width: 30px;
     height: 30px;
@@ -821,13 +829,32 @@ nav {
 
 
 .transmisje{
-    padding:0 4rem;
+    padding:2rem 4rem;
     background-color: #fff5ea;
     height:580px;
     display:  flex;
+    flex-direction: column;
     align-items:center;
 
 }
+
+.transmisje h2{
+    color: rgb(95, 172, 33, 0.9);
+    border-radius: 20px;
+    padding:10px;
+    border: gold 1px solid;
+    background: #fff;
+    cursor:pointer;
+}
+
+.transmisje h2:hover{
+    background: rgb(95, 172, 33, 0.9);
+    color: white;
+
+    text-decoration: underline;
+}
+
+
 
 .transmisje-wrapper{
     height: 470px;
@@ -836,6 +863,7 @@ nav {
     margin:1rem 0;
     color: #4c2a0f;
     display: flex;
+
     align-items: center;
     background-color: #ffffff;
 
