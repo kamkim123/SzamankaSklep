@@ -1,9 +1,7 @@
 /* ====== Reset + font ====== */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-*{ box-sizing: border-box; margin: 0; padding: 0; max-width: 100%;  }
-
-html, body {  }
+*{ box-sizing: border-box; margin: 0; padding: 0; }
 
 :root{
     /* Jasna paleta */
@@ -20,7 +18,7 @@ html, body {  }
     --ease: cubic-bezier(.22,.61,.36,1);
 }
 
-html, body{ min-height: 100%;  overflow-x: hidden;/* nowoczesne mobile */ }
+html, body{ min-height: 100%;/* nowoczesne mobile */ }
 
 body{
     font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
