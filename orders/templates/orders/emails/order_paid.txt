@@ -1,7 +1,26 @@
-Płatność potwierdzona ✅
-Zamówienie #{{ order.pk }} zostało opłacone.
+Płatność przyjęta ✅
 
-Kwota: {{ order.total_to_pay }} zł
+Zamówienie: #{{ order.pk }}
+Data zamówienia: {{ order.created_at|date:"Y-m-d H:i" }}
+Data płatności: {{ order.paid_at|date:"Y-m-d H:i" }}
+Kwota opłacona: {{ order.total_to_pay|floatformat:2 }} zł
+Dostawa: {{ order.shipping_method }}
 
-Dziękujemy!
-{{ site_name }}
+Dane do wysyłki:
+{{ order.first_name }} {{ order.last_name }}
+{{ order.address }}
+{{ order.postal_code }} {{ order.city }}
+Telefon: {{ order.phone }}
+Email: {{ order.email }}
+
+Produkty:
+{% for item in items %}
+- {{ item.product.product_name }} | {{ item.unit_price|floatformat:2 }} zł | x{{ item.quantity }} | razem: {{ item.line_total|floatformat:2 }} zł
+{% endfor %}
+
+Gdy przesyłka zostanie nadana, otrzymasz wiadomość bezpośrednio od firmy przewozowej z informacjami o dostawie i numerem śledzenia.
+
+Dziękujemy za zamówienie!
+Zespół Szamanki
+
+Kontakt: {{ support_email }}

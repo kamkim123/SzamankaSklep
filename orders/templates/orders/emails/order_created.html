@@ -1,33 +1,137 @@
 <!doctype html>
 <html lang="pl">
-  <body style="font-family:Arial,sans-serif; background:#f7faf8; padding:24px; color:#0d2a1a;">
-    <div style="max-width:640px; margin:0 auto; background:#ffffff; border:1px solid #e6efe9; border-radius:14px; padding:22px;">
-      <h2 style="margin:0 0 10px;">Dziękujemy! Otrzymaliśmy Twoje zamówienie ✅</h2>
-      <p style="margin:0 0 14px;">Numer zamówienia: <strong>#{{ order.pk }}</strong></p>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Potwierdzenie zamówienia</title>
+</head>
+<body style="margin:0; padding:0; background:#f4f7f5; font-family: Arial, Helvetica, sans-serif; color:#153524;">
 
-      <div style="background:#f7faf8; border-radius:12px; padding:12px; margin:0 0 14px;">
-        <p style="margin:0;">Kwota do zapłaty: <strong>{{ order.total_to_pay }} zł</strong></p>
-        <p style="margin:6px 0 0;">Dostawa: <strong>{{ order.shipping_method }}</strong></p>
-      </div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f7f5; padding:24px 0;">
+    <tr>
+      <td align="center" style="padding:0 12px;">
 
-      <h3 style="margin:16px 0 10px;">Produkty</h3>
-      <ul style="padding-left:18px; margin:0;">
-        {% for it in items %}
-          <li style="margin:6px 0;">
-            {{ it.product.product_name }} × {{ it.quantity }}
-            <span style="color:#5b7a67;">— {{ it.total_price }} zł</span>
-          </li>
-        {% endfor %}
-      </ul>
+        <!-- KARTA -->
+        <table role="presentation" width="640" cellspacing="0" cellpadding="0" style="max-width:640px; width:100%; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(16,38,28,.08); border:1px solid #e6efe9;">
+          <tr>
+            <td style="padding:22px 24px; background:#ffffff;">
+              <div style="font-size:22px; font-weight:800; line-height:1.2;">
+                Dziękujemy! Otrzymaliśmy Twoje zamówienie ✅
+              </div>
+              <div style="margin-top:6px; color:#2b5a42; font-size:14px;">
+                Numer zamówienia: <strong>#{{ order.pk }}</strong>
+              </div>
+            </td>
+          </tr>
 
-      <p style="margin:16px 0 0; color:#5b7a67;">
-        Jeśli wybrałeś płatność online, dokończysz ją w Przelewy24 po kliknięciu <strong>„Zamawiam i płacę”</strong>.
-      </p>
+          <tr>
+            <td style="padding:0 24px 18px;">
+              <!-- INFO BOX -->
+              <div style="background:#f7faf8; border:1px solid #e6efe9; border-radius:14px; padding:14px 14px; color:#153524;">
+                <div style="font-size:16px; line-height:1.6;">
+                  <div><strong>Data zamówienia:</strong> {{ order.created_at|date:"Y-m-d H:i" }}</div>
+                  <div style="margin-top:6px;"><strong>Kwota do zapłaty:</strong> {{ total|floatformat:2 }} zł</div>
+                  <div style="margin-top:6px;"><strong>Dostawa:</strong> {{ order.shipping_method }}</div>
+                </div>
+              </div>
+            </td>
+          </tr>
 
-      <hr style="border:none; border-top:1px solid #e6efe9; margin:18px 0;">
-      <p style="margin:0; font-size:12px; color:#5b7a67;">
-        {{ site_name }} • kontakt: {{ support_email }}
-      </p>
-    </div>
-  </body>
+          <tr>
+            <td style="padding:0 24px 18px;">
+              <div style="font-size:16px; font-weight:700; margin:8px 0 10px;">Dane do wysyłki</div>
+
+              <div style="background:#ffffff; border:1px solid #e6efe9; border-radius:14px; padding:14px;">
+                <div style="font-size:14px; line-height:1.7; color:#153524;">
+                  <strong>{{ order.first_name }} {{ order.last_name }}</strong><br>
+                  {{ order.address }}<br>
+                  {{ order.postal_code }} {{ order.city }}<br>
+                  Telefon: {{ order.phone }}<br>
+                  Email: {{ order.email }}
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0 24px 10px;">
+              <div style="font-size:16px; font-weight:700; margin:8px 0 10px;">Produkty</div>
+
+              <!-- TABELA PRODUKTÓW -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse; border:1px solid #e6efe9; border-radius:14px; overflow:hidden;">
+                <thead>
+                  <tr style="background:#f7faf8;">
+                    <th align="left" style="padding:10px 12px; font-size:13px; color:#2b5a42; border-bottom:1px solid #e6efe9;">Produkt</th>
+                    <th align="right" style="padding:10px 12px; font-size:13px; color:#2b5a42; border-bottom:1px solid #e6efe9;">Cena</th>
+                    <th align="right" style="padding:10px 12px; font-size:13px; color:#2b5a42; border-bottom:1px solid #e6efe9;">Ilość</th>
+                    <th align="right" style="padding:10px 12px; font-size:13px; color:#2b5a42; border-bottom:1px solid #e6efe9;">Razem</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in items %}
+                  <tr>
+                    <td style="padding:10px 12px; font-size:14px; border-bottom:1px solid #eef4f0;">{{ item.product.product_name }}</td>
+                    <td align="right" style="padding:10px 12px; font-size:14px; border-bottom:1px solid #eef4f0;">{{ item.unit_price|floatformat:2 }} zł</td>
+                    <td align="right" style="padding:10px 12px; font-size:14px; border-bottom:1px solid #eef4f0;">x {{ item.quantity }}</td>
+                    <td align="right" style="padding:10px 12px; font-size:14px; border-bottom:1px solid #eef4f0;"><strong>{{ item.line_total|floatformat:2 }} zł</strong></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0 24px 18px;">
+              <!-- PODSUMOWANIE KWOT -->
+              <div style="margin-top:10px; border-top:1px solid #e6efe9; padding-top:12px; font-size:14px; line-height:1.8;">
+                <div style="display:flex; justify-content:space-between;">
+                  <span>Produkty:</span>
+                  <strong>{{ subtotal|floatformat:2 }} zł</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span>Dostawa:</span>
+                  <strong>{{ order.shipping_cost|floatformat:2 }} zł</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:16px; margin-top:6px;">
+                  <span>Do zapłaty:</span>
+                  <strong>{{ total|floatformat:2 }} zł</strong>
+                </div>
+              </div>
+
+              <!-- INFO O PŁATNOŚCI -->
+              <div style="margin-top:14px; color:#2b5a42; font-size:14px; line-height:1.6;">
+                Jeśli wybrałeś(aś) płatność online, dokończysz ją w Przelewy24 po kliknięciu „Zamawiam i płacę”.
+              </div>
+
+              <!-- INFO O DOSTAWIE -->
+              <div style="margin-top:10px; color:#2b5a42; font-size:14px; line-height:1.6;">
+                Gdy przesyłka zostanie nadana, otrzymasz wiadomość bezpośrednio od firmy przewozowej z informacjami o dostawie i numerem śledzenia.
+              </div>
+
+              <!-- PODZIĘKOWANIE -->
+              <div style="margin-top:18px; color:#153524; font-size:14px; line-height:1.7;">
+                Dziękujemy za zamówienie!<br>
+                Pozdrawiamy,<br>
+                <strong>Zespół Szamanki</strong>
+              </div>
+
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:16px 24px; background:#f7faf8; border-top:1px solid #e6efe9;">
+              <div style="font-size:12px; color:#5b7a67; line-height:1.6;">
+                SzamankaSklep • kontakt: <a href="mailto:szamankasklep@gmail.com" style="color:#2b5a42; font-weight:700; text-decoration:none;">szamankasklep@gmail.com</a>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <!-- /KARTA -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
 </html>

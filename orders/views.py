@@ -166,6 +166,8 @@ def checkout(request):
                 quantity=item["quantity"],
             )
 
+
+
         # ✅ MAIL: zamówienie przyjęte (idzie zawsze po utworzeniu zamówienia)
         try:
             send_order_email(
