@@ -8,6 +8,7 @@ from django.contrib import messages
 import re
 from django.views.decorators.cache import never_cache
 from .epaka_auth import get_epaka_access_token
+from .emails import send_order_email
 
 from .cart import Cart
 from products.models import Product
@@ -165,6 +166,17 @@ def checkout(request):
                 quantity=item["quantity"],
             )
 
+        # ✅ MAIL: zamówienie przyjęte (idzie zawsze po utworzeniu zamówienia)
+        try:
+            send_order_email(
+                order,
+                subject=f"Potwierdzenie zamówienia #{order.pk} – SzamankaSklep",
+                template_base="orders/emails/order_created",
+            )
+        except Exception as e:
+            order.notes = (order.notes or "") + f"\n[MAIL] order_created error: {repr(e)}\n"
+            order.save(update_fields=["notes"])
+
         # Online: NIE czyścimy koszyka tutaj
         if payment_method == Order.PAYMENT_ONLINE:
             return redirect("orders:p24_start", pk=order.pk)
@@ -176,6 +188,9 @@ def checkout(request):
     default_method = Order.SHIPPING_INPOST_COURIER
     checkout_shipping = shipping_for_method(default_method)
     checkout_grand = cart.subtotal + checkout_shipping
+
+
+
 
     return render(request, "orders/checkout.html", {
         "cart": cart,
@@ -454,6 +469,17 @@ def p24_status(request):
     order.status = Order.STATUS_PAID
     order.p24_order_id = str(order_id)
     order.save(update_fields=["paid", "paid_at", "status", "p24_order_id"])
+
+    # ✅ MAIL: płatność potwierdzona
+    try:
+        send_order_email(
+            order,
+            subject=f"Płatność potwierdzona – zamówienie #{order.pk}",
+            template_base="orders/emails/order_paid",
+        )
+    except Exception as e:
+        order.notes = (order.notes or "") + f"\n[MAIL] order_paid error: {repr(e)}\n"
+        order.save(update_fields=["notes"])
 
     # ✅ Od teraz NIE wysyłamy automatycznie do ePaki po płatności.
     # Przesyłkę tworzysz ręcznie w adminie akcją "Wyślij do ePaki" po ustawieniu package_size.

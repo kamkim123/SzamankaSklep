@@ -1,0 +1,13 @@
+Dziękujemy! Otrzymaliśmy Twoje zamówienie #{{ order.pk }}.
+
+Kwota do zapłaty: {{ order.total_to_pay }} zł
+Metoda dostawy: {{ order.shipping_method }}
+
+Produkty:
+{% for it in items %}
+- {{ it.product.product_name }} x{{ it.quantity }} — {{ it.total_price }} zł
+{% endfor %}
+
+Jeśli wybrałeś płatność online, dokończysz ją w Przelewy24 po kliknięciu "Zamawiam i płacę".
+Pozdrawiamy,
+{{ site_name }}

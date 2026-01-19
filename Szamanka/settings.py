@@ -258,3 +258,8 @@ if P24_SANDBOX:
 else:
     P24_API_BASE = "https://secure.przelewy24.pl/api/v1"
     P24_TRN_BASE = "https://secure.przelewy24.pl/trnRequest"
+
+
+SITE_NAME = "SzamankaSklep"
+COMPANY_NAME = "Twoja Firma Sp. z o.o."
+COMPANY_IBAN = "PL12 3456 7890 1234 5678 9012 3456"

@@ -1,0 +1,7 @@
+Płatność potwierdzona ✅
+Zamówienie #{{ order.pk }} zostało opłacone.
+
+Kwota: {{ order.total_to_pay }} zł
+
+Dziękujemy!
+{{ site_name }}
