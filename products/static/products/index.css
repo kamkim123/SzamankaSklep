@@ -2108,9 +2108,7 @@ iframe {
         height: 35rem;
         padding:0 -2rem;
     }
-        .transmisje h2{
-        font-size: .9rem;
-    }
+
 
 }
 
@@ -2132,6 +2130,11 @@ iframe {
         height: 30rem;
         margin-top: 1.5rem;
 
+    }
+
+      .transmisje h2{
+
+        width: 300px;
     }
 
       .transmisje-image-wrapper{
