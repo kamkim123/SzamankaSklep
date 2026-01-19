@@ -98,19 +98,32 @@ if (!(window.CSS && CSS.escape)) {
     if (g && t) t.textContent = " " + g.textContent;
   }
 
-  const recalc = () => {
-    const sub = getSubtotal();
-    const shipRadio = $('input[name="shipping_method"]:checked');
-    const shipCost = shipRadio ? parseMoney(shipRadio.dataset.price) : 0;
+const getDiscount = () =>
+  totalsBox ? parseMoney(totalsBox.getAttribute("data-discount")) : 0;
 
-    if (shippingEl) shippingEl.textContent = fmt(shipCost);
-    if (grandEl) grandEl.textContent = fmt(sub + shipCost);
+const recalc = () => {
+  const sub = getSubtotal();
+  const discount = getDiscount();
 
-    // po przeliczeniu aktualizujemy też UI płatności (kwota w przelewie + notice)
-    try {
-      updatePaymentUI();
-    } catch (_) {}
-  };
+  const shipRadio = $('input[name="shipping_method"]:checked');
+  const shipCost = shipRadio ? parseMoney(shipRadio.dataset.price) : 0;
+
+  if (shippingEl) shippingEl.textContent = fmt(shipCost);
+
+  // ✅ GRAND = produkty - rabat + dostawa
+  const grand = Math.max(0, sub - discount + shipCost);
+  if (grandEl) grandEl.textContent = fmt(grand);
+
+  // ✅ (opcjonalnie) odśwież widoczny rabat, jeśli istnieje w DOM
+  const discEl = document.getElementById("discount-amount");
+  if (discEl && discount > 0) discEl.textContent = "-" + fmt(discount);
+
+  // po przeliczeniu aktualizujemy też UI płatności (kwota w przelewie + notice)
+  try {
+    updatePaymentUI();
+  } catch (_) {}
+};
+
 
   /* ===== Accept terms lock ===== */
   const acceptTerms = $("#accept_terms");
@@ -477,3 +490,4 @@ $(function () {
     }
   });
 });
+

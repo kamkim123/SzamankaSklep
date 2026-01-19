@@ -196,7 +196,7 @@ def checkout(request):
 
     default_method = Order.SHIPPING_INPOST_COURIER
     checkout_shipping = shipping_for_method(default_method)
-    checkout_grand = cart.subtotal + checkout_shipping
+    checkout_grand = cart.grand_total + checkout_shipping
 
 
 
@@ -204,6 +204,8 @@ def checkout(request):
     return render(request, "orders/checkout.html", {
         "cart": cart,
         "checkout_subtotal": cart.subtotal,
+        "checkout_discount": cart.discount_amount,
+        "checkout_coupon_code": cart.coupon_code,
         "checkout_shipping": checkout_shipping,
         "checkout_grand": checkout_grand,
         "checkout_method": default_method,

@@ -129,11 +129,21 @@
                         <!-- Pokaż więcej -->
                         <button type="button" class="order-toggle" id="order-toggle" hidden></button>
 
-                        <div class="order-totals" id="order-totals" data-subtotal="{{ checkout_subtotal }}">
+                        <div class="order-totals"
+                             id="order-totals"
+                             data-subtotal="{{ checkout_subtotal }}"
+                             data-discount="{{ checkout_discount|default:'0.00' }}">
+
                             <div class="row">
                                 <span>Produkty:</span>
                                 <strong id="subtotal-amount">{{ checkout_subtotal }} zł</strong>
                             </div>
+                            {% if checkout_discount and checkout_discount > 0 %}
+                            <div class="row">
+                              <span>Rabat{% if checkout_coupon_code %} ({{ checkout_coupon_code }}){% endif %}:</span>
+                              <strong id="discount-amount">-{{ checkout_discount }} zł</strong>
+                            </div>
+                            {% endif %}
                             <div class="row">
                                 <span>Dostawa:</span>
                                 <strong id="shipping-amount">{{ checkout_shipping }} zł</strong>
@@ -185,7 +195,7 @@
                                 <div class="visually-hidden">
                                     <label><input type="radio" name="shipping_method" value="inpost_courier" data-price="18.00" checked></label>
                                     <label><input type="radio" name="shipping_method" value="dpd_courier" data-price="18.00"></label>
-                                    <label><input type="radio" name="shipping_method" value="inpost_locker" data-price="18.00"></label>
+                                    <label><input type="radio" name="shipping_method" value="inpost_locker" data-price="19.00"></label>
                                     <label><input type="radio" name="shipping_method" value="pickup" data-price="0.00"></label>
                                 </div>
                             </div>
