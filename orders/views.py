@@ -142,6 +142,9 @@ def checkout(request):
             messages.error(request, "Podaj miasto.")
             return redirect("orders:checkout")
 
+        discount_amount = cart.discount_amount
+        coupon_code = cart.coupon_code
+
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             first_name=request.POST.get('first_name'),
@@ -152,6 +155,10 @@ def checkout(request):
             postal_code=postal_code,
             city=city,
             shipping_cost=shipping_cost,
+
+            coupon_code=coupon_code,
+            discount_amount=discount_amount,
+
             status=Order.STATUS_NEW,
             payment_method=payment_method,
             shipping_method=shipping_method,
@@ -489,5 +496,26 @@ def p24_status(request):
     order.save(update_fields=["epaka_last_error", "updated_at"])
 
     return HttpResponse("OK")
+
+
+from django.views.decorators.http import require_POST
+
+@require_POST
+def cart_apply_coupon(request):
+    cart = Cart(request)
+    code = request.POST.get("coupon_code", "")
+    ok, msg = cart.apply_coupon(code)
+    if ok:
+        messages.success(request, msg)
+    else:
+        messages.error(request, msg)
+    return redirect("orders:cart")
+
+@require_POST
+def cart_remove_coupon(request):
+    cart = Cart(request)
+    cart.remove_coupon()
+    messages.success(request, "Usunięto kod rabatowy.")
+    return redirect("orders:cart")
 
 

@@ -140,6 +140,11 @@ class Order(models.Model):
 
     # koszty
     shipping_cost   = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
+
+    # ✅ KUPON / RABAT
+    coupon_code = models.CharField(max_length=40, blank=True)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
+
     notes           = models.TextField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -174,7 +179,10 @@ class Order(models.Model):
 
     @property
     def total_to_pay(self) -> Decimal:
-        return (self.items_total + self.shipping_cost).quantize(Decimal("0.01"))
+        total = self.items_total + self.shipping_cost - (self.discount_amount or Decimal("0.00"))
+        if total < 0:
+            total = Decimal("0.00")
+        return total.quantize(Decimal("0.01"))
 
 
 class OrderItem(models.Model):
@@ -199,8 +207,30 @@ class OrderItem(models.Model):
         return (self.unit_price * self.quantity).quantize(Decimal("0.01"))
 
 
-
 from django.utils import timezone
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=40, unique=True)
+    percent = models.PositiveIntegerField(default=0, help_text="0-100 (%)")
+    active = models.BooleanField(default=True)
+
+    valid_from = models.DateTimeField(null=True, blank=True)
+    valid_to = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.code} (-{self.percent}%)"
+
+    def is_valid_now(self) -> bool:
+        if not self.active:
+            return False
+        now = timezone.now()
+        if self.valid_from and now < self.valid_from:
+            return False
+        if self.valid_to and now > self.valid_to:
+            return False
+        return True
+
+
 
 class EpakaToken(models.Model):
     access_token = models.TextField()

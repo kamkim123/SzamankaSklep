@@ -1,11 +1,15 @@
 from decimal import Decimal, ROUND_HALF_UP
 from django.conf import settings
 from products.models import Product
+from .models import Coupon
 
 MONEY_Q = Decimal("0.01")
 
 def qmoney(x: Decimal) -> Decimal:
     return x.quantize(MONEY_Q, rounding=ROUND_HALF_UP)
+
+COUPON_SESSION_KEY = "cart_coupon_code"
+
 
 class Cart:
     def __init__(self, request):
@@ -45,6 +49,7 @@ class Cart:
     def __iter__(self):
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
+
         for p in products:
             raw = self.cart[str(p.id)]
             price = Decimal(raw["price"])
@@ -66,14 +71,67 @@ class Cart:
 
     @property
     def shipping(self) -> Decimal:
-        # ✅ W KOSZYKU ZAWSZE 0
+        # ✅ W KOSZYKU ZAWSZE 0 (dostawa liczona dopiero w checkout)
         return Decimal("0.00")
+
+    # =========================
+    # KUPON / RABAT
+    # =========================
+    @property
+    def coupon_code(self) -> str:
+        return self.session.get(COUPON_SESSION_KEY, "")
+
+    @property
+    def coupon(self):
+        code = self.coupon_code
+        if not code:
+            return None
+        try:
+            c = Coupon.objects.get(code__iexact=code)
+        except Coupon.DoesNotExist:
+            return None
+        return c if c.is_valid_now() else None
+
+    def apply_coupon(self, code: str) -> tuple[bool, str]:
+        code = (code or "").strip()
+        if not code:
+            self.remove_coupon()
+            return True, "Usunięto kod rabatowy."
+
+        coupon = Coupon.objects.filter(code__iexact=code).first()
+        if not coupon:
+            return False, "Nieprawidłowy kod rabatowy."
+
+        if not coupon.is_valid_now():
+            return False, "Ten kod rabatowy jest nieaktywny lub wygasł."
+
+        self.session[COUPON_SESSION_KEY] = coupon.code.upper()
+        self.session.modified = True
+        return True, f"Zastosowano kod: {coupon.code.upper()} (-{coupon.percent}%)."
+
+    def remove_coupon(self):
+        self.session.pop(COUPON_SESSION_KEY, None)
+        self.session.modified = True
+
+    @property
+    def discount_amount(self) -> Decimal:
+        c = self.coupon
+        if not c or not c.percent:
+            return Decimal("0.00")
+        disc = (self.subtotal * Decimal(c.percent) / Decimal("100")).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+        return min(disc, self.subtotal)  # rabat nie może przekroczyć subtotal
 
     @property
     def grand_total(self) -> Decimal:
-        # ✅ do zapłaty w koszyku = suma produktów
-        return self.subtotal
+        # ✅ subtotal + shipping - discount (shipping u Ciebie = 0 w koszyku)
+        total = self.subtotal + self.shipping - self.discount_amount
+        if total < 0:
+            total = Decimal("0.00")
+        return total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     def clear(self):
         self.session.pop(settings.CART_SESSION_ID, None)
+        self.remove_coupon()  # ✅ wyczyść też kupon
         self.session.modified = True

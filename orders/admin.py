@@ -136,7 +136,7 @@ class OrderAdmin(admin.ModelAdmin):
 
             # 3) musi być rozmiar
             if not order.package_size:
-                order.epaka_last_error = "Brak package_size – ustaw S/M/L w adminie."
+                order.epaka_last_error = "Brak package_size – wybierz rozmiar 1–5 w adminie."
                 order.notes = (order.notes or "") + f"\n[EPAKA] ERROR: {order.epaka_last_error}\n"
                 order.save(update_fields=["epaka_last_error", "notes"])
                 skipped += 1
@@ -161,3 +161,12 @@ class OrderAdmin(admin.ModelAdmin):
             f"Wysłano do ePaki: {sent}, pominięto: {skipped}",
             level=messages.SUCCESS if sent else messages.WARNING
         )
+
+from django.contrib import admin
+from .models import Coupon
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ("code", "percent", "active", "valid_from", "valid_to")
+    search_fields = ("code",)
+    list_filter = ("active",)

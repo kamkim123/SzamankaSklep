@@ -19,4 +19,7 @@ urlpatterns = [
     path("pay/p24/start/<int:pk>/", views.p24_start, name="p24_start"),
     path("pay/p24/status/", views.p24_status, name="p24_status"),   # webhook
 
+    path("cart/coupon/apply/", views.cart_apply_coupon, name="cart_apply_coupon"),
+    path("cart/coupon/remove/", views.cart_remove_coupon, name="cart_remove_coupon"),
+
 ]

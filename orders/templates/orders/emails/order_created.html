@@ -87,7 +87,7 @@
               <div style="margin-top:10px; border-top:1px solid #e6efe9; padding-top:12px; font-size:14px; line-height:1.8;">
                 <div style="display:flex; justify-content:space-between;">
                   <span>Produkty:</span>
-                  <strong>{{ subtotal|floatformat:2 }} zł</strong>
+                  <strong>{{ order.items_total|floatformat:2 }} zł</strong>
                 </div>
                 <div style="display:flex; justify-content:space-between;">
                   <span>Dostawa:</span>
@@ -95,7 +95,7 @@
                 </div>
                 <div style="display:flex; justify-content:space-between; font-size:16px; margin-top:6px;">
                   <span>Do zapłaty:</span>
-                  <strong>{{ total|floatformat:2 }} zł</strong>
+                  <strong>{{ order.total_to_pay|floatformat:2 }} zł</strong>
                 </div>
               </div>
 
