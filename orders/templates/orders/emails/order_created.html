@@ -30,7 +30,7 @@
               <div style="background:#f7faf8; border:1px solid #e6efe9; border-radius:14px; padding:14px 14px; color:#153524;">
                 <div style="font-size:16px; line-height:1.6;">
                   <div><strong>Data zamówienia:</strong> {{ order.created_at|date:"Y-m-d H:i" }}</div>
-                  <div style="margin-top:6px;"><strong>Kwota do zapłaty:</strong> {{ total|floatformat:2 }} zł</div>
+                  <div style="margin-top:6px;"><strong>Kwota do zapłaty:</strong> {{ order.total_to_pay|floatformat:2 }} zł</div>
                   <div style="margin-top:6px;"><strong>Dostawa:</strong> {{ order.shipping_method }}</div>
                 </div>
               </div>
@@ -89,6 +89,16 @@
                   <span>Produkty:</span>
                   <strong>{{ order.items_total|floatformat:2 }} zł</strong>
                 </div>
+                {% if order.discount_amount and order.discount_amount > 0 %}
+                <div>
+                  <span style="padding:6px 0; color:#555;">
+                    Rabat{% if order.coupon_code %} ({{ order.coupon_code }}){% endif %}
+                  </span>
+                  <span style="padding:6px 0; text-align:right; color:#111; font-weight:600;">
+                    -{{ order.discount_amount|floatformat:2 }} zł
+                  </span>
+                </div>
+              {% endif %}
                 <div style="display:flex; justify-content:space-between;">
                   <span>Dostawa:</span>
                   <strong>{{ order.shipping_cost|floatformat:2 }} zł</strong>
