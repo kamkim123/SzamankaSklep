@@ -779,3 +779,77 @@ body {
 
  }
 
+
+
+/* ===== Kupon: wygląd ===== */
+.coupon-box{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.coupon-row{
+  display:flex;
+  gap:.5rem;
+  margin-top:.5rem;
+}
+
+.coupon-row input{
+  flex: 1 1 auto;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.15);
+  padding: 0 .85rem;
+  outline: none;
+}
+
+.coupon-row input:focus{
+  border-color: rgba(25, 160, 98, .55);
+  box-shadow: 0 0 0 6px rgba(25, 160, 98, .12);
+}
+
+.coupon-btn{
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 0;
+  background: linear-gradient(180deg, var(--green), var(--green-strong));
+  color: #fff;
+  font-weight: 700;
+  cursor:pointer;
+}
+
+.coupon-btn--ghost{
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.coupon-remove{ margin-top: .5rem; }
+
+/* ===== Kupon: POZYCJONOWANIE ===== */
+/* Desktop: kupon w prawej kolumnie pod podsumowaniem */
+.container .coupon-box{
+  grid-column: 2;
+  grid-row: 2; /* pod aside (który jest w 1 wierszu) */
+  align-self: start;
+}
+
+/* Mobile (1 kolumna): kupon ma być POD koszykiem i PRZED podsumowaniem */
+@media (max-width: 960px){
+  .container .coupon-box{
+    grid-column: 1;
+    grid-row: 2; /* po sekcji */
+  }
+
+  /* podsumowanie spada na dół */
+  .container aside.card{
+    grid-column: 1;
+    grid-row: 3;
+    position: static; /* sticky na mobile zwykle przeszkadza */
+  }
+}
+
+

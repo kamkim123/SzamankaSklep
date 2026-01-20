@@ -78,24 +78,26 @@
         </div>
 
     </aside>
-</div>
 
-<div class="coupon-box">
-  <form method="post" action="{% url 'orders:cart_apply_coupon' %}">
-    {% csrf_token %}
-    <label for="coupon_code"><strong>Kod rabatowy (opcjonalnie)</strong></label>
-    <div style="display:flex; gap:.5rem; margin-top:.5rem;">
-      <input id="coupon_code" name="coupon_code" type="text" placeholder="np. SZAMANKA" value="{{ cart.coupon_code }}" />
-      <button type="submit">Zastosuj</button>
-    </div>
-  </form>
 
-  {% if cart.coupon_code %}
-    <form method="post" action="{% url 'orders:cart_remove_coupon' %}" style="margin-top:.5rem;">
-      {% csrf_token %}
-      <button type="submit">Usuń kod</button>
-    </form>
-  {% endif %}
+     <div class="coupon-box">
+         <form method="post" action="{% url 'orders:cart_apply_coupon' %}">
+            {% csrf_token %}
+            <label for="coupon_code"><strong>Kod rabatowy (opcjonalnie)</strong></label>
+            <div class="coupon-row">
+              <input id="coupon_code" name="coupon_code" type="text" placeholder="np. SZAMANKA" value="{{ cart.coupon_code }}" />
+              <button type="submit" class="coupon-btn">Zastosuj</button>
+            </div>
+         </form>
+
+          {% if cart.coupon_code %}
+            <form method="post" action="{% url 'orders:cart_remove_coupon' %}" class="coupon-remove">
+              {% csrf_token %}
+              <button type="submit" class="coupon-btn coupon-btn--ghost">Usuń kod</button>
+            </form>
+          {% endif %}
+     </div>
+
 </div>
 {% include "products/footer.html" %}
 <script src="{% static 'orders/cart.js' %}"></script>
