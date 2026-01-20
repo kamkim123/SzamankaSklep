@@ -54,6 +54,27 @@
             {% endfor %}
         </ul>
     </section>
+
+    <div class="coupon-box coupon-box--mobile">
+      <form method="post" action="{% url 'orders:cart_apply_coupon' %}">
+        {% csrf_token %}
+        <label for="coupon_code_m"><strong>Kod rabatowy (opcjonalnie)</strong></label>
+
+        <div class="coupon-row">
+          <input id="coupon_code_m" name="coupon_code" type="text"
+                 placeholder="np. SZAMANKA" value="{{ cart.coupon_code }}" />
+          <button type="submit" class="coupon-btn">Zastosuj</button>
+        </div>
+      </form>
+
+      {% if cart.coupon_code %}
+        <form method="post" action="{% url 'orders:cart_remove_coupon' %}" class="coupon-remove">
+          {% csrf_token %}
+          <button type="submit" class="coupon-btn coupon-btn--ghost">Usuń kod</button>
+        </form>
+      {% endif %}
+    </div>
+
     <aside class="card"><h2>Podsumowanie</h2>
         <div class="summary">
           <div class="row1"><span>Wartość produktów</span><span id="subtotal">{{ cart.subtotal }} zł</span></div>
@@ -77,18 +98,18 @@
           </a>
         </div>
 
-    </aside>
-
-
-     <div class="coupon-box">
-         <form method="post" action="{% url 'orders:cart_apply_coupon' %}">
+        <!-- Kupon (DESKTOP: pod podsumowaniem) -->
+        <div class="coupon-box coupon-box--desktop">
+          <form method="post" action="{% url 'orders:cart_apply_coupon' %}">
             {% csrf_token %}
-            <label for="coupon_code"><strong>Kod rabatowy (opcjonalnie)</strong></label>
+            <label for="coupon_code_d"><strong>Kod rabatowy (opcjonalnie)</strong></label>
+
             <div class="coupon-row">
-              <input id="coupon_code" name="coupon_code" type="text" placeholder="np. SZAMANKA" value="{{ cart.coupon_code }}" />
+              <input id="coupon_code_d" name="coupon_code" type="text"
+                     placeholder="np. SZAMANKA" value="{{ cart.coupon_code }}" />
               <button type="submit" class="coupon-btn">Zastosuj</button>
             </div>
-         </form>
+          </form>
 
           {% if cart.coupon_code %}
             <form method="post" action="{% url 'orders:cart_remove_coupon' %}" class="coupon-remove">
@@ -96,7 +117,10 @@
               <button type="submit" class="coupon-btn coupon-btn--ghost">Usuń kod</button>
             </form>
           {% endif %}
-     </div>
+        </div>
+
+    </aside>
+
 
 </div>
 {% include "products/footer.html" %}

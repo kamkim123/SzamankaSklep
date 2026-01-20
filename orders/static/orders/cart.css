@@ -781,7 +781,12 @@ body {
 
 
 
-/* ===== Kupon: wygląd ===== */
+
+
+
+
+
+/* ===== Coupon box base ===== */
 .coupon-box{
   background: var(--card);
   border: 1px solid var(--line);
@@ -790,66 +795,70 @@ body {
   padding: 16px;
 }
 
+.coupon-box label{
+  display:block;
+  margin-bottom:8px;
+  color: var(--ink);
+}
+
 .coupon-row{
   display:flex;
-  gap:.5rem;
-  margin-top:.5rem;
+  gap:10px;
+  align-items:center;
 }
 
 .coupon-row input{
-  flex: 1 1 auto;
-  height: 42px;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,.15);
-  padding: 0 .85rem;
-  outline: none;
+  flex:1 1 auto;
+  height:44px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  padding:0 12px;
+  font: inherit;
+  outline:none;
 }
 
 .coupon-row input:focus{
-  border-color: rgba(25, 160, 98, .55);
-  box-shadow: 0 0 0 6px rgba(25, 160, 98, .12);
+  border-color: rgba(25,160,98,.55);
+  box-shadow: 0 0 0 6px rgba(25,160,98,.12);
 }
 
 .coupon-btn{
-  height: 42px;
-  padding: 0 14px;
-  border-radius: 12px;
-  border: 0;
+  height:44px;
+  padding:0 14px;
+  border-radius:12px;
+  border:0;
   background: linear-gradient(180deg, var(--green), var(--green-strong));
-  color: #fff;
-  font-weight: 700;
+  color:#fff;
+  font-weight:700;
   cursor:pointer;
 }
 
 .coupon-btn--ghost{
-  background: #fff;
+  background: transparent;
+  color: var(--green-strong);
   border: 1px solid var(--line);
-  color: var(--ink);
 }
 
-.coupon-remove{ margin-top: .5rem; }
+.coupon-remove{ margin-top:10px; }
 
-/* ===== Kupon: POZYCJONOWANIE ===== */
-/* Desktop: kupon w prawej kolumnie pod podsumowaniem */
-.container .coupon-box{
-  grid-column: 2;
-  grid-row: 2; /* pod aside (który jest w 1 wierszu) */
-  align-self: start;
+/* ===== Wariant B: przełączanie widoczności ===== */
+.coupon-box--mobile{ display:none; }
+.coupon-box--desktop{
+  margin: 0 16px 16px;         /* żeby wyglądało jak część karty podsumowania */
+  border-top: 1px dashed var(--line);
 }
 
-/* Mobile (1 kolumna): kupon ma być POD koszykiem i PRZED podsumowaniem */
+/* Na mobile pokazujemy box pod produktami, chowamy ten w aside */
 @media (max-width: 960px){
-  .container .coupon-box{
-    grid-column: 1;
-    grid-row: 2; /* po sekcji */
-  }
-
-  /* podsumowanie spada na dół */
-  .container aside.card{
-    grid-column: 1;
-    grid-row: 3;
-    position: static; /* sticky na mobile zwykle przeszkadza */
-  }
+  .coupon-box--mobile{ display:block; }
+  .coupon-box--desktop{ display:none; }
 }
+
+/* Bardzo małe ekrany: input i button pod sobą */
+@media (max-width: 480px){
+  .coupon-row{ flex-direction: column; align-items: stretch; }
+  .coupon-btn{ width:100%; }
+}
+
 
 
