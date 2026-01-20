@@ -786,50 +786,56 @@ body {
 
 
 
-/* ===== Coupon box base ===== */
+/* ===== Coupon box (bardziej kompaktowy) ===== */
 .coupon-box{
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 16px;
+  padding: 12px 14px 14px;          /* było 14/16/16 */
+  border-top: 1px dashed var(--line);
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+  font-size: .92rem;                /* cała sekcja minimalnie mniejsza */
+  line-height: 1.25;
 }
 
 .coupon-box label{
   display:block;
-  margin-bottom:8px;
+  margin-bottom:6px;                /* było 8 */
   color: var(--ink);
+  font-size: .92rem;
 }
 
 .coupon-row{
   display:flex;
-  gap:10px;
+  gap:8px;                          /* było 10 */
   align-items:center;
 }
 
 .coupon-row input{
   flex:1 1 auto;
-  height:44px;
-  border-radius:12px;
+  height:38px;                      /* było 44 */
+  border-radius:10px;               /* było 12 */
   border:1px solid var(--line);
-  padding:0 12px;
+  padding:0 10px;                   /* było 12 */
   font: inherit;
+  font-size: .92rem;
   outline:none;
 }
 
 .coupon-row input:focus{
   border-color: rgba(25,160,98,.55);
-  box-shadow: 0 0 0 6px rgba(25,160,98,.12);
+  box-shadow: 0 0 0 4px rgba(25,160,98,.12);  /* było 6px */
 }
 
 .coupon-btn{
-  height:44px;
-  padding:0 14px;
-  border-radius:12px;
+  height:38px;                      /* było 44 */
+  padding:0 12px;                   /* było 14 */
+  border-radius:10px;               /* było 12 */
   border:0;
   background: linear-gradient(180deg, var(--green), var(--green-strong));
   color:#fff;
   font-weight:700;
+  font-size: .90rem;
   cursor:pointer;
 }
 
@@ -839,26 +845,16 @@ body {
   border: 1px solid var(--line);
 }
 
-.coupon-remove{ margin-top:10px; }
-
-/* ===== Wariant B: przełączanie widoczności ===== */
-.coupon-box--mobile{ display:none; }
-.coupon-box--desktop{
-  margin: 0 16px 16px;         /* żeby wyglądało jak część karty podsumowania */
-  border-top: 1px dashed var(--line);
-}
-
-/* Na mobile pokazujemy box pod produktami, chowamy ten w aside */
-@media (max-width: 960px){
-  .coupon-box--mobile{ display:block; }
-  .coupon-box--desktop{ display:none; }
+.coupon-remove{
+  margin-top:8px;                   /* było 10 */
 }
 
 /* Bardzo małe ekrany: input i button pod sobą */
 @media (max-width: 480px){
-  .coupon-row{ flex-direction: column; align-items: stretch; }
+  .coupon-row{ flex-direction: column; align-items: stretch; gap:8px; }
   .coupon-btn{ width:100%; }
 }
+
 
 
 
