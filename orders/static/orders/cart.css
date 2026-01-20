@@ -247,7 +247,7 @@ body {
 }
 
 /* =============== CTA =============== */
-.btn {
+.go_btn {
     width: 100%;
     margin-top: 16px;
     height: 48px;
@@ -262,21 +262,21 @@ body {
     transition: transform .06s ease, box-shadow .25s var(--ease), filter .2s var(--ease);
 }
 
-.btn:hover {
+.go_btn:hover {
     filter: brightness(1.03);
     box-shadow: 0 16px 32px rgba(25, 160, 98, .22), inset 0 1px 0 rgba(255, 255, 255, .55);
 }
 
-.btn:active {
+.go_btn:active {
     transform: translateY(1px);
 }
 
-.btn:focus-visible {
+.go_btn:focus-visible {
     outline: 3px solid rgba(25, 160, 98, .42);
     outline-offset: 2px;
 }
 
-.btn[disabled] {
+.go_btn[disabled] {
     opacity: .6;
     cursor: not-allowed;
 }
@@ -536,7 +536,7 @@ body {
     }
 
     /* =============== CTA =============== */
-    .btn {
+    .go_btn {
         width: 100%;
         margin-top: 16px;
         height: 48px;
@@ -551,21 +551,21 @@ body {
         transition: transform .06s ease, box-shadow .25s var(--ease), filter .2s var(--ease);
     }
 
-    .btn:hover {
+    .go_btn:hover {
         filter: brightness(1.03);
         box-shadow: 0 16px 32px rgba(25, 160, 98, .22), inset 0 1px 0 rgba(255, 255, 255, .55);
     }
 
-    .btn:active {
+    .go_btn:active {
         transform: translateY(1px);
     }
 
-    .btn:focus-visible {
+    .go_btn:focus-visible {
         outline: 3px solid rgba(25, 160, 98, .42);
         outline-offset: 2px;
     }
 
-    .btn[disabled] {
+    .go_btn[disabled] {
         opacity: .6;
         cursor: not-allowed;
     }
@@ -780,80 +780,96 @@ body {
  }
 
 
-
-
-
-
-
-
-/* ===== Coupon box (bardziej kompaktowy) ===== */
+/* ===== Coupon box (od zera, kompaktowo, zawsze widoczny button) ===== */
 .coupon-box{
-  padding: 12px 14px 14px;          /* było 14/16/16 */
+  padding: 12px 14px 14px;
   border-top: 1px dashed var(--line);
   background: transparent;
   box-shadow: none;
   border: 0;
   border-radius: 0;
-  font-size: .92rem;                /* cała sekcja minimalnie mniejsza */
+
+  font-size: .92rem;
   line-height: 1.25;
 }
 
-.coupon-box label{
-  display:block;
-  margin-bottom:6px;                /* było 8 */
+.coupon-form{ margin: 0; }
+
+.coupon-head{
+  display:flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.coupon-label{
+  font-weight: 700;
   color: var(--ink);
-  font-size: .92rem;
+  margin: 0;
+}
+
+.coupon-active{
+  font-size: .88rem;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .coupon-row{
   display:flex;
-  gap:8px;                          /* było 10 */
+  gap: 8px;
   align-items:center;
 }
 
 .coupon-row input{
-  flex:1 1 auto;
-  height:38px;                      /* było 44 */
-  border-radius:10px;               /* było 12 */
-  border:1px solid var(--line);
-  padding:0 10px;                   /* było 12 */
+  flex: 1 1 auto;
+  min-width: 0;              /* KLUCZ: nie wypycha przycisku poza kartę */
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 0 10px;
   font: inherit;
   font-size: .92rem;
-  outline:none;
+  outline: none;
+  background: #fff;
 }
 
 .coupon-row input:focus{
   border-color: rgba(25,160,98,.55);
-  box-shadow: 0 0 0 4px rgba(25,160,98,.12);  /* było 6px */
+  box-shadow: 0 0 0 4px rgba(25,160,98,.12);
 }
 
 .coupon-btn{
-  height:38px;                      /* było 44 */
-  padding:0 12px;                   /* było 14 */
-  border-radius:10px;               /* było 12 */
-  border:0;
+  flex: 0 0 auto;            /* KLUCZ: przycisk się nie “zgniata” */
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 0;
   background: linear-gradient(180deg, var(--green), var(--green-strong));
-  color:#fff;
-  font-weight:700;
+  color: #fff;
+  font-weight: 800;
   font-size: .90rem;
-  cursor:pointer;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.coupon-btn--ghost{
-  background: transparent;
-  color: var(--green-strong);
-  border: 1px solid var(--line);
+.coupon-btn:hover{ filter: brightness(1.02); }
+.coupon-btn:active{ transform: translateY(1px); }
+
+.coupon-hint{
+  margin-top: 8px;
+  font-size: .86rem;
+  color: var(--muted);
 }
 
-.coupon-remove{
-  margin-top:8px;                   /* było 10 */
-}
-
-/* Bardzo małe ekrany: input i button pod sobą */
+/* Mobile: input i button pod sobą */
 @media (max-width: 480px){
-  .coupon-row{ flex-direction: column; align-items: stretch; gap:8px; }
-  .coupon-btn{ width:100%; }
+  .coupon-head{ flex-direction: column; align-items: flex-start; }
+  .coupon-row{ flex-direction: column; align-items: stretch; gap: 8px; }
+  .coupon-btn{ width: 100%; }
 }
+
+
 
 
 

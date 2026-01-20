@@ -75,30 +75,46 @@
           <div class="row1 total"><span>Do zapłaty</span><span id="grand">{{ cart.grand_total }} zł</span></div>
 
           <a href="{% url 'orders:checkout' %}">
-            <button class="btn" id="checkoutBtn">Przejdź do płatności</button>
+            <button class="go_btn" id="checkoutBtn">Przejdź do płatności</button>
           </a>
         </div>
 
         <!-- Kupon (DESKTOP: pod podsumowaniem) -->
+        <!-- Kupon (kompaktowo, bez osobnego przycisku "Usuń") -->
         <div class="coupon-box">
-          <form method="post" action="{% url 'orders:cart_apply_coupon' %}">
+          <form method="post" action="{% url 'orders:cart_apply_coupon' %}" class="coupon-form">
             {% csrf_token %}
-            <label for="coupon_code_d"><strong>Kod rabatowy (opcjonalnie)</strong></label>
+
+            <div class="coupon-head">
+              <label for="coupon_code_d" class="coupon-label">Kod rabatowy (opcjonalnie)</label>
+
+              {% if cart.coupon_code %}
+                <span class="coupon-active">
+                  Aktywny: <strong>{{ cart.coupon_code }}</strong>
+                </span>
+              {% endif %}
+            </div>
 
             <div class="coupon-row">
-              <input id="coupon_code_d" name="coupon_code" type="text"
-                     placeholder="np. SZAMANKA" value="{{ cart.coupon_code }}" />
+              <input
+                id="coupon_code_d"
+                name="coupon_code"
+                type="text"
+                placeholder="np. SZAMANKA"
+                value="{{ cart.coupon_code }}"
+                autocomplete="off"
+              />
               <button type="submit" class="coupon-btn">Zastosuj</button>
             </div>
-          </form>
 
-          {% if cart.coupon_code %}
-            <form method="post" action="{% url 'orders:cart_remove_coupon' %}" class="coupon-remove">
-              {% csrf_token %}
-              <button type="submit" class="coupon-btn coupon-btn--ghost">Usuń kod</button>
-            </form>
-          {% endif %}
+            {% if cart.coupon_code %}
+              <p class="coupon-hint">
+                Aby usunąć kupon: wyczyść pole i kliknij <strong>„Zastosuj”</strong>.
+              </p>
+            {% endif %}
+          </form>
         </div>
+
 
     </aside>
 
