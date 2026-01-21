@@ -1,153 +1,16 @@
 console.log("DETAIL.JS WSTAJE");
 
-const burger = document.querySelector('.burger');
-const kategorieNav = document.querySelector('.kategorie-nav');
-
-if (burger && kategorieNav) {
-  burger.addEventListener('click', () => {
-    burger.classList.toggle('active');
-    kategorieNav.classList.toggle('active');
-  });
-
-  document.querySelectorAll(".kategorie-nav").forEach(n =>
-    n.addEventListener("click", () => {
-      burger.classList.remove('active');
-      kategorieNav.classList.remove('active');
-    })
-  );
-}
-
-
-document.querySelectorAll(".kategorie-nav").forEach(n => n.addEventListener("click", () => {
-    burger.classList.remove('active');
-    kategorieNav.classList.remove('active');
-}));
-
-
-// ===== DROPDOWN – przejście na listę z ?type=... =====
-(function () {
-  const dropdowns = document.querySelectorAll('.dropdown');
-  if (!dropdowns.length) return;
-
-  // Ustal bazowy URL strony listy produktów:
-  // 1) <body data-products-url="/produkty/">
-  // 2) albo domyślnie /produkty/
-  const BASE_LIST_URL = document.body?.dataset?.productsUrl || '/products/products/';
-
-  dropdowns.forEach((dropdown) => {
-    const menu = dropdown.querySelector('.menu');
-    const options = dropdown.querySelectorAll('.menu li');
-    if (!menu || !options.length) return;
-
-    dropdown.addEventListener('mouseenter', () => menu.classList.add('menu-open'));
-    dropdown.addEventListener('mouseleave', () => menu.classList.remove('menu-open'));
-
-    options.forEach((option) => {
-      option.addEventListener('click', (e) => {
-        e.preventDefault();
-
-        // UI
-        options.forEach((o) => o.classList.remove('active'));
-        option.classList.add('active');
-        menu.classList.remove('menu-open');
-
-        // Wartość filtra/kategorii
-        const raw = option.getAttribute('data-value');
-        const value = (raw !== null ? raw : option.textContent)
-          .trim()
-          .replace(/\s*\(\d+\)\s*$/, ''); // usuń np. " (12)"
-
-        // Zbuduj URL do listy produktów z parametrem ?type=...
-        try {
-          const url = new URL(BASE_LIST_URL, window.location.origin);
-          if (value) url.searchParams.set('type', value);
-          // opcjonalnie: kasuj inne znaczniki sortowania, jeśli chcesz czyste przejście
-          url.searchParams.delete('page');
-          window.location.assign(url.toString());
-        } catch (err) {
-          // Fallback gdyby URL() nie zadziałał
-          const q = value ? ('?type=' + encodeURIComponent(value)) : '';
-          window.location.href = BASE_LIST_URL + q;
-        }
-      });
-    });
-  });
-})();
 
 
 
 
 
 
-
-document.addEventListener('DOMContentLoaded', () => {
-  const menu = document.querySelector('.products-menu');
-  if (!menu) return;
-
-  menu.addEventListener('click', (e) => {
-    const btn = e.target.closest('.submenu-toggle');
-    if (!btn) return;
-
-    const block = btn.closest('.submenu-block');
-    const panel = block && block.nextElementSibling;
-
-    if (!panel || !panel.classList.contains('submenu-panel')) return;
-
-    const willOpen = !panel.classList.contains('is-open');
-    panel.classList.toggle('is-open', willOpen);
-    btn.classList.toggle('is-open', willOpen);
-  });
-});
-
-
-
-const box = document.getElementById('search');
-if (box) {
-  const btn = box.querySelector('.search__toggle');
-  const inp = box.querySelector('.search__input');
-  const clearBtn = box.querySelector('.search__clear');
-
-  function openSearch() { ... }
-  function closeSearch() { ... }
-
-  btn?.addEventListener('click', () => {
-    if (!box.classList.contains('active-search')) openSearch();
-    else inp?.focus();
-  });
-  clearBtn?.addEventListener('click', closeSearch);
-  box.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
-}
-
-const inp = box.querySelector('.search__input');
-const clearBtn = box.querySelector('.search__clear');
-
-
-function openSearch() {
-    box.classList.add('active-search');
-    inp.disabled = false;
-    inp.focus();
-}
-
-function closeSearch() {
-    box.classList.remove('active-search');
-    inp.value = '';
-    inp.blur();
-    inp.disabled = true;
-}
-
-btn.addEventListener('click', () => {
-    if (!box.classList.contains('active-search')) openSearch();
-    else inp.focus(); // gdy otwarte, tylko focus na input
-});
-clearBtn.addEventListener('click', closeSearch);
-box.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeSearch();
-});
 
 
 const g = document.querySelector('.image-wrapper2');
 if (g) {
-  const m = g.querySelector(':scope > img');
+  const m = g.querySelector('img');
   if (m) {
     g.addEventListener('click', e => {
       const t = e.target.closest('img');
@@ -183,67 +46,79 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Funkcja do aktualizacji ilości produktu
     function setQty(q) {
-        const min  = parseInt(quantityInput?.dataset.min || '1', 10);
-        const max  = 9999; // Usuwamy ograniczenie max, ustawiamy na 9999 (brak limitu)
+      const min  = parseInt(quantityInput?.dataset.min || '1', 10);
+      const max  = 9999;
 
-        // Sprawdzamy, żeby ilość była w granicach minimum i maksimum
-        const qty  = Math.min(Math.max(q, min), max);
+      const qty  = Math.min(Math.max(q, min), max);
 
-        // Zaktualizowanie wyświetlanej ilości w elemencie calc-input
-        quantityInput.textContent = String(qty).padStart(2, '0');
-        document.querySelector('input[name="quantity"]').value = String(qty);  // Ustawienie wartości w ukrytym polu formularza
+      quantityInput.textContent = String(qty).padStart(2, '0');
+
+      const hiddenQty = cartButton.closest('form')?.querySelector('input[name="quantity"]');
+      if (hiddenQty) hiddenQty.value = String(qty);
     }
 
-    // Obsługuje kliknięcia przycisków +/-
-    document.querySelector('.plus').addEventListener('click', function() {
-        // Zwiększamy ilość o 1
-        const currentQty = parseInt(quantityInput.textContent);
-        setQty(currentQty + 1);
-    });
 
-    document.querySelector('.minus').addEventListener('click', function() {
-        // Zmniejszamy ilość o 1
-        const currentQty = parseInt(quantityInput.textContent);
-        setQty(currentQty - 1);
+    setQty(parseInt((quantityInput.textContent || '1').replace(/\D/g, ''), 10) || 1);
+
+    // Obsługuje kliknięcia przycisków +/-
+    document.querySelector('.plus')?.addEventListener('click', function() {
+      const currentQty = parseInt((quantityInput.textContent || '1').replace(/\D/g,''), 10) || 1;
+      setQty(currentQty + 1);
+    })
+
+    document.querySelector('.minus')?.addEventListener('click', function() {
+      const currentQty = parseInt((quantityInput.textContent || '1').replace(/\D/g,''), 10) || 1;
+      setQty(currentQty - 1);
     });
 
     // Obsługuje kliknięcie w przycisk "Dodaj do koszyka"
-    cartButton.addEventListener('click', function (e) {
-        e.preventDefault(); // Zapobiegamy domyślnemu zachowaniu formularza
+cartButton.addEventListener('click', function (e) {
+  e.preventDefault();
 
-        // Aktualizujemy ilość z licznika
-        const quantity = parseInt(quantityInput.textContent);  // Pobieramy ilość z licznika
+  const quantity = parseInt((quantityInput.textContent || '1').replace(/\D/g, ''), 10) || 1;
 
-        console.log("Dodaję do koszyka produkt o ID:", productId);  // Debugowanie
-        console.log("Ilość:", quantity);  // Debugowanie
+  console.log("Dodaję do koszyka produkt o ID:", productId);
+  console.log("Ilość:", quantity);
 
-        // Wysyłamy zapytanie do serwera
-        fetch(cartAddUrl, {
-            method: 'POST',
-            headers: {
-                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: new URLSearchParams({
-                'product_id': productId,
-                'quantity': quantity  // Wysyłamy ilość z licznika
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);  // Debugowanie odpowiedzi z serwera
-            if (data.ok) {
-                // Zaktualizowanie liczby produktów w koszyku
-                document.querySelector('.cart-count').textContent = data.items;
-            }
-        })
-        .catch(error => {
-            console.error("Wystąpił błąd:", error);
-        });
-    });
+  fetch(cartAddUrl, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+      "X-Requested-With": "XMLHttpRequest",
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      product_id: productId,
+      quantity: quantity
+    })
+  })
+  .then(async response => {
+      console.log("STATUS:", response.status);
+      const text = await response.text();
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        console.error("NIE JSON. Odpowiedź serwera:", text);
+        throw e;
+      }
+})
+    .then(data => {
+      console.log("DATA:", data);
+
+      if (data.ok) {
+        const counter = document.querySelector('.cart-count') || document.getElementById('cart-count');
+        if (counter) counter.textContent = data.items;
+      } else {
+        console.warn("ok=false albo błąd backendu:", data);
+      }
+    })
+
+  .catch(error => {
+    console.error("Wystąpił błąd:", error);
+  });
 });
-
-
+});
 
 
 
@@ -256,12 +131,14 @@ document.querySelectorAll('.favorite-toggle').forEach(item => {
 
         let productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
         let icon = this.querySelector('i');  // Pobieramy ikonę serca
-        let text = this.querySelector('span');  // Pobieramy tekst w przycisku
+        let text = this.querySelector('span'); // jeśli masz <span> na tekst
+         // Pobieramy tekst w przycisku
         let url = `/u/favorite/${productId}/toggle/`;  // URL do widoku
 
         // Wykonaj zapytanie AJAX, aby dodać/usunąć produkt z ulubionych
         fetch(url, {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRFToken': getCookie('csrftoken'),  // Pobieramy CSRF token
@@ -272,15 +149,15 @@ document.querySelectorAll('.favorite-toggle').forEach(item => {
             if (data.success) {
                 // Jeśli produkt został dodany do ulubionych lub usunięty, zmieniamy klasę
                 if (data.is_favorite) {
-                    icon.classList.remove('bx-heart');    // Usuwamy puste serce
-                    icon.classList.add('bxs-heart');       // Dodajemy pełne serce
-                    this.classList.add('active');          // Dodajemy klasę 'active' dla przycisku
-                    text.textContent = 'Dodano do ulubionych'; // Zmieniamy tekst
+                  icon.classList.remove('bx-heart');
+                  icon.classList.add('bxs-heart');
+                  this.classList.add('active');
+                  if (text) text.textContent = 'Dodano do ulubionych'; // <-- ZMIANA
                 } else {
-                    icon.classList.remove('bxs-heart');   // Usuwamy pełne serce
-                    icon.classList.add('bx-heart');        // Dodajemy puste serce
-                    this.classList.remove('active');       // Usuwamy klasę 'active' dla przycisku
-                    text.textContent = 'Dodaj do ulubionych'; // Zmieniamy tekst
+                  icon.classList.remove('bxs-heart');
+                  icon.classList.add('bx-heart');
+                  this.classList.remove('active');
+                  if (text) text.textContent = 'Dodaj do ulubionych'; // <-- ZMIANA
                 }
             }
         })
@@ -305,109 +182,8 @@ function getCookie(name) {
 }
 
 
-// ===== NAVBAR (burger + dropdown + search UI) =====
-document.addEventListener('DOMContentLoaded', function () {
-  // --- BURGER ---
-  var burger = document.querySelector('.burger');
-  var kategorieNav = document.querySelector('.kategorie-nav');
-
-  if (burger && kategorieNav) {
-    burger.addEventListener('click', function () {
-      burger.classList.toggle('active');
-      kategorieNav.classList.toggle('active');
-    });
-
-    document.querySelectorAll('.kategorie-nav').forEach(function (n) {
-      n.addEventListener('click', function () {
-        burger.classList.remove('active');
-        kategorieNav.classList.remove('active');
-      });
-    });
-  }
-
-  // --- DROPDOWN (hover + click -> ustawia ?type=...) ---
-  var dropdowns = document.querySelectorAll('.dropdown');
-  dropdowns.forEach(function (dropdown) {
-    var menu = dropdown.querySelector('.menu');
-    var options = dropdown.querySelectorAll('.menu li');
-    if (!menu || !options.length) return;
-
-    dropdown.addEventListener('mouseenter', function () {
-      menu.classList.add('menu-open');
-    });
-    dropdown.addEventListener('mouseleave', function () {
-      menu.classList.remove('menu-open');
-    });
-
-    options.forEach(function (option) {
-      option.addEventListener('click', function (e) {
-        e.preventDefault();
-
-        // aktywna klasa
-        options.forEach(function (o) { o.classList.remove('active'); });
-        option.classList.add('active');
-        menu.classList.remove('menu-open');
-
-        // wartość filtra (data-value albo tekst)
-        var raw = option.getAttribute('data-value');
-        var value = (raw !== null ? raw : option.textContent)
-          .trim()
-          .replace(/\s*\(\d+\)\s*$/, '');
-
-        // docelowa ścieżka: dropdown ma data-target="/products/"
-        var targetPath = dropdown.getAttribute('data-target') || '/products/';
-
-        // budujemy URL
-        try {
-          var url = new URL(targetPath, window.location.origin);
-          if (value) url.searchParams.set('type', value);
-          else url.searchParams.delete('type');
-          url.searchParams.delete('page');
-          window.location.assign(url.toString());
-        } catch (err) {
-          var q = value ? ('?type=' + encodeURIComponent(value)) : '';
-          window.location.href = targetPath + q;
-        }
-      });
-    });
-  });
-
-  // --- SEARCH (otwórz/zamknij input) ---
-  var box = document.getElementById('search');
-  if (box) {
-    var btn = box.querySelector('.search__toggle');
-    var inp = box.querySelector('.search__input');
-    var clearBtn = box.querySelector('.search__clear');
-
-    function openSearch() {
-      box.classList.add('active-search');
-      if (inp) { inp.disabled = false; inp.focus(); }
-    }
-    function closeSearch() {
-      box.classList.remove('active-search');
-      if (inp) { inp.value = ''; inp.blur(); inp.disabled = true; }
-    }
-
-    if (btn) {
-      btn.addEventListener('click', function () {
-        if (!box.classList.contains('active-search')) openSearch();
-        else if (inp) inp.focus();
-      });
-    }
-    if (clearBtn) clearBtn.addEventListener('click', closeSearch);
-
-    box.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeSearch();
-    });
-  }
-});
 
 
 
 
 
-
-
-
-
-console.log("NAVBAR SNIPPET START");

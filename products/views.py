@@ -289,10 +289,6 @@ def search_results(request):
 
 
 
-# views.py
-
-# views.py
-
 
 def epaka_login(request):
     params = {
