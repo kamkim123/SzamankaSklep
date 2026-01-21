@@ -105,7 +105,7 @@ if (menuLeft) {
 // ===== SORTOWANIE =====
 document.querySelectorAll('.sort-wrapper').forEach(function (wrapper) {
   var list  = wrapper.querySelector('.sort-list');
-  var items = wrapper.querySelectorAll('.sort-list li');
+  var items = wrapper.querySelectorAll('.sort-list a');
   var label = wrapper.querySelector('.sort');
   var caret = wrapper.querySelector('.caret');
   if (!list || !label || !caret) return;
@@ -119,6 +119,7 @@ document.querySelectorAll('.sort-wrapper').forEach(function (wrapper) {
   label.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
   caret.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
   document.addEventListener('click', function () { toggle(false); });
+
 
 items.forEach(function (item) {
   item.addEventListener('click', function (e) {
@@ -164,11 +165,11 @@ items.forEach(function (item) {
   (function syncFromQuery() {
     var current = new URLSearchParams(location.search).get('type') || '';
     var matched = false;
-    items.forEach(function (li) {
-      var val = li.textContent.trim();
+    items.forEach(function (a) {
+      var val = a.textContent.trim();
       if (val === current) {
-        li.classList.add('active');
-        label.textContent = li.textContent.trim();
+        a.classList.add('active');
+        label.textContent = a.textContent.trim();
         matched = true;
       }
     });
@@ -214,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log(data);  // Debugowanie odpowiedzi z serwera
                 if (data.ok) {
                     // Możesz przekierować użytkownika do strony koszyka lub odświeżyć stronę
-                    document.querySelector('.cart-count').textContent = data.items; // Odświeżenie strony, aby backend wygenerował nową wartość cart-items
+                    document.getElementById('cart-count').textContent = data.items; // Odświeżenie strony, aby backend wygenerował nową wartość cart-items
                 }
             })
             .catch(error => {
