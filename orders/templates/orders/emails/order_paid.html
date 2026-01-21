@@ -94,12 +94,12 @@
                   <strong>{{ order.shipping_cost|floatformat:2 }} zł</strong>
                 </div>
                 <div>
-                  <span style="padding:6px 0; color:#555;">
-                    Rabat{% if order.coupon_code %} ({{ order.coupon_code }}){% endif %}
-                  </span>
-                  <span style="padding:6px 0; text-align:right; color:#111; font-weight:600;">
-                    -{{ order.discount_amount|floatformat:2 }} zł
-                  </span>
+                  <span style="color:#555;">
+                      Rabat{% if order.coupon_code %} ({{ order.coupon_code }}){% endif %}:
+                    </span>
+                    <span style="text-align:right; color:#111; font-weight:600;">
+                      <strong>-{{ order.discount_amount|floatformat:2 }} zł</strong>
+                    </span>
                 </div>
                 <div style="display:flex; justify-content:space-between; font-size:16px; margin-top:6px;">
                   <span>Razem:</span>

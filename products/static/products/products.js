@@ -1,68 +1,3 @@
-document.addEventListener('DOMContentLoaded', function () {
-  // ===== BURGER =====
-  var burger = document.querySelector('.burger');
-  var kategorieNav = document.querySelector('.kategorie-nav');
-
-  if (burger && kategorieNav) {
-    burger.addEventListener('click', function () {
-      burger.classList.toggle('active');
-      kategorieNav.classList.toggle('active');
-    });
-
-    document.querySelectorAll('.kategorie-nav').forEach(function (n) {
-      n.addEventListener('click', function () {
-        burger.classList.remove('active');
-        kategorieNav.classList.remove('active');
-      });
-    });
-  }
-
-
-
-  // ===== DROPDOWNY =====
-  var dropdowns = document.querySelectorAll('.dropdown');
-  dropdowns.forEach(function (dropdown) {
-    var menu = dropdown.querySelector('.menu');
-    var options = dropdown.querySelectorAll('.menu li');
-    if (!menu || !options.length) return;
-
-    // Otwieranie/zamykanie na hover
-    dropdown.addEventListener('mouseenter', function () {
-      menu.classList.add('menu-open');
-    });
-    dropdown.addEventListener('mouseleave', function () {
-      menu.classList.remove('menu-open');
-    });
-
-    // Klik w opcję
-    options.forEach(function (option) {
-      option.addEventListener('click', function (e) {
-        e.preventDefault();
-
-        // UI jak wcześniej
-        options.forEach(function (o) { o.classList.remove('active'); });
-        option.classList.add('active');
-        menu.classList.remove('menu-open');
-
-        // Pobierz wartość filtra
-        var raw = option.getAttribute('data-value');
-        var value = (raw !== null ? raw : option.textContent).trim().replace(/\s*\(\d+\)\s*$/, '');
-
-        // Zbuduj nowy URL
-        try {
-          var url = new URL(window.location.href);
-          if (value) url.searchParams.set('type', value);
-          else url.searchParams.delete('type');
-          url.searchParams.delete('page');
-          window.location.assign(url.toString());
-        } catch (err) {
-          var q = value ? ('?type=' + encodeURIComponent(value)) : '';
-          window.location.href = window.location.pathname + q;
-        }
-      });
-    });
-  });
-
 
 
 // ===== LEWE MENU – rozwijane panele =====
@@ -241,29 +176,6 @@ items.forEach(function (item) {
   })();
 });
 
-});
-// ===== WYSZUKIWARKA =====
-    const box = document.getElementById('search');
-    const btn = box.querySelector('.search__toggle');
-    const inp = box.querySelector('.search__input');
-    const clearBtn = box.querySelector('.search__clear');
-
-
-    function openSearch(){
-        box.classList.add('active-search');
-        inp.disabled = false; inp.focus();
-    }
-    function closeSearch(){
-        box.classList.remove('active-search');
-        inp.value=''; inp.blur(); inp.disabled = true;
-    }
-
-    btn.addEventListener('click', () => {
-        if (!box.classList.contains('active-search')) openSearch();
-        else inp.focus(); // gdy otwarte, tylko focus na input
-    });
-    clearBtn.addEventListener('click', closeSearch);
-    box.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
 
 
 
