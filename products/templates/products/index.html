@@ -1,10 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    {% include "partials/head_seo.html" with
+        title="Szamanka – sklep zielarski i naturalne kosmetyki"
+        description="Naturalne zioła, suplementy, maści i kosmetyki. Sklep stacjonarny w Nasielsku i sprzedaż online."
+    %}
+
+
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +28,7 @@
 
     <link rel="stylesheet" href="{% static 'products/index.css' %}">
 
-    <title>Szamanka sklep</title>
+
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
 
@@ -76,6 +80,7 @@
 
 <body>
 
+
 <form method="get" id="navFilterForm" action="{% url 'products:index' %}" style="display:none">
     <input type="hidden" name="type" id="navTypeInput" value="{{ selected|default:'' }}">
     {% csrf_token %}
@@ -90,13 +95,13 @@
         <div class="swiper-reklamy">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <img src="{% static 'products/images/a-photo.jpg' %}" alt="zdjecie" class="zdjecie1"/>
+                    <img src="{% static 'products/images/hero-chlorofil.jpg' %}" alt="zdjecie" class="zdjecie1"/>
                 </div>
                 <div class="swiper-slide">
-                    <img src="images/marcie-kennedy-2iuOo_mCwGA-unsplash.jpg" alt="zdjecie" class="zdjecie1"/>
+                    <img src="{% static 'products/images/self-made-hero1.jpeg' %}" alt="zdjecie" class="zdjecie1"/>
                 </div>
                 <div class="swiper-slide">
-                    <img src="images/scott-webb-e6VmcXF8llA-unsplash.jpg" alt="zdjecie" class="zdjecie1"/>
+                    <img src= '/static/products/images/self-made-hero3.png' alt="zdjecie" class="zdjecie1"/>
                 </div>
             </div>
 
