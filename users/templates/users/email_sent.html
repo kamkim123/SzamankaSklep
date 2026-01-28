@@ -2,8 +2,15 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <title>Sprawdź maila</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
   {% load static %}
+
+  <title>Sprawdź maila – Szamanka</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
   <link rel="stylesheet" href="{% static 'users/style.css' %}">
   <style>
     .card{border:1px solid #e5e7eb;border-radius:14px;background:#fafafa;
@@ -13,6 +20,7 @@
     .muted{color:#666}
   </style>
 </head>
+
 <body>
   {% include "products/navbar.html" %}
 
