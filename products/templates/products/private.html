@@ -2,13 +2,30 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Polityka Prywatności</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
     {% load static %}
+
+    <title>Polityka prywatności – Szamanka</title>
+    <meta name="description" content="Polityka prywatności sklepu Szamanka. Informacje o przetwarzaniu danych osobowych, prawach użytkownika oraz plikach cookies.">
+    <meta name="robots" content="index,follow">
+
+    <link rel="canonical" href="https://www.szamankasklep.pl{% url 'products:private' %}">
+
+
+    <!-- Open Graph (opcjonalnie) -->
+    <meta property="og:locale" content="pl_PL">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Szamanka">
+    <meta property="og:title" content="Polityka prywatności – Szamanka">
+    <meta property="og:description" content="Informacje o przetwarzaniu danych osobowych i cookies w sklepie Szamanka.">
+    <meta property="og:url" content="https://www.szamankasklep.pl{% url 'products:private' %}">
+
     <link rel="stylesheet" href="{% static 'products/private.css' %}">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-
 </head>
+
 <body>
 
 {% include "products/navbar.html" %}
@@ -93,19 +110,19 @@
     <section class="privacy-section">
         <h2>7. Kontakt</h2>
         <p>Jeśli masz pytania dotyczące naszej polityki prywatności lub chcesz skorzystać ze swoich praw, skontaktuj się
-            z nami pod adresem: <a href="#">szamankasklep@wp.pl</a></p>
+            z nami pod adresem: <a href="mailto:szamankasklep@wp.pl">szamankasklep@wp.pl</a></p>
     </section>
 
     <section class="privacy-section">
         <h2>8. Administrator danych osobowych</h2>
         <p>Administratorem Twoich danych osobowych jest <strong>Szamanka Sp. z o.o.</strong>, ul. Kilińskiego 22, 05-190
-            Nasielsk, Polska. Możesz skontaktować się z nami pod adresem: <a href="#">szamankasklep@wp.pl</a></p>
+            Nasielsk, Polska. Możesz skontaktować się z nami pod adresem: <a href="mailto:szamankasklep@wp.pl">szamankasklep@wp.pl</a></p>
     </section>
 
     <section class="privacy-section">
         <h2>9. Zgoda na przetwarzanie danych</h2>
         <p>Jeśli przetwarzamy Twoje dane na podstawie zgody (np. dla celów marketingowych), masz prawo do jej wycofania
-            w dowolnym momencie, kontaktując się z nami pod adresem: <a href="#">szamankasklep@wp.pl</a></p>
+            w dowolnym momencie, kontaktując się z nami pod adresem: <a href="mailto:szamankasklep@wp.pl">szamankasklep@wp.pl</a></p>
     </section>
 
     <section class="privacy-section">

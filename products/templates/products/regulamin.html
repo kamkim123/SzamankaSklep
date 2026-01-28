@@ -2,12 +2,29 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Regulamin Sklepu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
     {% load static %}
+
+    <title>Regulamin sklepu – Szamanka</title>
+    <meta name="description" content="Regulamin sklepu internetowego Szamanka. Zasady zakupów, płatności, reklamacji oraz odstąpienia od umowy.">
+    <meta name="robots" content="index,follow">
+
+    <link rel="canonical" href="https://www.szamankasklep.pl{% url 'products:regulamin' %}">
+
+    <!-- Open Graph (opcjonalnie) -->
+    <meta property="og:locale" content="pl_PL">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Szamanka">
+    <meta property="og:title" content="Regulamin sklepu – Szamanka">
+    <meta property="og:description" content="Zasady zakupów, płatności, reklamacji i zwrotów w sklepie Szamanka.">
+    <meta property="og:url" content="https://www.szamankasklep.pl{% url 'products:regulamin' %}">
+
     <link rel="stylesheet" href="{% static 'products/regulamin.css' %}">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
 {% include "products/navbar.html" %}
 
@@ -38,7 +55,8 @@
         <h2>1. Postanowienia ogólne</h2>
         <p>
             Niniejszy regulamin określa zasady korzystania ze sklepu internetowego "Szamanka", który działa pod adresem
-            <a href="#">www.szamankasklep.pl</a>.
+            <a href="https://www.szamankasklep.pl/">www.szamankasklep.pl</a>
+.
         </p>
         <p>
             <strong>Dane sprzedawcy:</strong><br>
@@ -47,7 +65,8 @@
             Adres sklepu: <strong>Ul. Kilińskiego 22, 05-190 Nasielsk</strong><br>
             NIP: <strong>5361978706</strong><br>
             Numer REGON: 528130308<br>
-            Email: <a href="#">szamankasklep@wp.pl</a><br>
+            Email: <a href="mailto:szamankasklep@wp.pl">szamankasklep@wp.pl</a>
+<br>
         </p>
     </section>
 
@@ -55,7 +74,8 @@
         <h2>2. Definicje</h2>
         <dl class="definicje">
             <dt>Serwis</dt>
-            <dd>Sklep internetowy "Szamanka" dostępny pod adresem <a href="#">www.szamankasklep.pl</a>, który umożliwia
+            <dd>Sklep internetowy "Szamanka" dostępny pod adresem <a href="https://www.szamankasklep.pl/">www.szamankasklep.pl</a>
+, który umożliwia
                 zakup produktów online.
             </dd>
             <dt>Użytkownik</dt>
@@ -99,7 +119,7 @@
             W przypadku reklamacji, prosimy o kontakt z naszym działem obsługi klienta pod adresem:
         </p>
         <ul>
-            <li>E-mail: <a href="#">szamankasklep@wp.pl</a></li>
+            <li>E-mail: <a href="mailto:szamankasklep@wp.pl">szamankasklep@wp.pl</a></li>
             <li>Adres: Ul. Kilińskiego 22, 05-190 Nasielsk</li>
         </ul>
         <p>
@@ -125,7 +145,7 @@
         </p>
         <p>
             Aby skorzystać z prawa do odstąpienia, prosimy o kontakt z naszym działem obsługi klienta pod adresem: <a
-                href="#">szamankasklep@wp.pl</a>.
+                <a href="https://www.szamankasklep.pl/">www.szamankasklep.pl</a>.
         </p>
     </section>
 
