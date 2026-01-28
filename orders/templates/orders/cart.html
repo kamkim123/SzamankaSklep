@@ -2,14 +2,20 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>Koszyk</title> {% load static l10n %}
+    {% load static l10n %}
+
+    <title>Koszyk – Szamanka</title>
+    <meta name="robots" content="noindex,nofollow">
+
+    <link rel="canonical" href="https://www.szamankasklep.pl{% url 'orders:cart' %}">
+
     <link rel="stylesheet" href="{% static 'orders/cart.css' %}">
-
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-
 </head>
+
 <body>
 {% include "products/navbar.html" %}
 
