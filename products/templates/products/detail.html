@@ -2,14 +2,68 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>{{ product.product_name }} – Szamanka</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+
     {% load static %}
+
+    {# --- SEO podstawowe --- #}
+    <title>{{ product.product_name }} – Szamanka</title>
+
+    <meta name="description"
+          content="{% if product.short_description %}{{ product.short_description|striptags|truncatechars:155 }}{% elif product.product_info %}{{ product.product_info|striptags|truncatechars:155 }}{% else %}Naturalny produkt w sklepie Szamanka. Zobacz opis, skład i cenę.{% endif %}">
+
+    <meta name="robots" content="index,follow">
+
+    {# canonical: najlepiej bez query, czyli absolutny URL aktualnej strony #}
+    <link rel="canonical" href="{{ request.build_absolute_uri|cut:request.get_full_path|add:request.path }}">
+
+    {# --- Open Graph / social --- #}
+    <meta property="og:locale" content="pl_PL">
+    <meta property="og:type" content="product">
+    <meta property="og:site_name" content="Szamanka">
+    <meta property="og:title" content="{{ product.product_name }} – Szamanka">
+    <meta property="og:description"
+          content="{% if product.short_description %}{{ product.short_description|striptags|truncatechars:200 }}{% elif product.product_info %}{{ product.product_info|striptags|truncatechars:200 }}{% else %}Naturalny produkt w sklepie Szamanka.{% endif %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+
+    {# og:image: jeśli product_image jest pełnym URL to będzie OK; jeśli to ścieżka względna, podmień na pełny URL #}
+    {% if product.product_image %}
+      <meta property="og:image" content="{{ product.product_image }}">
+    {% endif %}
+
+    {# Twitter (opcjonalnie) #}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ product.product_name }} – Szamanka">
+    <meta name="twitter:description"
+          content="{% if product.short_description %}{{ product.short_description|striptags|truncatechars:200 }}{% elif product.product_info %}{{ product.product_info|striptags|truncatechars:200 }}{% else %}Naturalny produkt w sklepie Szamanka.{% endif %}">
+    {% if product.product_image %}
+      <meta name="twitter:image" content="{{ product.product_image }}">
+    {% endif %}
+
+    {# --- (Opcjonalnie, ale mocno polecam) JSON-LD Product --- #}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "{{ product.product_name|escapejs }}",
+      "description": "{{ product.short_description|default:product.product_info|default:'Naturalny produkt w sklepie Szamanka.'|striptags|truncatechars:500|escapejs }}",
+      "sku": "{{ product.id }}",
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "PLN",
+        "price": "{{ product.final_price|default:product.price|floatformat:2 }}",
+        "availability": "https://schema.org/{% if product.product_stock|default:0 > 0 %}InStock{% else %}OutOfStock{% endif %}",
+        "url": "{{ request.build_absolute_uri|escapejs }}"
+      }
+    }
+    </script>
+
+    {# --- Twoje istniejące zasoby --- #}
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="{% static 'products/detail.css' %}"/>
     <link rel="stylesheet" href="{% static 'products/navbar.css' %}">
     <link rel="stylesheet" href="{% static 'products/animations.css' %}">
-
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 
@@ -17,6 +71,7 @@
         var cartAddUrl = "{% url 'orders:cart_add' %}";
     </script>
 </head>
+
 <body>
 
 {% include "products/navbar.html" %}

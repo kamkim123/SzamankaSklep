@@ -3,36 +3,95 @@
 <head>
     <!-- TEMPLATE: products/index.html -->
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Szamanka-products</title>
 
     {% load static %}
 
-    <!-- jeśli plik masz w static/ -> np. static/products.css -->
+    {# --- SEO: dynamiczny title/description/robots/canonical (bez duplikatów) --- #}
+    {% if page_obj.number|default:1|add:0 > 1 %}
+      <title>Produkty – strona {{ page_obj.number }} | Szamanka</title>
+      <meta name="description" content="Lista produktów w sklepie Szamanka – strona {{ page_obj.number }}.">
+      <meta name="robots" content="noindex,follow">
+      {# canonical do strony bazowej (bez page=) #}
+      {% if selected %}
+        <link rel="canonical" href="https://www.szamankasklep.pl/produkty/?type={{ selected|urlencode }}">
+      {% else %}
+        <link rel="canonical" href="https://www.szamankasklep.pl/produkty/">
+      {% endif %}
+
+    {% elif selected %}
+      <title>{{ selected|capfirst }} – produkty | Szamanka</title>
+      <meta name="description" content="Kategoria: {{ selected }}. Naturalne produkty, zioła, suplementy i kosmetyki w sklepie Szamanka. Sprawdź ofertę i ceny.">
+      <meta name="robots" content="index,follow">
+      <link rel="canonical" href="https://www.szamankasklep.pl/produkty/?type={{ selected|urlencode }}">
+
+    {% elif request.GET.promocje %}
+      <title>Promocje – produkty | Szamanka</title>
+      <meta name="description" content="Promocje w sklepie Szamanka – zioła, suplementy i kosmetyki w atrakcyjnych cenach. Sprawdź aktualne okazje.">
+      <meta name="robots" content="noindex,follow">
+      <link rel="canonical" href="https://www.szamankasklep.pl/produkty/">
+
+    {% elif request.GET.nowosci %}
+      <title>Nowości – produkty | Szamanka</title>
+      <meta name="description" content="Nowości w sklepie Szamanka – świeżo dodane zioła, suplementy i naturalne kosmetyki. Zobacz, co nowego.">
+      <meta name="robots" content="noindex,follow">
+      <link rel="canonical" href="https://www.szamankasklep.pl/produkty/">
+
+    {% elif request.GET.bestsellers %}
+      <title>Bestsellery – produkty | Szamanka</title>
+      <meta name="description" content="Bestsellery w sklepie Szamanka – najchętniej wybierane zioła, suplementy i kosmetyki. Zobacz top produkty.">
+      <meta name="robots" content="noindex,follow">
+      <link rel="canonical" href="https://www.szamankasklep.pl/produkty/">
+
+    {% elif request.GET.najpopularniejsze %}
+      <title>Najpopularniejsze – produkty | Szamanka</title>
+      <meta name="description" content="Najpopularniejsze produkty w sklepie Szamanka – sprawdź, co wybierają inni klienci.">
+      <meta name="robots" content="noindex,follow">
+      <link rel="canonical" href="https://www.szamankasklep.pl/produkty/">
+
+    {% else %}
+      <title>Produkty – zioła, suplementy i kosmetyki | Szamanka</title>
+      <meta name="description" content="Produkty Szamanka: zioła, suplementy diety, maści i naturalne kosmetyki. Sklep stacjonarny w Nasielsku i online.">
+      <meta name="robots" content="index,follow">
+      <link rel="canonical" href="https://www.szamankasklep.pl/produkty/">
+    {% endif %}
+
+    {# OpenGraph minimalnie #}
+    <meta property="og:locale" content="pl_PL">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Szamanka">
+
+    <meta property="og:title" content="{% if selected %}{{ selected|capfirst }} – Szamanka{% else %}Produkty – Szamanka{% endif %}">
+    <meta property="og:description" content="{% if selected %}Kategoria: {{ selected }}. Naturalne produkty w sklepie Szamanka.{% else %}Zioła, suplementy i naturalne kosmetyki w sklepie Szamanka.{% endif %}">
+
+    {# OG url — dla kategorii ustawiamy dokładny URL, inaczej bazowy #}
+    <meta property="og:url" content="{% if selected %}https://www.szamankasklep.pl/produkty/?type={{ selected|urlencode }}{% else %}https://www.szamankasklep.pl/produkty/{% endif %}">
+    <meta property="og:image" content="https://www.szamankasklep.pl/static/products/images/hero-chlorofil.jpg">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="{% static 'products/products.css' %}">
 
-
+    <!-- Fonts / Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Delius+Swash+Caps&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
+    <!-- Swiper -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-
 
     <script>
         var cartAddUrl = "{% url 'orders:cart_add' %}";
     </script>
-
 </head>
+
+
 <body>
 
 <form method="get" id="navFilterForm" style="display:none">

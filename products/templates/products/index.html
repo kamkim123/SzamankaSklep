@@ -1,13 +1,33 @@
 <!doctype html>
 <html lang="pl">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    {% include "partials/head_seo.html" with
-        title="Szamanka – sklep zielarski i naturalne kosmetyki"
-        description="Naturalne zioła, suplementy, maści i kosmetyki. Sklep stacjonarny w Nasielsku i sprzedaż online."
-    %}
+    <title>Szamanka – sklep zielarski i naturalne kosmetyki</title>
+    <meta name="description" content="Naturalne zioła, suplementy, maści i kosmetyki. Sklep stacjonarny w Nasielsku i sprzedaż online.">
+    <meta name="robots" content="index,follow">
 
 
+    <link rel="canonical" href="https://www.szamankasklep.pl/">
+
+    <!-- Open Graph (Facebook/Instagram) -->
+    <meta property="og:locale" content="pl_PL">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Szamanka">
+    <meta property="og:title" content="Szamanka – sklep zielarski i naturalne kosmetyki">
+    <meta property="og:description" content="Naturalne zioła, suplementy, maści i kosmetyki. Sklep stacjonarny w Nasielsku i sprzedaż online.">
+    <meta property="og:url" content="https://www.szamankasklep.pl/">
+    <!-- og:image: wstaw link do konkretnego obrazka, np. hero (musi być pełny URL) -->
+    <meta property="og:image" content="https://www.szamankasklep.pl/static/products/images/hero-chlorofil.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Szamanka – sklep zielarski i naturalne kosmetyki">
+    <meta name="twitter:description" content="Naturalne zioła, suplementy, maści i kosmetyki. Sklep stacjonarny w Nasielsku i sprzedaż online.">
+    <meta name="twitter:image" content="https://www.szamankasklep.pl/static/products/images/hero-chlorofil.jpg">
 
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -79,7 +99,7 @@
 </script>
 
 <body>
-
+{% load static %}
 
 <form method="get" id="navFilterForm" action="{% url 'products:index' %}" style="display:none">
     <input type="hidden" name="type" id="navTypeInput" value="{{ selected|default:'' }}">
