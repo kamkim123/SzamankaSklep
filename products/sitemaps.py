@@ -1,11 +1,12 @@
+# products/sitemaps.py
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import Product  # <- dopasuj nazwę modelu jeśli inna
-
+from .models import Product
 
 class StaticViewSitemap(Sitemap):
-    priority = 0.6
+    protocol = "https"   # <--- TU
     changefreq = "monthly"
+    priority = 0.6
 
     def items(self):
         return ["home", "products:produkty", "products:regulamin", "products:private"]
@@ -15,15 +16,12 @@ class StaticViewSitemap(Sitemap):
 
 
 class ProductDetailSitemap(Sitemap):
-    priority = 0.8
+    protocol = "https"   # <--- I TU
     changefreq = "weekly"
+    priority = 0.8
 
     def items(self):
         return Product.objects.all()
 
     def location(self, obj):
         return reverse("products:detail", args=[obj.pk])
-
-    # opcjonalnie, jeśli masz pole updated_at / updated / modified:
-    # def lastmod(self, obj):
-    #     return obj.updated_at

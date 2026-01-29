@@ -62,7 +62,7 @@
           "offers": {
             "@type": "Offer",
             "priceCurrency": "PLN",
-            "price": "{{ product.final_price|default:product.price|floatformat:2 }}",
+            "price": "{{ product.final_price|default:product.price|stringformat:'0.2f' }}",
             "availability": "https://schema.org/{% if product.product_stock|default:0 > 0 %}InStock{% else %}OutOfStock{% endif %}",
             "url": "{{ request.build_absolute_uri|escapejs }}"
           }

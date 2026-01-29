@@ -33,5 +33,6 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps, "protocol": "https"}, name="sitemap"),
+
 ]
