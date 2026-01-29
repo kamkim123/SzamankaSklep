@@ -1,0 +1,14 @@
+User-agent: *
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /thank-you/
+Disallow: /u/
+Disallow: /accounts/
+
+# blokada wynikow wyszukiwania (czesto duplikaty)
+Disallow: /products/search
+Disallow: /products/search/
+Disallow: /products/search2/
+Disallow: /products/api/
+
+Sitemap: https://www.szamankasklep.pl/sitemap.xml

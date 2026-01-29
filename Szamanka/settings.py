@@ -52,9 +52,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.sites",
+
     "import_export",
     "corsheaders",
+    "django.contrib.sites",
+    "django.contrib.sitemaps",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",

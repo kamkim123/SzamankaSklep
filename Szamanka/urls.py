@@ -1,9 +1,15 @@
 from django.contrib import admin
 from django.urls import path, include
-
+from django.views.generic import TemplateView
 from orders.models import Order
-
+from products.sitemaps import StaticViewSitemap, ProductDetailSitemap
 from products import views
+from django.contrib.sitemaps.views import sitemap
+
+sitemaps = {
+    "static": StaticViewSitemap,
+    "products": ProductDetailSitemap,
+}
 
 urlpatterns = [
     path("", views.IndexView.as_view(), name="home"),
@@ -17,5 +23,15 @@ urlpatterns = [
     path("epaka/profile/", views.epaka_profile_view, name="epaka_profile"),
     path("newsletter/", include(("newsletter.urls", "newsletter"), namespace="newsletter")),
 
+    path(
+        "robots.txt",
+        TemplateView.as_view(template_name="robots.txt", content_type="text/plain; charset=utf-8"),
+        name="robots_txt",
+    ),
 
+
+]
+
+urlpatterns += [
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
 ]
