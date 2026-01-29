@@ -60,6 +60,8 @@
 
 </head>
 
+<body>
+
     {% if messages %}
       <div class="flash-messages">
         {% for message in messages %}
@@ -97,8 +99,6 @@
     }, HIDE_AFTER + 500);
   });
 </script>
-
-<body>
 {% load static %}
 
 <form method="get" id="navFilterForm" action="{% url 'products:index' %}" style="display:none">
@@ -115,19 +115,24 @@
         <div class="swiper-reklamy">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <img src="{% static 'products/images/hero-chlorofil.jpg' %}" alt="zdjecie" class="zdjecie1"/>
+                    <img src="{% static 'products/images/hero-chlorofil.jpg' %}" alt="Szamanka – naturalne produkty (baner 1)" class="zdjecie1"/>
                 </div>
                 <div class="swiper-slide">
-                    <img src="{% static 'products/images/self-made-hero1.jpeg' %}" alt="zdjecie" class="zdjecie1"/>
+                    <img src="{% static 'products/images/self-made-hero1.jpeg' %}" alt="Szamanka – naturalne produkty (baner 2)" class="zdjecie1"/>
                 </div>
                 <div class="swiper-slide">
-                    <img src= '/static/products/images/self-made-hero3.png' alt="zdjecie" class="zdjecie1"/>
+                    <img src= '/static/products/images/self-made-hero3.png' alt="Szamanka – naturalne produkty (baner 3)" class="zdjecie1"/>
                 </div>
             </div>
 
             <div class="swiper-pagination"></div>
 
-            <div class="hero-comment"> Naturalne produkty,<br> zamow juz dzis!</div>
+            <div class="hero-comment">
+              <h1 style="all: unset; display:block; font: inherit;">
+                  Szamanka – sklep zielarski i naturalne kosmetyki
+              </h1>
+            </div>
+
         </div>
 
     </section>
@@ -155,7 +160,7 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'products:index' %}?type=kosmetyki do włosów">
+                <a href="{% url 'products:index' %}?type={{ 'kosmetyki do włosów'|urlencode }}">
                     <div class="category1-wrapper">
                         <div class="category-image-wrapper">
                             <img src="{% static 'products/images/cosmeticsAI.jpeg' %}" alt="soap" class="vegan">
@@ -221,17 +226,19 @@
                 </div>
 
 
-                <span class="trans-trans1">TRANSMISJE</span>
+                <h2 class="trans-trans1">TRANSMISJE</h2>
+                <p>
                 Chcesz być z nami na bieżąco? Regularnie prowadzimy transmisje na żywo na Facebooku, podczas których:
                 – opowiadamy o nowych produktach,
                 – pokazujemy, jak korzystać z ziół i naturalnych preparatów,
                 – odpowiadamy na Wasze pytania.
                 To świetna okazja, żeby nas lepiej poznać i być blisko zielarskiej społeczności Szamanki – nawet bez
                 wychodzenia z domu.
+                </p>
 
             </div>
             <div class="a-photo-wrapper">
-                <img src="{% static 'products/images/Agnieszka3.jpg' %}" alt="a-photo" class="article-photo1">
+                <img src="{% static 'products/images/Agnieszka3.jpg' %}" alt="Agnieszka – Szamanka, sklep zielarski" class="article-photo1">
             </div>
         </div>
 
@@ -323,7 +330,7 @@
 
     <section class="o-nas-section" id="o-nas-section">
         <div class="o-nas-wrapper">
-            <div class="o-nas-info"><span class="o-nas-title">O nas</span><br>
+            <div class="o-nas-info"><h2 class="o-nas-title">O nas</h2><br>
 
                 Witaj w naszym zielarsko-kosmetycznym świecie, w którym natura i troska o zdrowie spotykają się każdego
                 dnia.
@@ -336,14 +343,17 @@
                 Wierzę, że siła natury potrafi naprawdę wiele — wystarczy jej zaufać.
             </div>
             <div class="o-nas-photo-wrapper">
-                <img src="{% static 'products/images/IMG_1963.jpeg' %}" alt="o nas photo" class="o-nas-photo">
+                <img src="{% static 'products/images/IMG_1963.jpeg' %}" alt="Sklep Szamanka – zioła i naturalne kosmetyki" class="o-nas-photo">
             </div>
         </div>
     </section>
     <section class="newsletter-section">
+
         <div class="newsletter-wrapper">
-            <div class="newsletter">Newsletter<span class="newsletter-info">Podaj swój adres e-mail, jeżeli chcesz otrzymywać
-                informacje o nowościach i promocjach!</span>
+
+            <div class="newsletter"><h2 class="news-title">Newsletter</h2><p class="newsletter-info">Podaj swój adres e-mail, jeżeli chcesz otrzymywać
+                informacje o nowościach i promocjach!</p>
+
                 <form method="post" action="{% url 'newsletter:signup' %}">
                   {% csrf_token %}
                   <label>
@@ -358,9 +368,10 @@
         </div>
     </section>
     <section id="location-section">
+        <h2>Kontakt i lokalizacja</h2>
         <div class="location-wrapper">
             <div class="location-map">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2423.895587309471!2d20.806356712078408!3d52.58958097196297!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471e998d02ec47c5%3A0x1d494104163be50d!2sSklep%20Zielarski%20Szamanka!5e0!3m2!1spl!2spl!4v1752750873724!5m2!1spl!2spl"
+                <iframe title="Mapa dojazdu – Sklep Zielarski Szamanka w Nasielsku" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2423.895587309471!2d20.806356712078408!3d52.58958097196297!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471e998d02ec47c5%3A0x1d494104163be50d!2sSklep%20Zielarski%20Szamanka!5e0!3m2!1spl!2spl!4v1752750873724!5m2!1spl!2spl"
                         width="600"
                         height="330"
                         style="border:0;"

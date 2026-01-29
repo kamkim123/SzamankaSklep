@@ -89,6 +89,7 @@
     <script>
         var cartAddUrl = "{% url 'orders:cart_add' %}";
     </script>
+
 </head>
 
 
@@ -114,7 +115,8 @@
             </div>
 
             <div class="products-menu-item">
-                <span class="title-link title-link1" data-type="spozywcze">Artykuły spożywcze</span>
+                <a class="title-link title-link1" data-type="spozywcze" href="{% url 'products:produkty' %}?type=spozywcze">Artykuły spożywcze</a>
+
                 <p class="products-menu-p">Mąki</p>
                 <p class="products-menu-p">Orzechy</p>
                 <p class="products-menu-p">Przekąski</p>
@@ -123,14 +125,17 @@
             </div>
 
             <div class="products-menu-item">
-                <span class="title-link" data-type="suplementy">Suplementy diety</span>
+                <a class="title-link" data-type="suplementy" href="{% url 'products:produkty' %}?type=suplementy">Suplementy diety</a>
+
             </div>
 
             <div class="products-menu-item">
                 <span class="title-link" id="title-only-no-link">Kosmetyki</span>
 
                 <div class="submenu-block">
-                    <a href="#" class="products-menu-link subtitle-link" data-type="kosmetyki do twarzy">Do twarzy</a>
+                    <a class="products-menu-link subtitle-link"
+                       href="{% url 'products:produkty' %}?type={{ 'kosmetyki do twarzy'|urlencode }}"
+                       data-type="kosmetyki do twarzy">Do twarzy</a>
                     <button class="submenu-toggle" type="button" aria-label="Rozwiń Do twarzy"></button>
                 </div>
                 <div class="submenu-panel">
@@ -147,7 +152,9 @@
                 </div>
 
                 <div class="submenu-block">
-                    <a href="#" class="products-menu-link subtitle-link" data-type="kosmetyki do ciała">Do ciała</a>
+                    <a class="products-menu-link subtitle-link"
+                       href="{% url 'products:produkty' %}?type={{ 'kosmetyki do ciała'|urlencode }}"
+                       data-type="kosmetyki do ciała">Do ciała</a>
                     <button class="submenu-toggle" type="button" aria-label="Rozwiń Do ciała"></button>
                 </div>
                 <div class="submenu-panel">
@@ -162,7 +169,9 @@
                 </div>
 
                 <div class="submenu-block">
-                    <a href="#" class="products-menu-link subtitle-link" data-type="kosmetyki do włosów">Do włosów</a>
+                    <a class="products-menu-link subtitle-link"
+                       href="{% url 'products:produkty' %}?type={{ 'kosmetyki do włosów'|urlencode }}"
+                       data-type="kosmetyki do włosów">Do włosów</a>
                     <button class="submenu-toggle" type="button" aria-label="Rozwiń Do włosów"></button>
                 </div>
                 <div class="submenu-panel">
@@ -177,16 +186,17 @@
             </div>
 
             <div class="products-menu-item">
-                <span class="title-link" data-type="masci">Maści</span>
+                <a class="title-link" data-type="masci" href="{% url 'products:produkty' %}?type=masci">Maści</a>
+
                 <p class="products-menu-p" data-type="Przeciwbolowe">Przeciwbólowe</p>
                 <p class="products-menu-p" data-type="Problemy skorne">Problemy skórne</p>
                 <p class="products-menu-p" data-type="Inne">Inne</p>
             </div>
             <div class="products-menu-item">
-                <span class="title-link" data-type="ziola">Zioła</span>
+                <a class="title-link" data-type="ziola" href="{% url 'products:produkty' %}?type=ziola">Zioła</a>
             </div>
             <div class="products-menu-item">
-                <span class="title-link" data-type="inne">Inne</span>
+                <a class="title-link" data-type="inne" href="{% url 'products:produkty' %}?type=inne">Inne</a>
                 <p class="products-menu-p" data-type="Perfumy">Perfumy</p>
                 <p class="products-menu-p" data-type="Dyfuzory">Dyfuzory</p>
                 <p class="products-menu-p" data-type="Olejki eteryczne">Olejki eteryczne</p>
@@ -215,6 +225,22 @@
 
 
         <div class="all-products">
+            <h1 class="sr-only">
+              {% if selected %}
+                {{ selected|capfirst }} – produkty
+              {% elif request.GET.promocje %}
+                Promocje – produkty
+              {% elif request.GET.nowosci %}
+                Nowości – produkty
+              {% elif request.GET.bestsellers %}
+                Bestsellery – produkty
+              {% elif request.GET.najpopularniejsze %}
+                Najpopularniejsze – produkty
+              {% else %}
+                Produkty
+              {% endif %}
+            </h1>
+
             <div class="sort-by">sort&nbsp;by:</div>
             <div class="sort-wrapper">
                 <div class="sort">Produkty</div>

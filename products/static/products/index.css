@@ -528,7 +528,7 @@ nav {
     position: absolute;
     top: 13rem;
     left: 5rem;
-    font-size: 3.5rem;
+    font-size: 3rem;
     color: white;
     z-index: 100;
 }
@@ -637,12 +637,14 @@ nav {
     text-shadow: 0 0 1px black;
 }
 
+
 .text-container1 p span:hover{
     text-decoration:underline;
 }
 
 .trans-trans1{
     font-weight: 600;
+    font-size: 1.4rem;
 }
 
 .text-container1 img{
@@ -921,7 +923,8 @@ nav {
 }
 
 .o-nas-title {
-    font-size: 3rem;
+    font-size: 2.2rem;
+    font-weight:600;
 }
 
 .o-nas-info {
@@ -976,6 +979,14 @@ nav {
   text-align: center;
   gap: 12px;
   font-size: 2rem;         /* trochę spokojniej niż 2.2 */
+
+}
+
+.news-title{
+    font-weight:600;
+    font-size: 2.2rem;
+
+    color: #4c2a0f;
 }
 
 .newsletter-info{
@@ -1066,6 +1077,16 @@ nav {
     width: 100%;
     min-width: 0;
   }
+}
+
+#location-section h2{
+    color: #4c2a0f;
+    display:flex;
+    justify-content:center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-top: 1rem;
 }
 
 
@@ -1832,9 +1853,7 @@ iframe {
 
     }
 
-    .location-section{
 
-    }
 
     .location-wrapper {
         width: 100%;
@@ -1972,6 +1991,21 @@ iframe {
     #ikonka-blik {
         width: 35px;
         height: 23px;
+    }
+
+    .o-nas-title {
+        font-size: 1.7rem;
+        font-weight:600;
+    }
+    .news-title{
+
+        font-size: 1.7rem;
+
+    }
+
+    #location-section h2{
+        font-size: 1.7rem;
+
     }
 
 

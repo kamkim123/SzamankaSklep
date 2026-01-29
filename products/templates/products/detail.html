@@ -16,7 +16,8 @@
     <meta name="robots" content="index,follow">
 
     {# canonical: najlepiej bez query, czyli absolutny URL aktualnej strony #}
-    <link rel="canonical" href="{{ request.build_absolute_uri|cut:request.get_full_path|add:request.path }}">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
 
     {# --- Open Graph / social --- #}
     <meta property="og:locale" content="pl_PL">
@@ -29,35 +30,45 @@
 
     {# og:image: jeśli product_image jest pełnym URL to będzie OK; jeśli to ścieżka względna, podmień na pełny URL #}
     {% if product.product_image %}
-      <meta property="og:image" content="{{ product.product_image }}">
+      {% if "http" in product.product_image %}
+        <meta property="og:image" content="{{ product.product_image }}">
+        <meta name="twitter:image" content="{{ product.product_image }}">
+      {% else %}
+        <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.product_image }}">
+        <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.product_image }}">
+      {% endif %}
     {% endif %}
+
 
     {# Twitter (opcjonalnie) #}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ product.product_name }} – Szamanka">
     <meta name="twitter:description"
           content="{% if product.short_description %}{{ product.short_description|striptags|truncatechars:200 }}{% elif product.product_info %}{{ product.product_info|striptags|truncatechars:200 }}{% else %}Naturalny produkt w sklepie Szamanka.{% endif %}">
-    {% if product.product_image %}
-      <meta name="twitter:image" content="{{ product.product_image }}">
-    {% endif %}
+
 
     {# --- (Opcjonalnie, ale mocno polecam) JSON-LD Product --- #}
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      "name": "{{ product.product_name|escapejs }}",
-      "description": "{{ product.short_description|default:product.product_info|default:'Naturalny produkt w sklepie Szamanka.'|striptags|truncatechars:500|escapejs }}",
-      "sku": "{{ product.id }}",
-      "offers": {
-        "@type": "Offer",
-        "priceCurrency": "PLN",
-        "price": "{{ product.final_price|default:product.price|floatformat:2 }}",
-        "availability": "https://schema.org/{% if product.product_stock|default:0 > 0 %}InStock{% else %}OutOfStock{% endif %}",
-        "url": "{{ request.build_absolute_uri|escapejs }}"
-      }
-    }
+        {
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": "{{ product.product_name|escapejs }}",
+          "description": "{{ product.short_description|default:product.product_info|default:'Naturalny produkt w sklepie Szamanka.'|striptags|truncatechars:500|escapejs }}",
+          "image": [
+            "{% if product.product_image %}{% if 'http' in product.product_image %}{{ product.product_image|escapejs }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ product.product_image|escapejs }}{% endif %}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'products/images/hero-chlorofil.jpg' %}{% endif %}"
+          ],
+          "brand": { "@type": "Brand", "name": "Szamanka" },
+          "sku": "{{ product.id }}",
+          "offers": {
+            "@type": "Offer",
+            "priceCurrency": "PLN",
+            "price": "{{ product.final_price|default:product.price|floatformat:2 }}",
+            "availability": "https://schema.org/{% if product.product_stock|default:0 > 0 %}InStock{% else %}OutOfStock{% endif %}",
+            "url": "{{ request.build_absolute_uri|escapejs }}"
+          }
+        }
     </script>
+
 
     {# --- Twoje istniejące zasoby --- #}
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
@@ -81,7 +92,7 @@
         <div class="breadcrumbs" aria-label="okruszki nawigacji">
             <a href="/">Home</a>
             <span aria-hidden="true">/</span>
-            <a href="/products/">Produkty</a>
+            <a href="{% url 'products:produkty' %}">Produkty</a>
             <span aria-hidden="true">/</span>
             <span class="current">{{ product.category.name }}</span>
         </div>
@@ -115,11 +126,8 @@
                 <div class="desc-wrap">
                     <article class="product-description card" id="opis">
                         <h2>Opis produktu</h2>
-                        <div class="prose">
-                            <p>
-                                {{ product.product_info }}
-                            </p>
-                        </div>
+                        <div class="prose">{{ product.product_info|safe }}</div>
+
 
                         <div class="meta-grid">
                             <div>

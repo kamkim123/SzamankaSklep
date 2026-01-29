@@ -50,7 +50,7 @@ if (menuLeft) {
   leftMenu.addEventListener('click', function (e) {
     if (e.target.closest('.submenu-toggle')) return;
 
-    var link = e.target.closest('.products-menu-link, .title-link');
+    var link = e.target.closest('.products-menu-link, .title-link, .products-cat2, .products-menu-p');
     if (!link) return;
 
     var isSectionTitle = link.classList.contains('title-link') && !link.hasAttribute('data-type');
@@ -58,8 +58,9 @@ if (menuLeft) {
 
     e.preventDefault();
 
-    var raw = link.getAttribute('data-type');
-    var value = (raw !== null ? raw : link.textContent).trim();
+    var value = (link.getAttribute('data-type') || '').trim();
+    if (!value) return; // jeśli brak data-type, nie filtruj
+
 
     // Sprawdzamy, czy kliknięto w "Bestsellery"
     var addBestsellers = (value === "Bestsellery");
