@@ -98,6 +98,17 @@ def checkout(request):
     cart = Cart(request)
 
     if request.method == "POST":
+
+        token_form = request.POST.get("checkout_token")
+        token_session = request.session.get("checkout_token")
+
+        if not token_form or not token_session or token_form != token_session:
+            messages.error(request, "Formularz został wysłany drugi raz lub sesja wygasła. Spróbuj ponownie.")
+            return redirect("orders:checkout")
+
+        # zużyj token: kolejny POST nie przejdzie
+
+
         if len(cart) == 0:
             messages.error(request, "Koszyk jest pusty — dodaj produkty i spróbuj ponownie.")
             return redirect("orders:cart")
@@ -165,6 +176,8 @@ def checkout(request):
             inpost_locker_code=inpost_locker_code,
         )
 
+        request.session.pop("checkout_token", None)
+
         for item in cart:
             OrderItem.objects.create(
                 order=order,
@@ -176,15 +189,6 @@ def checkout(request):
 
 
         # ✅ MAIL: zamówienie przyjęte (idzie zawsze po utworzeniu zamówienia)
-        try:
-            send_order_email(
-                order,
-                subject=f"Potwierdzenie zamówienia #{order.pk} – SzamankaSklep",
-                template_base="orders/emails/order_created",
-            )
-        except Exception as e:
-            order.notes = (order.notes or "") + f"\n[MAIL] order_created error: {repr(e)}\n"
-            order.save(update_fields=["notes"])
 
         # Online: NIE czyścimy koszyka tutaj
         if payment_method == Order.PAYMENT_ONLINE:
@@ -198,8 +202,12 @@ def checkout(request):
     checkout_shipping = shipping_for_method(default_method)
     checkout_grand = cart.grand_total + checkout_shipping
 
+    from uuid import uuid4
 
+    if "checkout_token" not in request.session:
+        request.session["checkout_token"] = uuid4().hex
 
+    checkout_token = request.session["checkout_token"]
 
     return render(request, "orders/checkout.html", {
         "cart": cart,
@@ -209,6 +217,7 @@ def checkout(request):
         "checkout_shipping": checkout_shipping,
         "checkout_grand": checkout_grand,
         "checkout_method": default_method,
+        "checkout_token": checkout_token,
     })
 
 
@@ -377,6 +386,9 @@ def p24_start(request, pk: int):
     if order.paid:
         return redirect("orders:thank_you", pk=order.pk)
 
+    if order.p24_token:
+        return redirect(f"{settings.P24_TRN_BASE}/{order.p24_token}")
+
     if not order.p24_session_id:
         order.p24_session_id = f"order-{order.pk}-{uuid4().hex}"
         order.save(update_fields=["p24_session_id"])
@@ -409,8 +421,8 @@ def p24_start(request, pk: int):
     order.save(update_fields=["p24_token"])
 
     # przekierowanie do P24 po TOKEN
-    base_url = "https://sandbox.przelewy24.pl" if settings.P24_SANDBOX else "https://secure.przelewy24.pl"
-    return redirect(f"{base_url}/trnRequest/{token}")
+    return redirect(f"{settings.P24_TRN_BASE}/{token}")
+
 
 
 @csrf_exempt
