@@ -9,7 +9,8 @@
 
     <title>Dziękujemy za zamówienie – Szamanka</title>
     <meta name="robots" content="noindex,nofollow">
-    <link rel="canonical" href="https://www.szamankasklep.pl{% url 'orders:thank_you' %}">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
 
     <link rel="stylesheet" href="{% static 'orders/thank_you.css' %}">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
