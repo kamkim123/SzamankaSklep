@@ -145,6 +145,7 @@ AUTHENTICATION_BACKENDS = [
 CSRF_COOKIE_NAME = "csrftoken"
 
 SITE_ID = 1
+SITE_DOMAIN = "www.szamankasklep.pl"
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 
