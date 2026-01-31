@@ -5,6 +5,9 @@ from orders.models import Order
 from products.sitemaps import StaticViewSitemap, ProductDetailSitemap
 from products import views
 from django.contrib.sitemaps.views import sitemap
+from django.urls import path
+from django.views.generic import RedirectView
+from django.templatetags.static import static
 
 sitemaps = {
     "static": StaticViewSitemap,
@@ -28,6 +31,11 @@ urlpatterns = [
         TemplateView.as_view(template_name="robots.txt", content_type="text/plain; charset=utf-8"),
         name="robots_txt",
     ),
+
+    path("favicon.ico", RedirectView.as_view(
+            url=static("products/favicons/favicon.ico"),
+            permanent=True
+    )),
 
 
 ]
