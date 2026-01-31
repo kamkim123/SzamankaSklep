@@ -526,9 +526,9 @@ nav {
 
 .hero-comment {
     position: absolute;
-    top: 13rem;
-    left: 5rem;
-    font-size: 3rem;
+    top: 12rem;
+    left: 6rem;
+    font-size: 1.3rem;
     color: white;
     z-index: 100;
 }
@@ -1292,6 +1292,15 @@ iframe {
         height: 500px;
 
     }
+
+    .hero-comment {
+        position: absolute;
+        top: 12rem;
+        left: 5rem;
+        font-size: 1rem;
+        color: white;
+        z-index: 100;
+    }
 }
 
 @media (max-width: 1150px) {
@@ -1971,16 +1980,48 @@ iframe {
         transform: translateY(-10px) rotate(-45deg);
     }
 
+    .swiper-reklamy{
+    height: 70vh;        /* było 630px */
+    min-height: 420px;
+    max-height: 620px;
+  }
+
+  /* 2) na mobile nie używaj fixed (często laguje i psuje render) */
+  .zdjecie1{
+    background-attachment: scroll;
+    object-fit: cover;
+    object-position: 60% 70%; /* <<< tu ustawiasz kadr (testuj %!) */
+ /* minimalnie, żeby kadr wyglądał pełniej */
+  }
+
+  /* 3) dodaj ciemny gradient dla czytelności tekstu */
+  .swiper-slide::after{
+    background: linear-gradient(
+      to top,
+      rgba(0,0,0,0.55) 0%,
+      rgba(0,0,0,0.25) 35%,
+      rgba(0,0,0,0.00) 70%
+    );
+  }
+
+  /* 4) tekst daj na dół + centrowanie, zamiast top/left */
+
 
 
     .hero-comment {
         position: absolute;
-        top: 20rem;
-        left: 2.5rem;
-        font-size: 2.5rem;
+        top: 8rem;
+        left: 3rem;
+        font-size: .8rem;
         color: white;
         z-index: 100;
     }
+
+    .hero-h1 {
+
+      padding: .5rem;
+    }
+
 
     .pay-icons {
         height: 22px;
@@ -2118,9 +2159,9 @@ iframe {
 
     .hero-comment {
         position: absolute;
-        top: 20rem;
+        top: 7rem;
         left: 2rem;
-        font-size: 1.5rem;
+        font-size: .7rem;
         color: white;
         z-index: 100;
     }
@@ -2130,6 +2171,8 @@ iframe {
 
         width: 100%;
       }
+
+
 
 }
 
@@ -2296,9 +2339,20 @@ iframe {
 
 
 .hero-h1 {
-  font-size: 28px;
   font-weight: 600;
   display: block;
+  margin-right: 3rem;
+  max-width: 40rem;
+  padding: .5rem;
+  border-radius: 2rem;
+  text-shadow: 0 0 2px black;
+  background: rgba(255, 255, 255, 0.12);   /* półprzezroczyste tło */
+  backdrop-filter: blur(8px);             /* rozmycie tła za elementem */
+  -webkit-backdrop-filter: blur(8px);     /* Safari */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+
+  border-radius: 16px;
+  font-family: "Poppins", sans-serif;
 }
 
 
