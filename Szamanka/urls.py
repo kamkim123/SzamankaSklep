@@ -8,6 +8,16 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import path
 from django.views.generic import RedirectView
 from django.templatetags.static import static
+from django.urls import path
+from django.http import FileResponse
+from django.contrib.staticfiles.storage import staticfiles_storage
+
+
+def favicon(request):
+    return FileResponse(
+        staticfiles_storage.open("products/favicons/favicon.ico"),
+        content_type="image/x-icon"
+    )
 
 sitemaps = {
     "static": StaticViewSitemap,
@@ -32,10 +42,7 @@ urlpatterns = [
         name="robots_txt",
     ),
 
-    path("favicon.ico", RedirectView.as_view(
-            url=static("products/favicons/favicon.ico"),
-            permanent=True
-    )),
+    path("favicon.ico", favicon),
 
 
 ]
