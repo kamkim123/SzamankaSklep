@@ -182,7 +182,7 @@ items.forEach(function (item) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.cart-icon').forEach(button => {
+    document.querySelectorAll('button.cart-icon[data-product-id]').forEach(button => {
         button.addEventListener('click', function (e) {
             e.preventDefault(); // Zapobiegamy domyślnemu wysłaniu formularza i przekierowaniu
 
