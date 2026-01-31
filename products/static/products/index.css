@@ -790,7 +790,7 @@ nav {
 }
 
 /* Ikona koszyka */
-.cart-icon {
+.cart-icon__img {
     width: 2rem;
     height: 2rem;
 }
@@ -2077,7 +2077,7 @@ iframe {
         font-size: 0.9rem;
     }
 
-        .cart-icon{
+      .cart-icon__img{
         width:1.4rem;
         height:1.4rem;
     }
