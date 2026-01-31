@@ -24,41 +24,62 @@ const swiper = new Swiper('.swiper-reklamy', {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.cart-icon').forEach(button => {
-        button.addEventListener('click', function (e) {
-            e.preventDefault(); // Zapobiegamy domyślnemu wysłaniu formularza i przekierowaniu
+  document.querySelectorAll('.cart-icon').forEach(button => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
 
-            const productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
-            const quantity = 1;  // Zakładamy, że zawsze dodajemy 1 sztukę
+      // klik może być w img albo w button — bierz najbliższy element z data-product-id
+      const el = e.target.closest('[data-product-id]');
+      const productId = el ? el.getAttribute('data-product-id') : null;
 
-            console.log("Dodaję do koszyka produkt o ID:", productId);  // Debugowanie
+      // fallback: weź product_id z ukrytego inputa w tym samym formularzu (u Ciebie jest)
+      let finalId = productId;
+      if (!finalId) {
+        const form = this.closest('form');
+        const hidden = form ? form.querySelector('input[name="product_id"]') : null;
+        finalId = hidden ? hidden.value : null;
+      }
 
-            // Używamy wygenerowanego URL do wysłania żądania
-            fetch(cartAddUrl, {
-                method: 'POST',
-                headers: {
-                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: new URLSearchParams({
-                    'product_id': productId,
-                    'quantity': quantity
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);  // Debugowanie odpowiedzi z serwera
-                if (data.ok) {
+      // jeśli dalej brak — nic nie rób (bez 500)
+      if (!finalId) return;
 
-                    document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
-                }
-            })
-            .catch(error => {
-                console.error("Wystąpił błąd:", error);
-            });
-        });
+      fetch(cartAddUrl, {
+        method: 'POST',
+        headers: {
+          "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+          "X-Requested-With": "XMLHttpRequest",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+          product_id: finalId,
+          quantity: 1
+        })
+      })
+      .then(async (response) => {
+        // nie parsuj HTML jako JSON
+        const ct = response.headers.get('content-type') || '';
+        if (!response.ok) {
+          await response.text();
+          return null;
+        }
+        if (!ct.includes('application/json')) {
+          await response.text();
+          return null;
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (!data || !data.ok) return;
+        const countEl = document.querySelector('.cart-count');
+        if (countEl) countEl.textContent = data.items;
+      })
+      .catch(() => {
+        // cicho
+      });
     });
+  });
 });
+
 
 
 
