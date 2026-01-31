@@ -1990,7 +1990,7 @@ iframe {
   .zdjecie1{
     background-attachment: scroll;
     object-fit: cover;
-    object-position: 60% 70%; /* <<< tu ustawiasz kadr (testuj %!) */
+    object-position: 40% 70%; /* <<< tu ustawiasz kadr (testuj %!) */
  /* minimalnie, żeby kadr wyglądał pełniej */
   }
 
