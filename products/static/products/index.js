@@ -1,3 +1,4 @@
+
 const swiper = new Swiper('.swiper-reklamy', {
     loop: true,
     slidesPerView: 1,
@@ -16,75 +17,41 @@ const swiper = new Swiper('.swiper-reklamy', {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-  const csrfEl = document.querySelector('[name=csrfmiddlewaretoken]');
-  const csrfToken = csrfEl ? csrfEl.value : null;
+    document.querySelectorAll('.cart-icon').forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault(); // Zapobiegamy domyślnemu wysłaniu formularza i przekierowaniu
 
-  document.querySelectorAll('.cart-icon').forEach(button => {
-    button.addEventListener('click', function (e) {
-      e.preventDefault();
+            const productId = this.getAttribute('data-product-id');  // Pobieramy ID produktu
+            const quantity = 1;  // Zakładamy, że zawsze dodajemy 1 sztukę
 
-      // Klik może być w <img> albo w <button> – bierzemy najbliższy przycisk koszyka
-      const btn = e.target.closest('button.cart-icon') || e.target.closest('.cart-icon') || this;
+            console.log("Dodaję do koszyka produkt o ID:", productId);  // Debugowanie
 
-      // 1) Spróbuj z data-product-id
-      let productId = btn.getAttribute('data-product-id');
+            // Używamy wygenerowanego URL do wysłania żądania
+            fetch(cartAddUrl, {
+                method: 'POST',
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    'product_id': productId,
+                    'quantity': quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);  // Debugowanie odpowiedzi z serwera
+                if (data.ok) {
 
-      // 2) Fallback: weź z formularza obok (u Ciebie jest hidden input product_id)
-      if (!productId || productId === 'null' || productId === 'undefined') {
-        const form = btn.closest('form');
-        const hidden = form ? form.querySelector('input[name="product_id"]') : null;
-        productId = hidden ? hidden.value : productId;
-      }
-
-      // Jeśli nadal brak – dopiero wtedy nic nie rób (to oznacza naprawdę brak danych)
-      if (!productId || productId === 'null' || productId === 'undefined') {
-        return; // cicho, bez logów i bez błędów
-      }
-
-      const quantity = 1;
-
-      fetch(cartAddUrl, {
-        method: 'POST',
-        headers: {
-          ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
-          "X-Requested-With": "XMLHttpRequest",
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({
-          product_id: productId,
-          quantity: quantity
-        })
-      })
-      .then(async (response) => {
-        const contentType = response.headers.get('content-type') || '';
-
-        // jeśli błąd i serwer zwróci HTML (np. strona błędu), nie parsuj JSON
-        if (!response.ok) {
-          await response.text();
-          return null;
-        }
-
-        if (!contentType.includes('application/json')) {
-          await response.text();
-          return null;
-        }
-
-        return response.json();
-      })
-      .then(data => {
-        if (!data) return;
-        if (data.ok) {
-          const countEl = document.querySelector('.cart-count');
-          if (countEl) countEl.textContent = data.items;
-        }
-      })
-      .catch(() => {
-        // cicho — bez spamowania konsoli na produkcji
-      });
+                    document.querySelector('.cart-count').textContent = data.items; // Zaktualizuj liczbę produktów w koszyku
+                }
+            })
+            .catch(error => {
+                console.error("Wystąpił błąd:", error);
+            });
+        });
     });
-  });
 });
-
 
 
 
