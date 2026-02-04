@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
 
     {% load static %}
+    {% load static products_filters %}
 
     {# --- SEO podstawowe --- #}
     <title>{{ product.product_name }} – Szamanka</title>
@@ -17,6 +18,8 @@
 
     {# canonical: najlepiej bez query, czyli absolutny URL aktualnej strony #}
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <link rel="icon" href="{% static 'products/favicons/favicon.ico' %}">
+
 
 
     {# --- Open Graph / social --- #}
@@ -87,6 +90,8 @@
 
 {% include "products/navbar.html" %}
 
+
+
 <main class="one-product-page">
     <div class="container">
         <div class="breadcrumbs" aria-label="okruszki nawigacji">
@@ -126,7 +131,8 @@
                 <div class="desc-wrap">
                     <article class="product-description card" id="opis">
                         <h2>Opis produktu</h2>
-                        <div class="prose">{{ product.product_info|safe }}</div>
+                        <div class="prose">{{ product.product_info|bold_labels }}</div>
+
 
 
                         <div class="meta-grid">
