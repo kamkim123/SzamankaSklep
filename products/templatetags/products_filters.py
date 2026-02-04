@@ -9,7 +9,7 @@ def bold_labels(text: str):
     if not text:
         return ""
 
-    # Pogrub "Skład:" / "Składniki:" na początku linii (także po enterze)
+    # Pogrub "Skład:" / "Składniki"
     out = re.sub(
         r'(^|\n)\s*(Składniki?|Skład)\s*:',
         r'\1<strong>\2:</strong>',

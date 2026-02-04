@@ -140,11 +140,7 @@ body {
   cursor: default;
 }
 
-.products-menu-p:hover{
-  color: var(--brand);
-  background: rgba(95,172,33,.08);
-  transform: translateY(-1px);
-}
+
 
 .title-link {
   box-shadow: 0 0 2px green;
@@ -195,10 +191,7 @@ body {
   cursor:default;
 }
 
-.products-cat2:hover {
-  background: rgba(95,172,33,.08);
-  color: var(--brand);
-}
+
 
 /* ------------------- FIX: Brakująca kropka przed .submenu-block ------------------- */
 .submenu-block {
