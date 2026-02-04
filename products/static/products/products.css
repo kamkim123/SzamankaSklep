@@ -1097,11 +1097,21 @@ body {
 
 .price {
 
-  margin-left:3px;
+  margin-left:5px;
 
   bottom: .4rem;
   font-size: 15px;
   width: 4rem;
+
+}
+
+.price .price__new{
+    font-size: 14px;
+
+}
+
+.price .price__old{
+    font-size: 11px;
 }
 
 .products-cart {
@@ -1206,6 +1216,23 @@ body {
 
 }
 
+@media (max-width: 500px) {
+    .price {
+      margin-left:6px;
+
+      font-size: 13px;
+
+    }
+
+    .price .price__new{
+        font-size: 12px;
+
+    }
+    .price .price__old{
+        font-size: 11px;
+    }
+}
+
 
 @media (max-width: 400px) {
 
@@ -1295,6 +1322,14 @@ body {
 
           font-size: 11px;
 
+        }
+        .price .price__new{
+            font-size: 11px;
+
+        }
+
+        .price .price__old{
+            font-size: 9px;
         }
 
         .products-cart {

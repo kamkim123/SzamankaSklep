@@ -161,6 +161,16 @@ items.forEach(function (item) {
   });
 });
 
+list.querySelectorAll('li').forEach(function (li) {
+  li.addEventListener('click', function (e) {
+    // jeśli kliknięto już w <a>, to jego handler i tak zadziała
+    if (e.target.closest('a')) return;
+
+    var a = li.querySelector('a');
+    if (a) a.click();
+  });
+});
+
 
   // Synchronizacja klasy 'active' w zależności od parametru w URL
   (function syncFromQuery() {

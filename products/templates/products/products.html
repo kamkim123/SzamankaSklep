@@ -139,33 +139,33 @@
                     <button class="submenu-toggle" type="button" aria-label="Rozwiń Do twarzy"></button>
                 </div>
                 <div class="submenu-panel">
-                    <p class="products-cat2" data-type="Hydrolaty">Hydrolaty</p>
-                    <p class="products-cat2" data-type="Olejki pod oczy">Olejki&nbsp;pod oczy</p>
-                    <p class="products-cat2" data-type="Kosmetyki kolorowe">Kosmetyki kolorowe</p>
-                    <p class="products-cat2" data-type="Pomadki do ust">Pomadki do ust</p>
-                    <p class="products-cat2" data-type="Maseczki">Maseczki</p>
-                    <p class="products-cat2" data-type="Kremy">Kremy</p>
-                    <p class="products-cat2" data-type="Peelingi">Peelingi</p>
-                    <p class="products-cat2" data-type="Zele i pianki">Żele i pianki</p>
-                    <p class="products-cat2" data-type="Serum">Serum</p>
-                    <p class="products-cat2" data-type="Plyny nicelarne">Płyny nicelarne</p>
+                    <p class="products-cat2">Hydrolaty</p>
+                    <p class="products-cat2">Olejki&nbsp;pod oczy</p>
+                    <p class="products-cat2">Kosmetyki kolorowe</p>
+                    <p class="products-cat2" >Pomadki do ust</p>
+                    <p class="products-cat2" >Maseczki</p>
+                    <p class="products-cat2" >Kremy</p>
+                    <p class="products-cat2" >Peelingi</p>
+                    <p class="products-cat2" >Żele i pianki</p>
+                    <p class="products-cat2" >Serum</p>
+                    <p class="products-cat2" >Płyny nicelarne</p>
                 </div>
 
                 <div class="submenu-block">
                     <a class="products-menu-link subtitle-link"
-                       href="{% url 'products:produkty' %}?type={{ 'kosmetyki do ciała'|urlencode }}"
-                       data-type="kosmetyki do ciała">Do ciała</a>
+                       href="{% url 'products:produkty' %}?type={{ 'kosmetyki do ciała'|urlencode }}">
+                       ="kosmetyki do ciała">Do ciała</a>
                     <button class="submenu-toggle" type="button" aria-label="Rozwiń Do ciała"></button>
                 </div>
                 <div class="submenu-panel">
-                    <p class="products-cat2"  data-type="Dezodoranty">Dezodoranty</p>
-                    <p class="products-cat2"  data-type="Sole">Sole</p>
-                    <p class="products-cat2"  data-type="Olejki">Olejki</p>
-                    <p class="products-cat2"  data-type="Zele do mycia">Żele do mycia</p>
-                    <p class="products-cat2"  data-type="Peelingi">Peelingi</p>
-                    <p class="products-cat2"  data-type="Mydla">Mydła</p>
-                    <p class="products-cat2"  data-type="Higiena intymna">Higiena intymna</p>
-                    <p class="products-cat2"  data-type="Balsamy">Balsamy</p>
+                    <p class="products-cat2"  >Dezodoranty</p>
+                    <p class="products-cat2" >Sole</p>
+                    <p class="products-cat2"  >Olejki</p>
+                    <p class="products-cat2"  >Żele do mycia</p>
+                    <p class="products-cat2"  >Peelingi</p>
+                    <p class="products-cat2"  >Mydła</p>
+                    <p class="products-cat2"  >Higiena intymna</p>
+                    <p class="products-cat2"  >Balsamy</p>
                 </div>
 
                 <div class="submenu-block">
@@ -175,34 +175,34 @@
                     <button class="submenu-toggle" type="button" aria-label="Rozwiń Do włosów"></button>
                 </div>
                 <div class="submenu-panel">
-                    <p class="products-cat2" data-type="Odzywki i maski">Odżywki i maski</p>
-                    <p class="products-cat2" data-type="Wcierki">Wcierki</p>
-                    <p class="products-cat2" data-type="Olejki">Olejki</p>
-                    <p class="products-cat2" data-type="Szampony">Szampony</p>
-                    <p class="products-cat2" data-type="Farby">Farby</p>
-                    <p class="products-cat2" data-type="Akcesoria">Akcesoria</p>
-                    <p class="products-cat2" data-type="Peelingi">Peelingi</p>
+                    <p class="products-cat2" >Odżywki i maski</p>
+                    <p class="products-cat2" >Wcierki</p>
+                    <p class="products-cat2" >Olejki</p>
+                    <p class="products-cat2" >Szampony</p>
+                    <p class="products-cat2" >Farby</p>
+                    <p class="products-cat2" >Akcesoria</p>
+                    <p class="products-cat2" >Peelingi</p>
                 </div>
             </div>
 
             <div class="products-menu-item">
                 <a class="title-link" data-type="masci" href="{% url 'products:produkty' %}?type=masci">Maści</a>
 
-                <p class="products-menu-p" data-type="Przeciwbolowe">Przeciwbólowe</p>
-                <p class="products-menu-p" data-type="Problemy skorne">Problemy skórne</p>
-                <p class="products-menu-p" data-type="Inne">Inne</p>
+                <p class="products-menu-p" >Przeciwbólowe</p>
+                <p class="products-menu-p" >Problemy skórne</p>
+                <p class="products-menu-p" >Inne</p>
             </div>
             <div class="products-menu-item">
                 <a class="title-link" data-type="ziola" href="{% url 'products:produkty' %}?type=ziola">Zioła</a>
             </div>
             <div class="products-menu-item">
                 <a class="title-link" data-type="inne" href="{% url 'products:produkty' %}?type=inne">Inne</a>
-                <p class="products-menu-p" data-type="Perfumy">Perfumy</p>
-                <p class="products-menu-p" data-type="Dyfuzory">Dyfuzory</p>
-                <p class="products-menu-p" data-type="Olejki eteryczne">Olejki eteryczne</p>
-                <p class="products-menu-p" data-type="Swiece zapachowe">Świece zapachowe</p>
-                <p class="products-menu-p" data-type="Poduszki">Poduszki</p>
-                <p class="products-menu-p" data-type="Pasty do zebow">Pasty do zębów</p>
+                <p class="products-menu-p" >Perfumy</p>
+                <p class="products-menu-p" >Dyfuzory</p>
+                <p class="products-menu-p" >Olejki eteryczne</p>
+                <p class="products-menu-p" >Świece zapachowe</p>
+                <p class="products-menu-p" >Poduszki</p>
+                <p class="products-menu-p" >Pasty do zębów</p>
             </div>
         </div>
 
@@ -230,7 +230,7 @@
                 {{ selected|capfirst }} – produkty
               {% elif request.GET.promocje %}
                 Promocje – produkty
-              {% elif request.GET.nowosci %}
+              {% elif request.GET.noscitur %}
                 Nowości – produkty
               {% elif request.GET.bestsellers %}
                 Bestsellery – produkty
