@@ -78,11 +78,11 @@ class Order(models.Model):
 
     PACKAGE_CHOICES = [
         (PACKAGE_NONE, "— wybierz —"),
-        (PACKAGE_1, "1) 17×20×20 cm (do 2 kg)"),
-        (PACKAGE_2, "2) 25×20×20 cm (do 5 kg)"),
-        (PACKAGE_3, "3) 35×25×15 cm (do 7 kg)"),
+        (PACKAGE_1, "1) 17×20×20 cm (do 1 kg)"),
+        (PACKAGE_2, "2) 25×20×20 cm (do 4 kg)"),
+        (PACKAGE_3, "3) 35×25×15 cm (do 6 kg)"),
         (PACKAGE_4, "4) 35×35×30 cm (do 10 kg)"),
-        (PACKAGE_5, "5) 45×45×45 cm (do 20 kg)"),
+        (PACKAGE_5, "5) 45×45×45 cm (do 15 kg)"),
     ]
 
     package_size = models.CharField(
