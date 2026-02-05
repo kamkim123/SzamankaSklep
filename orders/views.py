@@ -271,15 +271,19 @@ def epaka_label_view(request, pk):
     return response
 
 def epaka_couriers_view(request):
-    access_token = request.session.get("epaka_access_token")
+    access_token = get_epaka_access_token()
     if not access_token:
+        # możesz też pokazać komunikat zamiast pustej listy
         return render(request, "orders/epaka_couriers.html", {"couriers": []})
 
     resp = epaka_api_get("/v1/couriers", access_token)
+    if resp.status_code != 200:
+        return render(request, "orders/epaka_couriers.html", {"couriers": []})
+
     data = resp.json()
     couriers = data.get("couriers", [])
-
     return render(request, "orders/epaka_couriers.html", {"couriers": couriers})
+
 
 
 
@@ -301,9 +305,9 @@ def epaka_points(request):
     if not q:
         return JsonResponse({"points": []})
 
-    access_token = request.session.get("epaka_access_token")
+    access_token = get_epaka_access_token()
     if not access_token:
-        return JsonResponse({"error": "Brak powiązanego konta Epaka"}, status=403)
+        return JsonResponse({"error": "Błąd połączenia z ePaka. Spróbuj ponownie za chwilę."}, status=503)
 
     params = {
         "limit": 30,

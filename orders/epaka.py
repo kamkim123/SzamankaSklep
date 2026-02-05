@@ -38,13 +38,14 @@ def epaka_api_get(endpoint, access_token, params=None):
 
 
 def epaka_api_post(endpoint, access_token, payload):
-    url = settings.EPAKA_API_BASE_URL + endpoint
+    url = settings.EPAKA_API_BASE_URL.rstrip("/") + endpoint
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json",
         "Content-Type": "application/json",
     }
-    return requests.post(url, headers=headers, json=payload)
+    return requests.post(url, headers=headers, json=payload, timeout=20)
+
 
 
 

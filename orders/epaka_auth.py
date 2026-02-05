@@ -33,7 +33,9 @@ def get_epaka_access_token() -> str | None:
     if not token:
         return None
 
-    expires_at = timezone.now() + timezone.timedelta(seconds=expires_in)
+    # odświeżaj z zapasem (np. 120s), żeby nie wygasło w trakcie requestu
+    skew = 120
+    expires_at = timezone.now() + timezone.timedelta(seconds=max(0, expires_in - skew))
 
     # zapisz/odśwież
     EpakaToken.objects.all().delete()  # trzymamy 1 rekord
