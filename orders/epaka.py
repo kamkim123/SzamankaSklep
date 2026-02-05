@@ -8,11 +8,11 @@ from .models import Order
 
 # Mapowanie rozmiaru paczki -> wymiary dla ePaki (dostosuj do siebie)
 PACKAGE_DIMENSIONS = {
-    "1": {"weight": 2.0, "height": 17, "width": 20, "length": 20},
-    "2": {"weight": 5.0, "height": 25, "width": 20, "length": 20},
-    "3": {"weight": 7.0, "height": 35, "width": 25, "length": 15},
+    "1": {"weight": 1.0, "height": 17, "width": 20, "length": 20},
+    "2": {"weight": 4.0, "height": 25, "width": 20, "length": 20},
+    "3": {"weight": 6.0, "height": 35, "width": 25, "length": 15},
     "4": {"weight": 10.0, "height": 35, "width": 35, "length": 30},
-    "5": {"weight": 20.0, "height": 45, "width": 45, "length": 45},
+    "5": {"weight": 15.0, "height": 45, "width": 45, "length": 45},
 }
 
 
