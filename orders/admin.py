@@ -136,7 +136,7 @@ class OrderAdmin(admin.ModelAdmin):
 
             # 3) musi być rozmiar
             if not order.package_size:
-                order.epaka_last_error = "Brak package_size – wybierz rozmiar 1–5 w adminie."
+                order.epaka_last_error = "Brak package_size – wybierz rozmiar 1–6 w adminie."
                 order.notes = (order.notes or "") + f"\n[EPAKA] ERROR: {order.epaka_last_error}\n"
                 order.save(update_fields=["epaka_last_error", "notes"])
                 skipped += 1
