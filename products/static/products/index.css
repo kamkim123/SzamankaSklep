@@ -837,9 +837,6 @@ nav {
     display:  flex;
     flex-direction: column;
     align-items:center;
-
-
-
 }
 
 .transmisje h2{
@@ -919,7 +916,6 @@ nav {
     color: #4c2a0f;
     display: flex;
     align-items: center;
-
 }
 
 .o-nas-title {
@@ -1050,6 +1046,7 @@ nav {
   cursor: pointer;
   transition: background-color .15s ease, transform .05s ease;
   white-space: nowrap;
+  color:black;
 }
 
 .newsletter button:hover{
@@ -1287,9 +1284,16 @@ iframe {
 }
 
 
-@media (max-width: 1200px){
+@media (max-width: 1250px){
     .transmisje-wrapper{
-        height:550px;
+        height:640px;
+
+
+    }
+    .transmisje{
+
+        height:750px;
+
 
     }
 
@@ -1300,6 +1304,16 @@ iframe {
         font-size: 1rem;
         color: white;
         z-index: 100;
+    }
+
+    .o-nas-title {
+
+        margin-bottom: -15px;
+    }
+    .o-nas-wrapper {
+        height: 490px;
+
+
     }
 }
 
@@ -1484,6 +1498,10 @@ iframe {
 
     }
 
+    .transmisje h2{
+        margin-top: 1rem;
+    }
+
 
 
 
@@ -1494,8 +1512,9 @@ iframe {
         flex-direction: column;
         align-content: center;
         justify-items: center;
-
     }
+
+
 
     .o-nas-info {
         width: 100%;
@@ -1813,6 +1832,7 @@ iframe {
         margin:1rem;
 
     }
+
 
     .transmisje-wrapper p{
         font-size:1rem;
