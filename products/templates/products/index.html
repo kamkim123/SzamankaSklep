@@ -143,13 +143,35 @@
         <div class="swiper-reklamy">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <img src="{% static 'products/images/hero-chlorofil.jpg' %}" alt="Szamanka – naturalne produkty (baner 1)" class="zdjecie1"/>
+                    <img
+                      src="{% static 'products/images/hero-chlorofil.jpg' %}"
+                      alt="Szamanka – sklep zielarski i naturalne kosmetyki"
+                      class="zdjecie1"
+                      width="1920" height="630"
+                      fetchpriority="high"
+                      loading="eager"
+                      decoding="async"
+                    />
                 </div>
                 <div class="swiper-slide">
-                    <img src="{% static 'products/images/hero-pink.jpeg' %}" alt="Szamanka – naturalne produkty (baner 2)" class="zdjecie1"/>
+                    <img
+                      src="{% static 'products/images/hero-pink.jpeg' %}"
+                      alt="Szamanka – naturalne produkty"
+                      class="zdjecie1"
+                      width="1920" height="630"
+                      loading="lazy"
+                      decoding="async"
+                    />
                 </div>
                 <div class="swiper-slide">
-                    <img src= '/static/products/images/hero-chlorofil.jpg' alt="Szamanka – naturalne produkty (baner 3)" class="zdjecie1"/>
+                    <img
+                      src="{% static 'products/images/hero-chlorofil.jpg' %}"
+                      alt="Szamanka – naturalne produkty"
+                      class="zdjecie1"
+                      width="1920" height="630"
+                      loading="lazy"
+                      decoding="async"
+                    />
                 </div>
             </div>
 
