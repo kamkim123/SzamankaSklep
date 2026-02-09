@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== Podstawy produkcyjne =====
-DEBUG = False
+DEBUG = True
 SECRET_KEY = os.getenv("SECRET_KEY", "dber74gf7%&DFcwcwdq!")
 ALLOWED_HOSTS = [
     "szamankasklep.pl",
