@@ -188,7 +188,7 @@ def checkout(request):
 
 
 
-        # ✅ MAIL: zamówienie przyjęte (idzie zawsze po utworzeniu zamówienia)
+        #  MAIL: zamówienie przyjęte (idzie zawsze po utworzeniu zamówienia)
 
         # Online: NIE czyścimy koszyka tutaj
         if payment_method == Order.PAYMENT_ONLINE:

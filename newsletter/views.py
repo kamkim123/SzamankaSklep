@@ -27,7 +27,7 @@ def signup(request):
     if created:
         messages.success(request, "Dziękujemy! Twój e-mail został zapisany do newslettera.")
     else:
-        # jeśli już jest w bazie
+
         if obj.is_active:
             messages.info(request, "Ten e-mail jest już zapisany do newslettera.")
         else:

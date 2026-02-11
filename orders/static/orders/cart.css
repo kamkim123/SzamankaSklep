@@ -780,7 +780,7 @@ body {
  }
 
 
-/* ===== Coupon box (od zera, kompaktowo, zawsze widoczny button) ===== */
+/* ===== Coupon box (od zera) ===== */
 .coupon-box{
   padding: 12px 14px 14px;
   border-top: 1px dashed var(--line);
@@ -823,7 +823,7 @@ body {
 
 .coupon-row input{
   flex: 1 1 auto;
-  min-width: 0;              /* KLUCZ: nie wypycha przycisku poza kartę */
+  min-width: 0;
   height: 38px;
   border-radius: 10px;
   border: 1px solid var(--line);
@@ -840,7 +840,7 @@ body {
 }
 
 .coupon-btn{
-  flex: 0 0 auto;            /* KLUCZ: przycisk się nie “zgniata” */
+  flex: 0 0 auto;
   height: 38px;
   padding: 0 12px;
   border-radius: 10px;

@@ -12,7 +12,7 @@ from .epaka_auth import get_epaka_access_token
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
-    fields = ("product", "product_name", "unit_price", "quantity", "line_total_display")
+    fields = ("product", "quantity", "unit_price", "line_total_display")
     readonly_fields = ("line_total_display",)
 
     def line_total_display(self, obj):
