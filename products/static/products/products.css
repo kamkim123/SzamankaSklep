@@ -1499,3 +1499,65 @@ body {
 }
 
 
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+    margin: 1rem 0;
+}
+
+/* ------------------- Przycisk Poprzednia/Następna ------------------- */
+.pagination .page-btn {
+    background-color: #4CAF50;
+    color: #fff;
+    font-weight: normal;
+    border-radius: 30px;
+    padding: 3px 7px;
+    text-decoration: none;
+    white-space: nowrap; /* nie łamiemy tekstu */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+
+}
+
+.pagination .page-btn:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+/* ------------------- Numery stron ------------------- */
+.pagination .page-numbers {
+    display: flex;
+    gap: 6px;        /* odstęp między cyframi */
+    flex-wrap: nowrap; /* w jednej linii zawsze */
+}
+
+.pagination .page-numbers a.page,
+.pagination .page-numbers span.page {
+    flex: 0 0 auto;      /* nie kurczą się */
+    min-width: 28px;
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f0f0f0;
+    color: #555;
+    text-decoration: none;
+    white-space: nowrap; /* cyfra nie zawija się */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.pagination .page-numbers a.page:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-1px);
+}
+
+/* ------------------- Aktywna strona ------------------- */
+.pagination .page-numbers span.current {
+    font-weight: normal;
+    background-color: #d4f0c4;
+    color: #111;
+}

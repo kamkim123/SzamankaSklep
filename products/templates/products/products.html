@@ -320,53 +320,36 @@
 
             <!-- „Więcej produktów” = następna strona paginacji -->
             <div class="pagination">
-
-                {% comment %}
-                Budujemy bazowy querystring BEZ page,
-                żeby zachować filtry (type, promocje, nowosci itd.)
-                {% endcomment %}
-                {% with request.GET.urlencode as qs %}
-                  {% if qs %}
-                    {% if 'page=' in qs %}
-                      {% with qs|cut:'page='|cut:'&' as clean_qs %}
-                        {% set base_qs = clean_qs %}
-                      {% endwith %}
-                    {% else %}
-                      {% set base_qs = qs %}
-                    {% endif %}
-                  {% endif %}
-                {% endwith %}
-
                 {% if page_obj.has_previous %}
                   <a class="page-btn"
-                     href="?{{ request.GET.urlencode|cut:'page=' }}&page={{ page_obj.previous_page_number }}">
+                     href="?{% for key,value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
                     ← Poprzednia
                   </a>
                 {% endif %}
 
                 <div class="page-numbers">
                   {% for num in page_obj.paginator.page_range %}
-
-                    {% if num == page_obj.number %}
-                      <span class="page current">{{ num }}</span>
-                    {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
-                      <a class="page"
-                         href="?{{ request.GET.urlencode|cut:'page=' }}&page={{ num }}">
-                        {{ num }}
-                      </a>
+                    {% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+                      {% if num == page_obj.number %}
+                        <span class="page current">{{ num }}</span>
+                      {% else %}
+                        <a class="page"
+                           href="?{% for key,value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}page={{ num }}">
+                          {{ num }}
+                        </a>
+                      {% endif %}
                     {% endif %}
-
                   {% endfor %}
                 </div>
 
                 {% if page_obj.has_next %}
                   <a class="page-btn"
-                     href="?{{ request.GET.urlencode|cut:'page=' }}&page={{ page_obj.next_page_number }}">
+                     href="?{% for key,value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
                     Następna →
                   </a>
                 {% endif %}
-
             </div>
+
 
             {% else %}
             <p>Brak produktów.</p>

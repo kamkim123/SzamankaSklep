@@ -17,6 +17,7 @@ if (menuLeft) {
   });
 }
 
+
 // ===== LEWE MENU -> filtr ?type=... =====
 (function () {
   var leftMenu = document.querySelector('.products-menu');
@@ -362,6 +363,40 @@ function getCookie(name) {
 
 
 
+// ===== LEWE MENU -> filtr ?type=... (czysty URL po kliknięciu) =====
+(function () {
+  var leftMenu = document.querySelector('.products-menu');
+  if (!leftMenu) return;
+
+  leftMenu.addEventListener('click', function (e) {
+    if (e.target.closest('.submenu-toggle')) return;
+
+    var link = e.target.closest('.products-menu-link, .title-link');
+    if (!link) return;
+
+    var value = link.getAttribute('data-type');
+    if (!value) return;
+
+    e.preventDefault();
+
+    // ustawiamy klasę active tylko dla klikniętego linku
+    leftMenu.querySelectorAll('.products-menu-link, .title-link').forEach(el => el.classList.remove('active'));
+    link.classList.add('active');
+
+    // przechodzimy do nowego URL tylko z kategorią (absolutnie do /products/)
+    window.location.assign("/products/?type=" + encodeURIComponent(value));
+  });
+
+  // opcjonalnie: ustawienie active dla obecnego URL przy załadowaniu strony
+  var currentType = new URLSearchParams(window.location.search).get('type');
+  if (currentType) {
+    leftMenu.querySelectorAll('.products-menu-link, .title-link').forEach(link => {
+      if (link.getAttribute('data-type') === currentType) {
+        link.classList.add('active');
+      }
+    });
+  }
+})();
 
 
 
