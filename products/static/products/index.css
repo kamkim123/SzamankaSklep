@@ -1604,6 +1604,7 @@ iframe {
     }
 
 
+
 }
 
 
@@ -1624,6 +1625,12 @@ iframe {
         min-width: 230px;
     }
 
+
+    .hero-comment .hero-h1 {
+
+      font-size: 1.8rem;
+
+    }
 
 
 
@@ -2030,16 +2037,18 @@ iframe {
 
     .hero-comment {
         position: absolute;
-        top: 8rem;
+        top: 10rem;
         left: 3rem;
         font-size: .8rem;
         color: white;
         z-index: 100;
+        margin-right: 1rem;
     }
 
-    .hero-h1 {
-      margin-right: 3rem;
+    .hero-comment .hero-h1 {
+      margin-left: 1rem;
       padding: .5rem;
+      font-size: 1.5rem;
     }
 
 
@@ -2356,15 +2365,12 @@ iframe {
 .flash--warning { border-color: #ef6c00; color: #ef6c00; }
 
 
-.hero-h1 span{
-    font-size:3rem;
-    text-shadow: green 0 0 5px;
-}
+
 
 .hero-h1 {
   font-weight: 600;
   display: block;
-  margin-left: 5rem;
+  margin-left: 4rem;
   max-width: 40rem;
   padding: .5rem;
   border-radius: 2rem;
@@ -2373,7 +2379,7 @@ iframe {
   backdrop-filter: blur(8px);             /* rozmycie tła za elementem */
   -webkit-backdrop-filter: blur(8px);     /* Safari */
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-  font-size: 2.5rem;
+  font-size: 2rem;
   border-radius: 16px;
   font-family: "Poppins", sans-serif;
 }
