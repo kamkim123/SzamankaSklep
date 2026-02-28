@@ -34,7 +34,7 @@
                 data-product-id="{{ item.product.id }}"
                 data-price="{{ item.price|unlocalize|floatformat:2 }}"
                 data-update-url="{% url 'orders:cart_update' %}">
-                <img src="{% if item.product.product_image %}{{ item.product.product_image }}{% else %}{% static 'products/images/default-image.png' %}{% endif %}"
+                <img src="{% if item.product.image_url %}{{ item.product.product_image }}{% else %}{% static 'products/images/default-image.png' %}{% endif %}"
                      alt="{{ item.product.product_name }}" class="cart-product-image"/>
 
                 <div class="info">

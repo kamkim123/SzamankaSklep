@@ -114,7 +114,7 @@
 
                         <div class="image-wrapper2">
 
-                            <img src="{{ product.product_image }}" alt="{{ product.product_name }}" class="main-image">
+                            <img src="{{ product.image_url }}" alt="{{ product.product_name }}" class="main-image">
                             <div class="mini-photos" role="list" aria-label="Dodatkowe zdjęcia">
                                 {% for img in product.gallery.all %}
                                 <button class="mini-photo" type="button" role="listitem"
