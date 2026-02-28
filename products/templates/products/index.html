@@ -304,7 +304,8 @@
                     <span class="badge badge--promo">Promocja</span>
                 {% endif %}
                 <a href="{% url 'products:detail' product.pk %}">
-                    <img src="{{ p.image_url }}" alt="{{ p.product_name }}" class="product-image">
+                    <img src="{% if product.product_image %}{{ product.product_image }}{% else %}{% static 'images/default-image.jpg' %}{% endif %}"
+                         alt="{{ product.product_name }}" class="product-image">
                 </a>
                 <h3><a href="{% url 'products:detail' product.pk %}">{{ product.product_name }}</a></h3>
                 {% if product.is_promotion and product.promo_price %}
