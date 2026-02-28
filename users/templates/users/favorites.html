@@ -41,6 +41,7 @@
             <a href="{% url 'products:detail' favorite.product.pk %}">
                 <img src="{% if favorite.product.product_image %}{{ favorite.product.product_image }}{% else %}{% static 'images/product2.png' %}{% endif %}"
                      alt="{{ favorite.product.product_name }}" class="favorite-image">
+
             </a>
             <div class="favorite-info">
                 <h3>{{ favorite.product.product_name }}</h3>

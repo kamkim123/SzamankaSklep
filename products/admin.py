@@ -105,6 +105,7 @@ class ProductResource(resources.ModelResource):
     product_image = fields.Field(column_name="url_zdjecia", attribute="product_image", widget=DefaultingCharWidget(""))
 
 
+
     class Meta:
         model = Product
         # import_id_fields jest wymagane, ale i tak nadpisujemy get_instance()
@@ -122,6 +123,7 @@ class ProductResource(resources.ModelResource):
             "product_type",
             "product_image",
             "product_weight",
+            "product_image_file"
         )
         skip_unchanged = True
         report_skipped = True
@@ -182,9 +184,10 @@ class ProductAdmin(ImportExportModelAdmin):
         "is_new",  # Dodane pole do listy
         "is_popular",  # Dodane pole do listy
         "product_image",
+        "product_image_file",
         "product_weight",
     )
     search_fields = ("product_name", "product_brand", "product_category", "product_code")  # intowe product_code pomijamy w search_fields
-    list_filter = ("product_vat", "product_type", "product_category", "product_brand")
-    list_editable = ("is_bestseller", "is_promotion", "promo_price", "is_new", "is_popular",)
+    list_filter = ("product_vat", "product_type", "product_category", "product_brand", "product_image_file")
+    list_editable = ("is_bestseller", "is_promotion", "promo_price", "is_new", "is_popular", "product_image_file")
 

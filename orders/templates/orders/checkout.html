@@ -111,12 +111,7 @@
                             <li class="order-item" data-product-id="{{ item.product.id }}">
                                 <div class="order-item__media">
                                   {% if item.product.product_image %}
-                                    <img
-                                      class="thumb-img"
-                                      src="{{ item.product.product_image }}"
-                                      alt="{{ item.product.product_name }}"
-                                      loading="lazy"
-                                    >
+                                    <img src="{{ p.image_url }}" class="thumb-img" alt="{{ p.product_name }}" loading="lazy">
                                   {% else %}
                                     <div class="thumb" aria-hidden="true">{{ item.product.product_name|first|upper }}</div>
                                   {% endif %}

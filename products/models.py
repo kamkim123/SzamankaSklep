@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from decimal import Decimal
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 
 
 def was_published_recently(self):
@@ -45,6 +46,13 @@ class Product(models.Model):
     # models.py
     product_image = models.URLField(null=True, blank=True,
                                     default='static/products/images/default-image.png')
+
+    product_image_file = models.ImageField(
+        upload_to="products/images/",
+        null=True,
+        blank=True,
+        default="products/images/default-image.png"
+    )
 
     is_bestseller = models.BooleanField(default=False)
     is_promotion = models.BooleanField(default=False)  # Pole dla promocji
@@ -98,3 +106,11 @@ class Product(models.Model):
         if self.is_promotion and promo not in (None, ""):
             return promo
         return self.price
+
+    @property
+    def image_url(self):
+        if self.product_image_file:
+            return self.product_image_file.url
+        elif self.product_image:
+            return self.product_image
+        return "/static/products/images/default-image.png"

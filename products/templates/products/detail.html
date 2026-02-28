@@ -113,7 +113,8 @@
                         {% endif %}
 
                         <div class="image-wrapper2">
-                            <img src="{{ product.product_image }}" alt="{{ product.product_name }}" class="main-image"/>
+
+                            <img src="{{ p.image_url }}" alt="{{ p.product_name }}" class="main-image">
                             <div class="mini-photos" role="list" aria-label="Dodatkowe zdjęcia">
                                 {% for img in product.gallery.all %}
                                 <button class="mini-photo" type="button" role="listitem"
@@ -224,7 +225,7 @@
             {% for p in similar_products %}
             <div class="diff-product">
                 <a href="{% url 'products:detail' p.pk %}">
-                    <img src="{{ p.product_image }}" alt="{{ p.product_name }}"/>
+                    <img src="{{ p.image_url }}" alt="{{ p.product_name }}" class="product-image">
                     <h3>{{ p.product_name }}</h3>
                     {% if p.has_promo %}
                       <span class="price">

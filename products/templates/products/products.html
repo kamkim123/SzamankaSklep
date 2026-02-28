@@ -273,10 +273,7 @@
               {% endif %}
 
                 <a href="{% url 'products:detail' p.pk %}">
-                    <img
-                        src="{% if p.product_image %}{{ p.product_image }}{% else %}{% static 'products/images/default-image.png' %}{% endif %}"
-                        alt="{{ p.product_name }}"
-                        class="product-image">
+                    <img src="{{ p.image_url }}" alt="{{ p.product_name }}" class="product-image">
                 </a>
 
                 <h3>
