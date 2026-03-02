@@ -184,7 +184,11 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
-MEDIA_ROOT = "/var/data/media"
+if os.environ.get("RENDER"):
+    MEDIA_ROOT = "/var/data/media"
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
 MEDIA_URL = "/media/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
