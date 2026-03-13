@@ -5,8 +5,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== Podstawy produkcyjne =====
-DEBUG = False
-SECRET_KEY = os.getenv("SECRET_KEY", "dber74gf7%&DFcwcwdq!")
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+SECRET_KEY = os.getenv("SECRET_KEY", "temporary-dev-secret-change-me")
 ALLOWED_HOSTS = [
     "szamankasklep.pl",
     "www.szamankasklep.pl",
@@ -21,18 +21,20 @@ import os
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
+    EMAIL_BACKEND = os.getenv(
+        "EMAIL_BACKEND",
+        "django.core.mail.backends.smtp.EmailBackend"
+    )
+    EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+    EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+    EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").lower() == "true"
 
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.gmail.com"
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_USE_SSL = False
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 
-    EMAIL_HOST_USER = "szamankasklep@gmail.com"
-    EMAIL_HOST_PASSWORD = "cghsmpbwjbxmzvnb"
-
-    DEFAULT_FROM_EMAIL = "szamankasklep@gmail.com"
-    SERVER_EMAIL = "szamankasklep@gmail.com"
+    DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
+    SERVER_EMAIL = os.getenv("SERVER_EMAIL", EMAIL_HOST_USER)
 
 USE_X_FORWARDED_HOST = True
 
@@ -110,15 +112,23 @@ TEMPLATES = [
 WSGI_APPLICATION = "Szamanka.wsgi.application"
 
 DJANGO_DB_PATH = os.getenv("DJANGO_DB_PATH", str(BASE_DIR / "db.sqlite3"))
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-DATABASES = {
-    "default": dj_database_url.parse(
-        "postgresql://kamyk3226:iTwmja0Urf3bGjj1ZQIJvzSrAlnK2gMj@"
-        "dpg-d3jnr43ipnbc73clhnng-a.frankfurt-postgres.render.com/szamanka",
-        conn_max_age=300,         # 5 min – połączenia są re-używane
-        ssl_require=True,
-    )
-}
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=300,
+            ssl_require=True,
+        )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": DJANGO_DB_PATH,
+        }
+    }
 
 DATABASES["default"]["OPTIONS"] = {
     "keepalives": 1,
@@ -185,7 +195,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 if os.environ.get("RENDER"):
-    MEDIA_ROOT = "/var/data/media"
+    MEDIA_ROOT = os.getenv("DJANGO_MEDIA_ROOT", "/var/data/media")
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
@@ -194,7 +204,7 @@ MEDIA_URL = "/media/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ===== Bezpieczeństwo (włączysz po HTTPS) =====
-#SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "true").lower() == "true"
+SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "true").lower() == "true"
 CSRF_TRUSTED_ORIGINS = ["https://szamankasklep.pl", "https://www.szamankasklep.pl",  "http://127.0.0.1:8000",  # Lokalny adres
     "http://localhost:8000"]
 
@@ -229,8 +239,8 @@ DATABASES["default"]["OPTIONS"].update({
 
 # settings.py
 
-EPAKA_CLIENT_ID = "8f6838db44fbd3149716f3c3a214c183"
-EPAKA_CLIENT_SECRET = "b117c80f5dbaa46ad6a95315ca191dcc321f07b090cf852821ce6c4add501b6c"
+EPAKA_CLIENT_ID = os.getenv("EPAKA_CLIENT_ID", "")
+EPAKA_CLIENT_SECRET = os.getenv("EPAKA_CLIENT_SECRET", "")
 
 EPAKA_AUTHORIZE_URL = "https://epaka.pl/auth/oauth/autorizatize"
 EPAKA_TOKEN_URL = "https://api.epaka.pl/oauth/token"
@@ -271,3 +281,6 @@ else:
 SITE_NAME = "SzamankaSklep"
 COMPANY_NAME = "Twoja Firma Sp. z o.o."
 COMPANY_IBAN = "PL12 3456 7890 1234 5678 9012 3456"
+
+
+#koniec edycji
