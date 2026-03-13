@@ -13,6 +13,7 @@ from django.http import FileResponse
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import re_path
 
 from django.views.static import serve
 
@@ -30,6 +31,7 @@ sitemaps = {
 }
 
 urlpatterns = [
+    re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
     path("", views.IndexView.as_view(), name="home"),
     path("admin/", admin.site.urls),
     path("", include(("orders.urls", "orders"), namespace="orders")),
@@ -57,10 +59,4 @@ urlpatterns += [
 
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-
-urlpatterns += [
-    path("media/<path:path>", serve, {"document_root": settings.MEDIA_ROOT}),
-]
