@@ -2078,7 +2078,20 @@ iframe {
 
     }
 
+}
 
+.hero-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .hero-desktop {
+        display: none;
+    }
+
+    .hero-mobile {
+        display: block;
+    }
 }
 
 @media (max-width: 700px) {
