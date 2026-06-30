@@ -15,6 +15,7 @@ class OrderItemInline(admin.TabularInline):
     extra = 0
     fields = ("product", "quantity", "unit_price", "line_total_display")
     readonly_fields = ("line_total_display",)
+    raw_id_fields = ("product",)
 
     def line_total_display(self, obj):
         return f"{obj.line_total:.2f} zł" if obj.pk else "-"
