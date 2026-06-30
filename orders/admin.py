@@ -4,9 +4,10 @@ from django.utils import timezone
 from .models import Order, OrderItem
 from django.utils.html import format_html
 from django.urls import reverse
-from django.db import transaction
+
 from .epaka import create_epaka_order
 from .epaka_auth import get_epaka_access_token
+import requests
 
 
 class OrderItemInline(admin.TabularInline):
@@ -21,6 +22,7 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    list_per_page = 40
     list_display = (
         "id", "created_at", "last_name", "email",
         "status_label", "shipped_at",
@@ -38,6 +40,10 @@ class OrderAdmin(admin.ModelAdmin):
     )
 
     actions = ["mark_paid", "mark_shipped", "mark_cancelled", "send_to_epaka"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.prefetch_related("items", "items__product")
 
 
     # === Kolumny/etykiety ===
@@ -115,7 +121,30 @@ class OrderAdmin(admin.ModelAdmin):
 
     @admin.action(description="Wyślij do ePaki (wymaga: opłacone + rozmiar paczki)")
     def send_to_epaka(self, request, queryset):
-        token = get_epaka_access_token()
+        try:
+            token = get_epaka_access_token()
+        except requests.exceptions.Timeout:
+            self.message_user(
+                request,
+                "ePaka nie odpowiedziała na czas przy pobieraniu tokena. Spróbuj ponownie później.",
+                level=messages.ERROR,
+            )
+            return
+        except requests.exceptions.RequestException as e:
+            self.message_user(
+                request,
+                f"Błąd połączenia z ePaka przy pobieraniu tokena: {e}",
+                level=messages.ERROR,
+            )
+            return
+        except Exception as e:
+            self.message_user(
+                request,
+                f"Nieoczekiwany błąd przy pobieraniu tokena ePaka: {e}",
+                level=messages.ERROR,
+            )
+            return
+
         if not token:
             self.message_user(request, "Nie udało się pobrać tokena ePaki.", level=messages.ERROR)
             return
@@ -123,7 +152,7 @@ class OrderAdmin(admin.ModelAdmin):
         sent = 0
         skipped = 0
 
-        for order in queryset:
+        for order in queryset.prefetch_related("items", "items__product"):
             # 1) tylko opłacone
             if not order.paid or order.status != Order.STATUS_PAID:
                 skipped += 1
@@ -143,18 +172,39 @@ class OrderAdmin(admin.ModelAdmin):
                 continue
 
             # 4) wysyłka do ePaki
-            with transaction.atomic():
+            try:
                 data = create_epaka_order(order, token)
-                if not data:
-                    skipped += 1
-                    continue
 
-                # ✅ sukces: czyścimy błąd i zapisujemy datę wysłania do ePaki
-                order.epaka_last_error = ""
-                order.epaka_sent_at = timezone.now()
-                order.save(update_fields=["epaka_sent_at", "epaka_last_error", "updated_at"])
+            except requests.exceptions.Timeout:
+                order.epaka_last_error = "ePaka nie odpowiedziała na czas. Spróbuj ponownie później."
+                order.notes = (order.notes or "") + f"\n[EPAKA] TIMEOUT: {order.epaka_last_error}\n"
+                order.save(update_fields=["epaka_last_error", "notes", "updated_at"])
+                skipped += 1
+                continue
 
-                sent += 1
+            except requests.exceptions.RequestException as e:
+                order.epaka_last_error = f"Błąd połączenia z ePaka: {e}"
+                order.notes = (order.notes or "") + f"\n[EPAKA] ERROR: {order.epaka_last_error}\n"
+                order.save(update_fields=["epaka_last_error", "notes", "updated_at"])
+                skipped += 1
+                continue
+
+            except Exception as e:
+                order.epaka_last_error = f"Nieoczekiwany błąd ePaka: {e}"
+                order.notes = (order.notes or "") + f"\n[EPAKA] ERROR: {order.epaka_last_error}\n"
+                order.save(update_fields=["epaka_last_error", "notes", "updated_at"])
+                skipped += 1
+                continue
+
+            if not data:
+                skipped += 1
+                continue
+
+            order.epaka_last_error = ""
+            order.epaka_sent_at = timezone.now()
+            order.save(update_fields=["epaka_sent_at", "epaka_last_error", "updated_at"])
+
+            sent += 1
 
         self.message_user(
             request,
@@ -162,7 +212,6 @@ class OrderAdmin(admin.ModelAdmin):
             level=messages.SUCCESS if sent else messages.WARNING
         )
 
-from django.contrib import admin
 from .models import Coupon
 
 @admin.register(Coupon)

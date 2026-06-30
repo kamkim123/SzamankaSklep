@@ -122,6 +122,20 @@ if DATABASE_URL:
             ssl_require=True,
         )
     }
+
+    DATABASES["default"]["CONN_MAX_AGE"] = 60
+    DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+
+    DATABASES["default"].setdefault("OPTIONS", {})
+    DATABASES["default"]["OPTIONS"].update({
+        "keepalives": 1,
+        "keepalives_idle": 30,
+        "keepalives_interval": 10,
+        "keepalives_count": 5,
+        "connect_timeout": 15,
+        "options": "-c statement_timeout=0",
+    })
+
 else:
     DATABASES = {
         "default": {
@@ -129,16 +143,6 @@ else:
             "NAME": DJANGO_DB_PATH,
         }
     }
-
-DATABASES["default"]["OPTIONS"] = {
-    "keepalives": 1,
-    "keepalives_idle": 30,
-    "keepalives_interval": 10,
-    "keepalives_count": 5,
-    "connect_timeout": 15,
-    # na czas importu — dłuższe zapytania:
-    "options": "-c statement_timeout=0",  # albo np. 600000 (10 min)
-}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -204,14 +208,26 @@ MEDIA_URL = "/media/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ===== Bezpieczeństwo (włączysz po HTTPS) =====
-SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "true").lower() == "true"
-CSRF_TRUSTED_ORIGINS = ["https://szamankasklep.pl", "https://www.szamankasklep.pl",  "http://127.0.0.1:8000",  # Lokalny adres
-    "http://localhost:8000"]
+IS_RENDER = os.getenv("RENDER") == "true" or bool(os.getenv("RENDER_EXTERNAL_HOSTNAME"))
 
+SECURE_SSL_REDIRECT = bool(IS_RENDER)
 
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = [
+    "https://szamankasklep.pl",
+    "https://www.szamankasklep.pl",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8001",
+    "http://localhost:8001",
+]
+
+if IS_RENDER:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 CART_SESSION_ID = "cart"
 
@@ -229,12 +245,6 @@ LOGGING = {
 
 ACCOUNT_EMAIL_REQUIRED = True
 
-
-DATABASES["default"]["CONN_MAX_AGE"] = 60  # lub nawet 0 na czas diagnozy
-DATABASES["default"]["CONN_HEALTH_CHECKS"] = True  # Django 4.1+
-DATABASES["default"]["OPTIONS"].update({
-    "keepalives": 1, "keepalives_idle": 30, "keepalives_interval": 10, "keepalives_count": 5,
-})
 
 
 # settings.py
